@@ -1,14 +1,22 @@
 #include <relevance_map/relevance_map_node.hpp>
+#include <relevance_map/utilities.hpp>
+#include <relevance_map/parameters.hpp>
+
+#include <pcl_conversions/pcl_conversions.h>
+
+#include <chrono>
 
 using namespace relevance_map;
 namespace ip = image_processing;
 
 void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
 
+    XmlRpc::XmlRpcValue glob_params; // parameters stored in global_params.yml
     XmlRpc::XmlRpcValue exp_params; // parameters stored in experiment_params.yml
-    XmlRpc::XmlRpcValue modalities;
+    XmlRpc::XmlRpcValue modalities, moda;
     XmlRpc::XmlRpcValue wks;
 
+    nh->getParam("/dream_babbling/params", glob_params);
     nh->getParam("modalities",modalities);
     nh->getParam("experiment", exp_params);
     nh->getParam("experiment/workspace", wks);
@@ -25,19 +33,26 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
         _modalities.emplace(static_cast<std::string>(moda["name"]),moda["dimension"]);
     }
 
+    // Initialisation of the RGB and Depth images subscriber.
+    _images_sub.reset(new rgbd_utils::RGBD_Subscriber(glob_params["rgb_info_topic"],
+                                          glob_params["rgb_topic"],
+                                          glob_params["depth_info_topic"],
+                                          glob_params["depth_topic"],
+                                          *nh));
+
     for(const auto& mod : _modalities)
-        _weighted_cloud_pub.emplace(mod.first,std::unique_ptr<Publisher>(
-                                        new Publisher(nh->advertise<sensor_msgs::PointCloud2>
+        _weighted_cloud_pub.emplace(mod.first,std::unique_ptr<ros::Publisher>(
+                                        new ros::Publisher(nh->advertise<sensor_msgs::PointCloud2>
                                                       ("weighted_color_cloud_"+mod.first, 5))));
     if(_soi_method == "mcs")
-        _weighted_cloud_pub.emplace("merge",std::unique_ptr<Publisher>(
-                                        new Publisher(nh->advertise<sensor_msgs::PointCloud2>
+        _weighted_cloud_pub.emplace("merge",std::unique_ptr<ros::Publisher>(
+                                        new ros::Publisher(nh->advertise<sensor_msgs::PointCloud2>
                                                       ("weighted_color_cloud_mcs", 5))));
 
-    _choice_dist_cloud_pub.reset(new Publisher(ros_nh->advertise<sensor_msgs::PointCloud2>("choice_dist_cloud",5)));
+    _choice_dist_cloud_pub.reset(new ros::Publisher(nh->advertise<sensor_msgs::PointCloud2>("choice_dist_cloud",5)));
 
 
-    _soi.init<relevance_map::sv_param>();
+    _soi.init<sv_param>();
 
 
     if(_soi_method == "nnmap"){
@@ -59,9 +74,19 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
         }
     }
 
+    _background_saved = false;
 }
 
-bool relevance_map_node::_compute_soi(const ip::PointCloudT::Ptr input_cloud){
+void relevance_map_node::release(){
+    _images_sub.reset();
+
+    for(auto& pub : _weighted_cloud_pub)
+        pub.second.reset();
+    _choice_dist_cloud_pub.reset();
+
+}
+
+bool relevance_map_node::_compute_relevance_map(const ip::PointCloudT::Ptr input_cloud){
     ROS_INFO_STREAM("Computing saliency map !");
     std::chrono::system_clock::time_point timer, timer2;
     timer  = std::chrono::system_clock::now();
@@ -69,7 +94,7 @@ bool relevance_map_node::_compute_soi(const ip::PointCloudT::Ptr input_cloud){
 
 
     //* compute the saliency map according the method selected
-    _soi.clear<babbling::sv_param>();
+    _soi.clear<sv_param>();
 
 
     _soi.setInputCloud(input_cloud);
@@ -152,7 +177,10 @@ bool relevance_map_node::_compute_soi(const ip::PointCloudT::Ptr input_cloud){
     return true;
 }
 
-bool relevance_map_node::_compute_choice_map(){
+bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, uint32_t &lbl){
+
+    std::chrono::system_clock::time_point timer;
+    timer  = std::chrono::system_clock::now();
 
     if(_soi.empty()){
         ROS_ERROR_STREAM("BABBLING : No SOI extracted");
@@ -169,26 +197,26 @@ bool relevance_map_node::_compute_choice_map(){
                             std::chrono::system_clock::now() - timer).count());
 
         if(_soi_method == "nnmap"){
-            _possible_choice = _soi.choice_of_soi(_modality,sv, lbl);
+            _soi.choice_of_soi(_modality,sv, lbl);
         }else if(_soi_method == "gmm"){
             std::vector<std::pair<Eigen::VectorXd,double>> samples;
 
-            std::vector<uint32_t> lbl;
+            std::vector<uint32_t> lbl_vct;
             ip::SurfaceOfInterest::saliency_map_t weights = _soi.get_weights()[_modality];
             for(const auto& sv : _soi.getSupervoxels()){
                 samples.push_back(std::make_pair(_soi.get_feature(sv.first,_modality),weights[sv.first]));
-                lbl.push_back(sv.first);
+                lbl_vct.push_back(sv.first);
             }
 
             _gmm_class[_modality].set_distance_function(ip::HistogramFactory::chi_squared_distance);
             int index = _gmm_class[_modality].next_sample(samples,_choice_dist_map);
-            lbl = lbl[index];
+            lbl = lbl_vct[index];
             sv = *(_soi.getSupervoxels()[lbl]);
 
 
         }
         else if(_soi_method == "mcs"){
-            std::vector<uint32_t> lbl;
+            std::vector<uint32_t> lbl_vct;
 
             std::map<std::string,std::vector<std::pair<Eigen::VectorXd,double>>> samples;
             ip::SurfaceOfInterest::saliency_map_t weights = _soi.get_weights()[_modality];
@@ -199,10 +227,10 @@ bool relevance_map_node::_compute_choice_map(){
                     samples[feature.first].push_back(
                                 std::make_pair(feature.second,weights[sv.first]));
                 }
-                lbl.push_back(sv.first);
+                lbl_vct.push_back(sv.first);
             }
             int ind = _mcs.next_sample(samples,_choice_dist_map);
-            lbl = lbl[ind];
+            lbl = lbl_vct[ind];
             sv = *(_soi.getSupervoxels()[lbl]);
 
         }
@@ -235,10 +263,15 @@ void relevance_map_node::publish_feedback(){
         pub.second->publish(weighted_cloud);
     }
 
+    std::vector<uint32_t> lbl_vct;
+    for(const auto& sv : _soi.getSupervoxels()){
+        lbl_vct.push_back(sv.first);
+    }
+
     //visualization of choice distribution map
     ip::PointCloudT choice_ptcl;
-    for(size_t i = 0; i < lbl.size(); i++){
-        pcl::Supervoxel<ip::PointT>::Ptr current_sv = _soi.getSupervoxels()[lbl[i]];
+    for(size_t i = 0; i < lbl_vct.size(); i++){
+        pcl::Supervoxel<ip::PointT>::Ptr current_sv = _soi.getSupervoxels()[lbl_vct[i]];
         float c = 255.*_choice_dist_map(i);
         uint8_t color = c;
         ip::PointT pt;

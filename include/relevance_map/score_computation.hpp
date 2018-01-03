@@ -9,12 +9,12 @@ namespace relevance_map {
 template <class Node>
 class score_computation{
     public:
-        score_computation(Node* node) : _node(node){
+        score_computation(Node* node, std::string output_file) : _node(node){
             _weights = _node->get_soi().get_weights()[_node->get_modality()];
             for(const auto& w : _weights)
                 _lbls.push_back(w.first);
         }
-        score_computation(_score_computation& sc, tbb::split) :
+        score_computation(score_computation& sc, tbb::split) :
             _node(sc._node), _weights(sc._weights), _lbls(sc._lbls),
             _tp(0), _tn(0), _fp(0), _fn(0), _total_neg(0), _total_pos(0){}
 
@@ -45,7 +45,7 @@ class score_computation{
             _total_neg = total_neg;
             _total_pos = total_pos;
         }
-        void join(const _score_computation& sc){
+        void join(const score_computation& sc){
             _tp += sc._tp;
             _tn += sc._tn;
             _fp += sc._fp;
@@ -104,7 +104,7 @@ class score_computation{
 
         std::stringstream str;
         str << "iteration_" << _counter_iter;
-        _results = std::make_pair(str.str(),
+        _result = std::make_pair(str.str(),
                          std::array<double,10>{{nb_samples,
                                                precision,
                                                recall,
@@ -116,10 +116,8 @@ class score_computation{
                                                _nb_false_pos,
                                                _nb_false_neg}});
 
-        std::string output_file;
-        cafer_core::ros_nh->getParam("experiment/soi/output_file",output_file);
-        if(!utilities::write_results(output_file,_results))
-            ROS_ERROR_STREAM("unable to open " << output_file);
+        if(!write_result(_output_file,_result))
+            ROS_ERROR_STREAM("unable to open " << _output_file);
 
         ROS_INFO_STREAM("Computing scores pra finish, time spent : "
                         << std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -140,11 +138,42 @@ class score_computation{
         accuracy = (sc._tp/sc._total_pos + sc._tn/sc._total_neg) / 2.;
     }
 
+    int write_result(std::string file_name){
+        ROS_INFO_STREAM("start to write output file");
+        std::ofstream ofs(file_name,std::ofstream::out | std::ofstream::app);
+        if(!ofs.is_open())
+            return 0;
+
+        YAML::Emitter emitter;
+        emitter << YAML::BeginMap;
+        emitter << YAML::Key << _results.first << YAML::Value
+                << YAML::BeginMap
+                << YAML::Key << "nbr_samples" << YAML::Value << ((int)_results.second[0])
+                << YAML::Key << "precision" << YAML::Value << _results.second[1]
+                << YAML::Key << "recall" << YAML::Value << _results.second[2]
+                << YAML::Key << "accuracy" << YAML::Value << _results.second[3]
+                << YAML::Key << "pos_samples" << YAML::Value << _results.second[4]
+                << YAML::Key << "neg_samples" << YAML::Value << _results.second[5]
+                << YAML::Key << "pos_components" << YAML::Value << _results.second[6]
+                << YAML::Key << "neg_components" << YAML::Value << _results.second[7]
+                << YAML::Key << "false_positives" << YAML::Value << _results.second[8]
+                << YAML::Key << "false_negatives" << YAML::Value << _results.second[9]
+                << YAML::EndMap;
+
+
+        emitter << YAML::EndMap;
+
+        ofs << emitter.c_str();
+        ofs << "\n";
+        return 1;
+    }
+
     private:
         Node* _node;
         ip::SurfaceOfInterest::saliency_map_t _weights;
         std::vector<uint32_t> _lbls;
-
+        std::pair<std::string,std::array<double,10>> _result;
+        std::string _output_file;
 };
 
 }
