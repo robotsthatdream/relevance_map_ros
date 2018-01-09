@@ -18,7 +18,6 @@
 #include <iagmm/nnmap.hpp>
 #include <iagmm/mcs.hpp>
 
-#include <dream_babbling/dataset.h>
 
 #include <gazebo_msgs/SpawnModel.h>
 #include <gazebo_msgs/DeleteModel.h>
@@ -48,6 +47,7 @@ typedef struct model_t{
     std::array<double,3> position;
 }model_t;
 
+typedef std::array<double,10> result_array_t;
 
 void define_frames(const std::string& robot, std::string& base_frame, std::string& camera_frame){
     if(robot == "baxter" || robot == "crustcrawler"){
@@ -71,12 +71,30 @@ std::array<double,3> load_start_models_pose(const std::string& file_name){
     return position;
 }
 
+int load_results(std::string file_name, int &fp, int &fn, int &nbr_iteration){
+    std::cout << "load results : " << file_name << std::endl;
+
+    YAML::Node file_node = YAML::LoadFile(file_name);
+    if(file_node.IsNull())
+        return 0;
+
+    std::stringstream sstream;
+    sstream << "iteration_" << file_node.size()  - 2;
+    std::cout << "load for " << sstream.str() << std::endl;
+    fp = file_node[sstream.str()]["false_positives"].as<int>();
+    fn = file_node[sstream.str()]["false_negatives"].as<int>();
+    nbr_iteration = file_node.size()-1;
+    return 1;
+}
+
 bool load_models(XmlRpc::XmlRpcValue &params,
                  std::map<std::string,std::string>& sdf_models,
                  setup_param_t& setup_params){
     std::ifstream ifs;
     std::string file;
     std::string folder = static_cast<std::string>(params["models_folder"]);
+    std::cout << "load models : " << folder << std::endl;
+
     XmlRpc::XmlRpcValue models = params["models"];
     for(int i = 0; i < models.size(); i++){
         file = folder + static_cast<std::string>(models[i]) + ".sdf";
@@ -107,6 +125,8 @@ bool load_models(XmlRpc::XmlRpcValue &params,
 }
 
 iagmm::TrainingData load_dataset(const std::string& filename){
+    std::cout << "load dataset : " << filename << std::endl;
+
     iagmm::TrainingData dataset;
 
     YAML::Node fileNode = YAML::LoadFile(filename);
@@ -142,7 +162,7 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
                 std::map<std::string,iagmm::GMM> &gmm_class,
                 std::map<std::string,iagmm::NNMap> &nnmap_class,
                 iagmm::MCS &mcs){
-    std::cout << "load : " << folder << std::endl;
+    std::cout << "load experiment : " << folder << std::endl;
     if(folder.empty())
         return false;
     boost::filesystem::directory_iterator dir_it(folder);
@@ -202,6 +222,30 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
     return true;
 }
 
+bool load_archive(std::string folder_name, std::queue<std::string> &folder_list){
+    std::cout << "load archive : " << folder_name << std::endl;
+    if(folder_name.empty())
+        return false;
+
+    if(!boost::filesystem::exists(folder_name))
+        return false;
+
+    boost::filesystem::directory_iterator dir_it(folder_name);
+    boost::filesystem::directory_iterator end_it;
+
+    for(;dir_it != end_it; ++dir_it){
+        if(!boost::filesystem::is_directory(dir_it->path().string()))
+            continue;
+
+        folder_list.push(dir_it->path().string());
+    }
+
+    if(folder_list.empty())
+        return false;
+
+    return true;
+}
+
 Eigen::Vector3d get_model_position(const std::string& model_name,std::unique_ptr<ros::ServiceClient> &client){
     gazebo_msgs::GetModelState msg;
     Eigen::Vector3d position;
@@ -219,25 +263,6 @@ Eigen::Vector3d get_model_position(const std::string& model_name,std::unique_ptr
     return position;
 }
 
-dream_babbling::dataset training_data_to_ros_msg(const std::string &type, const iagmm::TrainingData &tr_data){
-    dream_babbling::dataset dataset_msg;
-    dream_babbling::sv_feature temp_feature;
-
-    dataset_msg.type.data = type;
-
-    iagmm::TrainingData::data_t dataset = tr_data.get();
-    std::vector<double> data_vct(dataset[0].second.rows());
-    for (const auto& data : dataset) {
-
-        for(int i = 0; i < data.second.rows(); i++)
-            data_vct[i] = data.second(i);
-        temp_feature.feature = data_vct;
-        temp_feature.label = data.first;
-
-        dataset_msg.features.push_back(temp_feature);
-    }
-    return dataset_msg;
-}
 
 bool change_models_state(const model_map_t &sdf_models,
                          const setup_param_t &setup_params,

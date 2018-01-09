@@ -3,13 +3,15 @@
 
 #include <tbb/tbb.h>
 #include <image_processing/SurfaceOfInterest.h>
+#include <relevance_map/utilities.hpp>
 
 namespace relevance_map {
 
 template <class Node>
 class score_computation{
     public:
-        score_computation(Node* node, std::string output_file) : _node(node){
+        score_computation(Node* node, std::string output_file) :
+            _node(node), _output_file(output_file){
             _weights = _node->get_soi().get_weights()[_node->get_modality()];
             for(const auto& w : _weights)
                 _lbls.push_back(w.first);
@@ -25,7 +27,7 @@ class score_computation{
             for(size_t i = r.begin(); i < r.end(); ++i){
                 w =_weights[_lbls[i]];
                 lbl = _lbls[i];
-                bool is_in_back = utilities::is_in_cloud(_node->get_soi().getSupervoxels().at(lbl)->centroid_,_node->get_background());
+                bool is_in_back = is_in_cloud(_node->get_soi().getSupervoxels().at(lbl)->centroid_,_node->get_background());
                 if(!is_in_back && w >= _node->get_threshold())
                     tp += w;
                 else if(is_in_back && w >= _node->get_threshold())
@@ -54,7 +56,6 @@ class score_computation{
             _total_pos += sc._total_pos;
         }
 
-
         double _tp = 0;
         double _fp = 0;
         double _fn = 0;
@@ -62,29 +63,29 @@ class score_computation{
         double _total_neg = 0;
         double _total_pos = 0;
 
-    void compute_scores_results(){
+    void compute_scores_results(int iter, int nb_false_pos = 0, int nb_false_neg = 0){
         std::chrono::system_clock::time_point timer;
         timer  = std::chrono::system_clock::now();
         //* Compute scores of performance
         double precision, recall, accuracy;
-        _compute_precision_recall(precision,recall,accuracy);
+        compute_precision_recall(precision,recall,accuracy);
 
         int nb_samples, nb_neg, nb_pos, nb_pos_comp, nb_neg_comp;
-        if(_soi_method == "nnmap"){
-            nb_samples = _node->_nnmap_class[_modality].get_samples().size();
-            nb_neg = _node->_nnmap_class[_modality].get_samples().get_data(0).size();
-            nb_pos = _node->_nnmap_class[_modality].get_samples().get_data(1).size();
+        if(_node->get_method() == "nnmap"){
+            nb_samples = _node->_nnmap_class[_node->get_modality()].get_samples().size();
+            nb_neg = _node->_nnmap_class[_node->get_modality()].get_samples().get_data(0).size();
+            nb_pos = _node->_nnmap_class[_node->get_modality()].get_samples().get_data(1).size();
             nb_pos_comp = 0;
             nb_neg_comp = 0;
         }
-        else if(_soi_method == "gmm"){
-            nb_samples = _node->_gmm_class[_modality].get_samples().size();
-            nb_neg = _node->_gmm_class[_modality].get_samples().get_data(0).size();
-            nb_pos = _node->_gmm_class[_modality].get_samples().get_data(1).size();
-            nb_pos_comp = _node->_gmm_class[_modality].model()[1].size();
-            nb_neg_comp = _node->_gmm_class[_modality].model()[0].size();
+        else if(_node->get_method() == "gmm"){
+            nb_samples = _node->_gmm_class[_node->get_modality()].get_samples().size();
+            nb_neg = _node->_gmm_class[_node->get_modality()].get_samples().get_data(0).size();
+            nb_pos = _node->_gmm_class[_node->get_modality()].get_samples().get_data(1).size();
+            nb_pos_comp = _node->_gmm_class[_node->get_modality()].model()[1].size();
+            nb_neg_comp = _node->_gmm_class[_node->get_modality()].model()[0].size();
         }
-        else if(_soi_method == "mcs"){
+        else if(_node->get_method() == "mcs"){
             nb_samples = _node->_mcs.get_nb_samples();
             nb_neg = _node->_mcs.get_samples().get_data(0).size();
             nb_pos = _node->_mcs.get_samples().get_data(1).size();
@@ -93,19 +94,19 @@ class score_computation{
         }
 
         ROS_INFO_STREAM("--------------------------------------------------------");
-        ROS_INFO_STREAM("scores for iteration " << _counter_iter << "\n"
+        ROS_INFO_STREAM("scores for iteration " << iter << "\n"
                         << " precision : " << precision << "\n"
                         << " recall : " << recall << "\n"
                         << " accuracy : " << accuracy << "\n"
                         << " nb components : pos " << nb_pos_comp << "; neg " << nb_neg_comp << "\n"
                         << " nb samples : pos " << nb_pos << "; neg " << nb_neg << "\n"
-                        << " false samples : pos " << _nb_false_pos << "; neg " << _nb_false_neg);
+                        << " false samples : pos " << nb_false_pos << "; neg " << nb_false_neg);
         ROS_INFO_STREAM("--------------------------------------------------------");
 
         std::stringstream str;
-        str << "iteration_" << _counter_iter;
+        str << "iteration_" << iter;
         _result = std::make_pair(str.str(),
-                         std::array<double,10>{{nb_samples,
+                         result_array_t{{nb_samples,
                                                precision,
                                                recall,
                                                accuracy,
@@ -113,10 +114,10 @@ class score_computation{
                                                nb_neg,
                                                nb_pos_comp,
                                                nb_neg_comp,
-                                               _nb_false_pos,
-                                               _nb_false_neg}});
+                                               nb_false_pos,
+                                               nb_false_neg}});
 
-        if(!write_result(_output_file,_result))
+        if(!write_result(_output_file))
             ROS_ERROR_STREAM("unable to open " << _output_file);
 
         ROS_INFO_STREAM("Computing scores pra finish, time spent : "
@@ -129,13 +130,12 @@ class score_computation{
         ROS_INFO_STREAM("compute precision, recall and accuracy");
         precision = 0; recall = 0; accuracy = 0;
 
-        _score_computation sc(this);
-        tbb::parallel_reduce(tbb::blocked_range<size_t>(0,_soi.get_weights()[_modality].size()),sc);
+        tbb::parallel_reduce(tbb::blocked_range<size_t>(0,_node->get_soi().get_weights()[_node->get_modality()].size()),*this);
 
 
-        precision = sc._tp / (sc._tp + sc._fp);
-        recall = sc._tp / (sc._tp + sc._fn);
-        accuracy = (sc._tp/sc._total_pos + sc._tn/sc._total_neg) / 2.;
+        precision = _tp / (_tp + _fp);
+        recall = _tp / (_tp + _fn);
+        accuracy = (_tp/_total_pos + _tn/_total_neg) / 2.;
     }
 
     int write_result(std::string file_name){
@@ -146,18 +146,18 @@ class score_computation{
 
         YAML::Emitter emitter;
         emitter << YAML::BeginMap;
-        emitter << YAML::Key << _results.first << YAML::Value
+        emitter << YAML::Key << _result.first << YAML::Value
                 << YAML::BeginMap
-                << YAML::Key << "nbr_samples" << YAML::Value << ((int)_results.second[0])
-                << YAML::Key << "precision" << YAML::Value << _results.second[1]
-                << YAML::Key << "recall" << YAML::Value << _results.second[2]
-                << YAML::Key << "accuracy" << YAML::Value << _results.second[3]
-                << YAML::Key << "pos_samples" << YAML::Value << _results.second[4]
-                << YAML::Key << "neg_samples" << YAML::Value << _results.second[5]
-                << YAML::Key << "pos_components" << YAML::Value << _results.second[6]
-                << YAML::Key << "neg_components" << YAML::Value << _results.second[7]
-                << YAML::Key << "false_positives" << YAML::Value << _results.second[8]
-                << YAML::Key << "false_negatives" << YAML::Value << _results.second[9]
+                << YAML::Key << "nbr_samples" << YAML::Value << ((int)_result.second[0])
+                << YAML::Key << "precision" << YAML::Value << _result.second[1]
+                << YAML::Key << "recall" << YAML::Value << _result.second[2]
+                << YAML::Key << "accuracy" << YAML::Value << _result.second[3]
+                << YAML::Key << "pos_samples" << YAML::Value << _result.second[4]
+                << YAML::Key << "neg_samples" << YAML::Value << _result.second[5]
+                << YAML::Key << "pos_components" << YAML::Value << _result.second[6]
+                << YAML::Key << "neg_components" << YAML::Value << _result.second[7]
+                << YAML::Key << "false_positives" << YAML::Value << _result.second[8]
+                << YAML::Key << "false_negatives" << YAML::Value << _result.second[9]
                 << YAML::EndMap;
 
 
@@ -172,8 +172,10 @@ class score_computation{
         Node* _node;
         ip::SurfaceOfInterest::saliency_map_t _weights;
         std::vector<uint32_t> _lbls;
-        std::pair<std::string,std::array<double,10>> _result;
+        std::pair<std::string,result_array_t> _result;
         std::string _output_file;
+        std::string _soi_method;
+        std::string _modality;
 };
 
 }
