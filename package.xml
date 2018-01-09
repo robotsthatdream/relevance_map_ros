@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<package>
+    <name>relevance_map</name>
+    <version>0.8.0</version>
+    <description>The dream_babbling package</description>
+
+    <maintainer email="le_goff@isir.upmc.fr">le_goff</maintainer>
+
+    <license>TODO</license>
+
+    <!-- <url type="website">http://wiki.ros.org/dream_babbling</url> -->
+
+    <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <build_depend>roscpp</build_depend>
+    <build_depend>rospy</build_depend>
+    <build_depend>std_msgs</build_depend>
+    <build_depend>message_generation</build_depend>
+    <build_depend>yaml_cpp</build_depend>
+    <build_depend>rgbd_utils</build_depend>
+    <build_depend>message_filters</build_depend>
+    <build_depend>geometry_msgs</build_depend>
+    <build_depend>gazebo_msgs</build_depend>
+    <build_depend>sensor_msgs</build_depend>
+
+    <run_depend>sensor_msgs</run_depend>
+    <run_depend>message_runtime</run_depend>
+    <run_depend>roscpp</run_depend>
+    <run_depend>rospy</run_depend>
+    <run_depend>std_msgs</run_depend>
+    <run_depend>yaml_cpp</run_depend>
+    <run_depend>rgbd_utils</run_depend>
+    <run_depend>message_filters</run_depend>
+    <run_depend>geometry_msgs</run_depend>
+    <run_depend>gazebo_msgs</run_depend>
+    <export>
+        <!-- Other tools can request additional information be placed here -->
+    </export>
+</package>
