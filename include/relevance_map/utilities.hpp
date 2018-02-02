@@ -163,8 +163,10 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
                 std::map<std::string,iagmm::NNMap> &nnmap_class,
                 iagmm::MCS &mcs){
     std::cout << "load experiment : " << folder << std::endl;
-    if(folder.empty())
+    if(folder.empty()){
+        std::cerr << folder << " is empty" << std::endl;
         return false;
+    }
     boost::filesystem::directory_iterator dir_it(folder);
     boost::filesystem::directory_iterator end_it;
     std::vector<std::string> split_str;
@@ -193,9 +195,12 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
         for(const auto& arch: gmm_arch_file){
             iagmm::GMM gmm;
             std::ifstream ifs(arch.second);
+            if(!ifs || ifs.peek() == std::ifstream::traits_type::eof())
+                return false;
             boost::archive::text_iarchive iarch(ifs);
             iarch >> gmm;
             gmm_class.emplace(arch.first,gmm);
+            ifs.close();
         }
     }
     else if(soi_method == "mcs"){
@@ -203,9 +208,12 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
         for(const auto& arch: gmm_arch_file){
             iagmm::GMM gmm;
             std::ifstream ifs(arch.second);
+            if(!ifs || ifs.peek() == std::ifstream::traits_type::eof())
+                return false;
             boost::archive::text_iarchive iarch(ifs);
             iarch >> gmm;
             gmms.emplace(arch.first,iagmm::GMM::Ptr(new iagmm::GMM(gmm)));
+            ifs.close();
         }
         mcs = iagmm::MCS(gmms,iagmm::combinatorial::fct_map.at("sum"),iagmm::param_estimation::fct_map.at("linear"));
     }

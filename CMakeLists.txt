@@ -36,10 +36,10 @@ link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
 set(LOCAL_LIB_DIR /usr/local/ CACHE STRING "local libraries directory for iagmm and image_processing")
-set(IAGMM_INCLUDE_DIR ${LOCAL_LIB_DIR}include)
-set(IAGMM_LIBRARIES ${LOCAL_LIB_DIR}lib/libiagmm.so)
-set(image_processing_INCLUDE_DIR ${LOCAL_LIB_DIR}include/)
-set(image_processing_LIBRARIES ${LOCAL_LIB_DIR}lib/libimage_processing.so)
+set(IAGMM_INCLUDE_DIR ${LOCAL_LIB_DIR}/include/)
+set(IAGMM_LIBRARIES ${LOCAL_LIB_DIR}/lib/libiagmm.so)
+set(image_processing_INCLUDE_DIR ${LOCAL_LIB_DIR}/include/)
+set(image_processing_LIBRARIES ${LOCAL_LIB_DIR}/lib/libimage_processing.so)
 
 ## Generate messages in the 'msg' folder
 #add_message_files(
@@ -77,7 +77,7 @@ set(image_processing_LIBRARIES ${LOCAL_LIB_DIR}lib/libimage_processing.so)
 #)
 
 catkin_package(
-        INCLUDE_DIRS include/${PROJECT_NAME}/
+        INCLUDE_DIRS include
         LIBRARIES relevance_map
         CATKIN_DEPENDS roscpp rospy std_msgs message_runtime rgbd_utils gazebo_msgs sensor_msgs
         DEPENDS ${IMAGE_PROCESSING_LIBRARY}

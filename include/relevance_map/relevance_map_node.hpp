@@ -72,12 +72,13 @@ protected:
     std::map<std::string,std::unique_ptr<ros::Publisher>> _weighted_cloud_pub;
     std::unique_ptr<ros::Publisher> _choice_dist_cloud_pub;
 
+    bool _compute_supervoxels(const ip::PointCloudT::Ptr input_cloud);
     /**
      * @brief Compute the saliency map for the next iteration and choose the next supervoxel to explore.
      * @param input cloud
      * @return true if all went good false otherwise
      */
-    bool _compute_relevance_map(const ip::PointCloudT::Ptr input_cloud);
+    bool _compute_relevance_map();
     bool _compute_choice_map(pcl::Supervoxel<image_processing::PointT> &sv, uint32_t &lbl);
 };
 
