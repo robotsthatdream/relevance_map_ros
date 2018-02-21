@@ -19,7 +19,7 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
     XmlRpc::XmlRpcValue modalities, moda;
     XmlRpc::XmlRpcValue wks;
 
-    nh->getParam("/dream_babbling/params", glob_params);
+    nh->getParam("global", glob_params);
     nh->getParam("modalities",modalities);
     nh->getParam("experiment", exp_params);
     nh->getParam("experiment/workspace", wks);
@@ -59,14 +59,17 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
     _soi.init<sv_param>();
 
     _background_saved = false;
+    _background.reset(new ip::PointCloudT);
 }
 
 void relevance_map_node::init_classifiers(const std::string &folder_name){
     if(_method == "nnmap"){
+        _nnmap_class.clear();
         for(const auto& mod : _modalities)
             _nnmap_class.emplace(mod.first,iagmm::NNMap(mod.second,2,.3,0.05));
     }
     else if (_method == "gmm"){
+        _gmm_class.clear();
         if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs))
             for(const auto& mod : _modalities)
                 _gmm_class.emplace(mod.first,iagmm::GMM(mod.second,2));
@@ -113,22 +116,25 @@ bool relevance_map_node::retrieve_input_cloud(ip::PointCloudT::Ptr cloud){
 
 }
 
-bool relevance_map_node::_compute_relevance_map(const ip::PointCloudT::Ptr input_cloud){
+bool relevance_map_node::_compute_supervoxels(const ip::PointCloudT::Ptr input_cloud){
+    _soi.clear<sv_param>();
+    _soi.setInputCloud(input_cloud);
+    if(!_soi.computeSupervoxel(*_workspace))
+        return false;
+    _soi.filter_supervoxels(6);
+}
+
+bool relevance_map_node::_compute_relevance_map(){
     ROS_INFO_STREAM("Computing saliency map !");
     std::chrono::system_clock::time_point timer, timer2;
     timer  = std::chrono::system_clock::now();
     timer2 = std::chrono::system_clock::now();
 
 
-    //* compute the saliency map according the method selected
-    _soi.clear<sv_param>();
+    //* compute the relevance map according the method selected
 
-
-    _soi.setInputCloud(input_cloud);
 
     if (_method == "nnmap"){ // Use a Nearst Neighbor map
-        if(!_soi.computeSupervoxel(*_workspace))
-            return false;
         for(auto& classifier: _nnmap_class){
            _soi.init_weights(classifier.first,.5);
            classifier.second.default_estimation = .5;
@@ -145,8 +151,6 @@ bool relevance_map_node::_compute_relevance_map(const ip::PointCloudT::Ptr input
         }
     }
     if(_method == "gmm"){ // Use a Gaussian Mixture Model
-        if(!_soi.computeSupervoxel(*_workspace))
-            return false;
         for(auto& classifier: _gmm_class){
            _soi.compute_feature(classifier.first);
            ROS_INFO_STREAM("Computing features finish for " << classifier.first << ", time spent : "
@@ -162,8 +166,6 @@ bool relevance_map_node::_compute_relevance_map(const ip::PointCloudT::Ptr input
         }
     }
     if(_method == "mcs"){
-        if(!_soi.computeSupervoxel(*_workspace))
-            return false;
         for(const auto& classifier: _mcs.access_classifiers()){
             _soi.compute_feature(classifier.first);
             ROS_INFO_STREAM("Computing features finish for " << classifier.first << ", time spent : "
@@ -180,9 +182,8 @@ bool relevance_map_node::_compute_relevance_map(const ip::PointCloudT::Ptr input
 
     }
     if (_method == "random") { // Use nothing. the choice of the next supervoxel will random.
-        if (!_soi.generate(*_workspace)) {
-            return false;
-        }
+        _soi.init_weights("random");
+
     }
     if (_method == "expert") { // Use a background substraction.
         if (!_soi.generate(_background, *_workspace)) {
@@ -211,7 +212,7 @@ bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, ui
     Eigen::VectorXd choice_dist_map;
 
     if(_soi.empty()){
-        ROS_ERROR_STREAM("BABBLING : No SOI extracted");
+        ROS_ERROR_STREAM("No SOI extracted");
         return false;
     }
 
@@ -220,9 +221,7 @@ bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, ui
     if(_mode == "exploration" || _mode == "experiment"){
         //-_- TODO _-_ DECISION BETWEEN WHICH MODALITY TO CHOOSE FOR THE NEXT POINT TO EXPLORE
 
-        ROS_INFO_STREAM("BABBLING_NODE: Choosing next sv to explore,  time spent so far : "
-                        << std::chrono::duration_cast<std::chrono::milliseconds>(
-                            std::chrono::system_clock::now() - timer).count());
+        ROS_INFO_STREAM("Choosing next sv to explore");
 
         if(_method == "nnmap"){
             _soi.choice_of_soi(_modality,sv, lbl);
@@ -270,7 +269,7 @@ bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, ui
             sv = *(_soi.getSupervoxels()[lbl]);
 
         }
-        else ROS_ERROR_STREAM("BABBLING : Unknown soi method" << _method);
+        else ROS_ERROR_STREAM("Unknown soi method" << _method);
         // TODO the other modes !
     }
 
@@ -289,7 +288,7 @@ bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, ui
 void relevance_map_node::publish_feedback(){
     sensor_msgs::PointCloud2 weighted_cloud;
 
-    ip::PointCloudT w_cl;
+    pcl::PointCloud<pcl::PointXYZI> w_cl;
 
     //visualisation of relevance map
     for(auto& pub: _weighted_cloud_pub){
