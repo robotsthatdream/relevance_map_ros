@@ -121,6 +121,7 @@ bool relevance_map_node::_compute_supervoxels(const ip::PointCloudT::Ptr input_c
     _soi.setInputCloud(input_cloud);
     if(!_soi.computeSupervoxel(*_workspace))
         return false;
+    _soi.filter_supervoxels(6);
 }
 
 bool relevance_map_node::_compute_relevance_map(){
