@@ -165,6 +165,7 @@ class score_computation{
 
         ofs << emitter.c_str();
         ofs << "\n";
+        ofs.close();
         return 1;
     }
 
