@@ -163,6 +163,8 @@ class score_computation{
                 << YAML::Key << "neg_components" << YAML::Value << _result.second[7]
                 << YAML::Key << "false_positives" << YAML::Value << _result.second[8]
                 << YAML::Key << "false_negatives" << YAML::Value << _result.second[9]
+                << YAML::Key << "rand_nb_pos" << YAML::Value << _result.second[10]
+                << YAML::Key << "rand_nb_neg" << YAML::Value << _result.second[11]
                 << YAML::EndMap;
 
 
