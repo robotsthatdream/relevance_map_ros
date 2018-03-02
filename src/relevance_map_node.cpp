@@ -121,6 +121,7 @@ bool relevance_map_node::_compute_supervoxels(const ip::PointCloudT::Ptr input_c
     _soi.setInputCloud(input_cloud);
     if(!_soi.computeSupervoxel(*_workspace))
         return false;
+    _soi.filter_supervoxels(6);
 }
 
 bool relevance_map_node::_compute_relevance_map(){
@@ -298,19 +299,15 @@ void relevance_map_node::publish_feedback(){
     }
 
     //visualization of choice distribution map
-    ip::PointCloudT choice_ptcl;
+    pcl::PointCloud<pcl::PointXYZI> choice_ptcl;
     for(const auto& val: _choice_map){
         pcl::Supervoxel<ip::PointT>::Ptr current_sv = _soi.getSupervoxels()[val.first];
-        float c = 255.*val.second;
-        uint8_t color = c;
-        ip::PointT pt;
+        pcl::PointXYZI pt;
         for(auto v : *(current_sv->voxels_)){
             pt.x = v.x;
             pt.y = v.y;
             pt.z = v.z;
-            pt.r = color;
-            pt.g = color;
-            pt.b = color;
+            pt.intensity = val.second;
             choice_ptcl.push_back(pt);
         }
     }

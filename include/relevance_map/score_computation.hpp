@@ -70,7 +70,7 @@ class score_computation{
         double precision, recall, accuracy;
         compute_precision_recall(precision,recall,accuracy);
 
-        int nb_samples, nb_neg, nb_pos, nb_pos_comp, nb_neg_comp;
+        int nb_samples, nb_neg, nb_pos, nb_pos_comp, nb_neg_comp,rand_nb_pos, rand_nb_neg;
         if(_node->get_method() == "nnmap"){
             nb_samples = _node->_nnmap_class[_node->get_modality()].get_samples().size();
             nb_neg = _node->_nnmap_class[_node->get_modality()].get_samples().get_data(0).size();
@@ -92,6 +92,8 @@ class score_computation{
             nb_pos_comp = 0;
             nb_neg_comp = 0;
         }
+        rand_nb_pos = nb_samples*_total_pos/(_total_pos+_total_neg);
+        rand_nb_neg = nb_samples - rand_nb_pos;
 
         ROS_INFO_STREAM("--------------------------------------------------------");
         ROS_INFO_STREAM("scores for iteration " << iter << "\n"
@@ -100,7 +102,8 @@ class score_computation{
                         << " accuracy : " << accuracy << "\n"
                         << " nb components : pos " << nb_pos_comp << "; neg " << nb_neg_comp << "\n"
                         << " nb samples : pos " << nb_pos << "; neg " << nb_neg << "\n"
-                        << " false samples : pos " << nb_false_pos << "; neg " << nb_false_neg);
+                        << " false samples : pos " << nb_false_pos << "; neg " << nb_false_neg << "\n"
+                        << " rand nb : pos " << rand_nb_pos << " ; neg " << rand_nb_neg);
         ROS_INFO_STREAM("--------------------------------------------------------");
 
         std::stringstream str;
@@ -115,7 +118,9 @@ class score_computation{
                                                nb_pos_comp,
                                                nb_neg_comp,
                                                nb_false_pos,
-                                               nb_false_neg}});
+                                               nb_false_neg,
+                                               rand_nb_pos,
+                                               rand_nb_neg}});
 
         if(!write_result(_output_file))
             ROS_ERROR_STREAM("unable to open " << _output_file);
@@ -158,6 +163,8 @@ class score_computation{
                 << YAML::Key << "neg_components" << YAML::Value << _result.second[7]
                 << YAML::Key << "false_positives" << YAML::Value << _result.second[8]
                 << YAML::Key << "false_negatives" << YAML::Value << _result.second[9]
+                << YAML::Key << "rand_nb_pos" << YAML::Value << _result.second[10]
+                << YAML::Key << "rand_nb_neg" << YAML::Value << _result.second[11]
                 << YAML::EndMap;
 
 
@@ -165,6 +172,7 @@ class score_computation{
 
         ofs << emitter.c_str();
         ofs << "\n";
+        ofs.close();
         return 1;
     }
 
