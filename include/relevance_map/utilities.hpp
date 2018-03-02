@@ -52,7 +52,7 @@ typedef std::array<double,10> result_array_t;
 void define_frames(const std::string& robot, std::string& base_frame, std::string& camera_frame){
     if(robot == "baxter" || robot == "crustcrawler"){
         base_frame = "/base";
-        camera_frame = "/camera_depth_optical_frame";
+        camera_frame = "/kinect2_link";
     }else if(robot == "pr2"){
         base_frame = "/odom_combined";
         camera_frame = "/head_mount_kinect2_rgb_optical_frame";
