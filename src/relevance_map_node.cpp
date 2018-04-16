@@ -302,12 +302,13 @@ void relevance_map_node::publish_feedback(){
     pcl::PointCloud<pcl::PointXYZI> choice_ptcl;
     for(const auto& val: _choice_map){
         pcl::Supervoxel<ip::PointT>::Ptr current_sv = _soi.getSupervoxels()[val.first];
+        float i = val.second;
         pcl::PointXYZI pt;
         for(auto v : *(current_sv->voxels_)){
             pt.x = v.x;
             pt.y = v.y;
             pt.z = v.z;
-            pt.intensity = val.second;
+            pt.intensity = i;
             choice_ptcl.push_back(pt);
         }
     }
