@@ -69,6 +69,7 @@ public:
         if(!rm::load_experiment(_method,_iter_list.front(),_modalities,_gmm_class,_nnmap_class,_mcs)){
             ROS_INFO_STREAM("Empty archive");
             _iter_list.pop();
+            _progress+=_input_clouds.size()*_backgrounds.size();
             return;
         }
         _iter_list.pop();

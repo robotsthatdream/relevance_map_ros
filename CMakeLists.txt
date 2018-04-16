@@ -97,8 +97,8 @@ install(TARGETS rgbd_utils
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
 
-install(DIRECTORY include/rgbd_utils/
-        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+install(DIRECTORY include/rgbd_utils
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}/..)
 
 add_library(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} rgbd_utils)
