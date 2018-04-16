@@ -19,11 +19,13 @@
     <build_depend>std_msgs</build_depend>
     <build_depend>message_generation</build_depend>
     <build_depend>yaml_cpp</build_depend>
-    <build_depend>rgbd_utils</build_depend>
+    <build_depend>cv_bridge</build_depend>
     <build_depend>message_filters</build_depend>
     <build_depend>geometry_msgs</build_depend>
     <build_depend>gazebo_msgs</build_depend>
     <build_depend>sensor_msgs</build_depend>
+    <build_depend>pcl_conversions</build_depend>
+
 
     <run_depend>sensor_msgs</run_depend>
     <run_depend>message_runtime</run_depend>
@@ -31,11 +33,14 @@
     <run_depend>rospy</run_depend>
     <run_depend>std_msgs</run_depend>
     <run_depend>yaml_cpp</run_depend>
-    <run_depend>rgbd_utils</run_depend>
+    <run_depend>cv_bridge</run_depend>
     <run_depend>message_filters</run_depend>
     <run_depend>geometry_msgs</run_depend>
     <run_depend>gazebo_msgs</run_depend>
-    <export>
+    <run_depend>pcl_conversions</run_depend>
+    <run_depend>rgbd_utils</run_depend>
+
+ <export>
         <!-- Other tools can request additional information be placed here -->
     </export>
 </package>
