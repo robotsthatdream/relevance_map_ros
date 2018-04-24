@@ -145,7 +145,7 @@ bool relevance_map_node::_compute_relevance_map(){
 
     if (_method == "nnmap"){ // Use a Nearst Neighbor map (only for 2 class problem)
         for(auto& classifier: _nnmap_class){
-           _soi.init_weights(classifier.first,.5);
+           _soi.init_weights(classifier.first,2,.5);
            classifier.second.default_estimation = .5;
            _soi.compute_feature(classifier.first);
            ROS_INFO_STREAM("Computing features finish for " << classifier.first << ", time spent : "
@@ -191,7 +191,7 @@ bool relevance_map_node::_compute_relevance_map(){
 
     }
     if (_method == "random") { // Use nothing. the choice of the next supervoxel will random.
-        _soi.init_weights("random");
+        _soi.init_weights("random",2);
 
     }
     if (_method == "expert") { // Use a background substraction.
