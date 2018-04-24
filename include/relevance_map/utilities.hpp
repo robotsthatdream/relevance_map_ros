@@ -191,6 +191,9 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
         }
     }
 
+    if(gmm_arch_file.empty() || dataset_file.empty())
+        return false;
+
     if(soi_method == "gmm"){
         for(const auto& arch: gmm_arch_file){
             iagmm::GMM gmm;

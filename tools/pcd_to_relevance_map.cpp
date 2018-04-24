@@ -38,7 +38,7 @@ public:
             ROS_ERROR_STREAM("unable to compute relevance map");
             return false;
         }
-        pcl::PointCloud<pcl::PointXYZI> rm_cloud = _soi.getColoredWeightedCloud("meanFPFHLabHist");
+        pcl::PointCloud<pcl::PointXYZI> rm_cloud = _soi.getColoredWeightedCloud("meanFPFHLabHist",1);
         pcl::toROSMsg(rm_cloud,_rm_msg);
         _rm_msg.header.frame_id = "world";
         pcl::toROSMsg(*_input_cloud,_cloud_msg);
