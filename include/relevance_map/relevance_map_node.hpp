@@ -22,12 +22,18 @@ namespace rgbd = rgbd_utils;
 
 namespace relevance_map{
 
+/**
+ * @brief Base class to implent a ros node for computing a relevance map.
+ */
 class relevance_map_node
 {
 public:
 
     typedef std::map<uint32_t,double> map_t;
 
+    /**
+     * @brief default constructor
+     */
     relevance_map_node(){}
 
     void initialize(const ros::NodeHandlePtr nh);
@@ -58,6 +64,7 @@ protected:
     std::string _modality;
     int _dimension;
     double _threshold = 0.5;
+    int _nbr_class = 2;
     std::map<std::string,int> _modalities;
     std::vector<std::string> _mcs_mod_mapping;
 

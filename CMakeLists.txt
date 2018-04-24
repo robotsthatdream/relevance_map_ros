@@ -23,7 +23,7 @@ set(CATKIN_COMMON_COMPONENTS roscpp
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_COMMON_COMPONENTS})
 find_package(OpenCV 2.4.8 REQUIRED)
-find_package(PCL 1.7 REQUIRED)
+find_package(PCL 1.8 REQUIRED)
 find_library(BASE64 NAMES b64)
 
 
@@ -120,7 +120,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 #TOOLS
 add_executable(pcd_to_relevance_map tools/pcd_to_relevance_map.cpp)
-target_link_libraries(pcd_to_relevance_map ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES})
+target_link_libraries(pcd_to_relevance_map ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb)
 
 add_executable(evaluate_classifier tools/evaluate_classifier.cpp)
 target_link_libraries(evaluate_classifier ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
