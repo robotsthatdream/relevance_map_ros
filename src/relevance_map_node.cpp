@@ -31,6 +31,7 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
     _modality = static_cast<std::string>(exp_params["soi"]["modality"]);
     _dimension = std::stoi(exp_params["soi"]["dimension"]);
     _threshold = std::stod(exp_params["soi"]["threshold"]);
+    _nbr_class = std::stod(exp_params["soi"]["nbr_class"]);
 
     for(const auto& mod: modalities){
         moda = mod.second;
@@ -66,19 +67,19 @@ void relevance_map_node::init_classifiers(const std::string &folder_name){
     if(_method == "nnmap"){
         _nnmap_class.clear();
         for(const auto& mod : _modalities)
-            _nnmap_class.emplace(mod.first,iagmm::NNMap(mod.second,2,.3,0.05));
+            _nnmap_class.emplace(mod.first,iagmm::NNMap(mod.second,.3,0.05));
     }
     else if (_method == "gmm"){
         _gmm_class.clear();
         if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs))
             for(const auto& mod : _modalities)
-                _gmm_class.emplace(mod.first,iagmm::GMM(mod.second,2));
+                _gmm_class.emplace(mod.first,iagmm::GMM(mod.second,_nbr_class));
     }
     else if (_method == "mcs"){
         if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs)){
             std::map<std::string,iagmm::GMM::Ptr> gmms;
             for(const auto& mod: _modalities){
-                gmms.emplace(mod.first,iagmm::GMM::Ptr(new iagmm::GMM(mod.second,2)));
+                gmms.emplace(mod.first,iagmm::GMM::Ptr(new iagmm::GMM(mod.second,_nbr_class)));
                 _mcs = iagmm::MCS(gmms,iagmm::combinatorial::fct_map.at("sum"),iagmm::param_estimation::fct_map.at("linear"));
             }
         }
@@ -91,6 +92,7 @@ void relevance_map_node::release(){
     for(auto& pub : _weighted_cloud_pub)
         pub.second.reset();
     _choice_dist_cloud_pub.reset();
+    _background.reset();
 
 }
 
@@ -142,9 +144,9 @@ bool relevance_map_node::_compute_relevance_map(){
     //* compute the relevance map according the method selected
 
 
-    if (_method == "nnmap"){ // Use a Nearst Neighbor map
+    if (_method == "nnmap"){ // Use a Nearst Neighbor map (only for 2 class problem)
         for(auto& classifier: _nnmap_class){
-           _soi.init_weights(classifier.first,.5);
+           _soi.init_weights(classifier.first,2,.5);
            classifier.second.default_estimation = .5;
            _soi.compute_feature(classifier.first);
            ROS_INFO_STREAM("Computing features finish for " << classifier.first << ", time spent : "
@@ -158,7 +160,7 @@ bool relevance_map_node::_compute_relevance_map(){
                                               std::chrono::system_clock::now() - timer2).count());
         }
     }
-    if(_method == "gmm"){ // Use a Gaussian Mixture Model
+    if(_method == "gmm"){ // Use Collaborative Mixture Models
         for(auto& classifier: _gmm_class){
            _soi.compute_feature(classifier.first);
            ROS_INFO_STREAM("Computing features finish for " << classifier.first << ", time spent : "
@@ -173,7 +175,7 @@ bool relevance_map_node::_compute_relevance_map(){
 
         }
     }
-    if(_method == "mcs"){
+    if(_method == "mcs"){ //Use Multi Classifier System with GMM
         for(const auto& classifier: _mcs.access_classifiers()){
             _soi.compute_feature(classifier.first);
             ROS_INFO_STREAM("Computing features finish for " << classifier.first << ", time spent : "
@@ -190,7 +192,7 @@ bool relevance_map_node::_compute_relevance_map(){
 
     }
     if (_method == "random") { // Use nothing. the choice of the next supervoxel will random.
-        _soi.init_weights("random");
+        _soi.init_weights("random",2);
 
     }
     if (_method == "expert") { // Use a background substraction.
@@ -234,10 +236,10 @@ bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, ui
         if(_method == "nnmap"){
             _soi.choice_of_soi(_modality,sv, lbl);
         }else if(_method == "gmm"){
-            std::vector<std::pair<Eigen::VectorXd,double>> samples;
+            std::vector<std::pair<Eigen::VectorXd,std::vector<double>>> samples;
 
             std::vector<uint32_t> lbl_vct;
-            ip::SurfaceOfInterest::saliency_map_t weights = _soi.get_weights()[_modality];
+            ip::SurfaceOfInterest::relevance_map_t weights = _soi.get_weights()[_modality];
             for(const auto& sv : _soi.getSupervoxels()){
                 samples.push_back(std::make_pair(_soi.get_feature(sv.first,_modality),weights[sv.first]));
                 lbl_vct.push_back(sv.first);
@@ -257,8 +259,8 @@ bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, ui
         else if(_method == "mcs"){
             std::vector<uint32_t> lbl_vct;
 
-            std::map<std::string,std::vector<std::pair<Eigen::VectorXd,double>>> samples;
-            ip::SurfaceOfInterest::saliency_map_t weights = _soi.get_weights()[_modality];
+            std::map<std::string,std::vector<std::pair<Eigen::VectorXd,std::vector<double>>>> samples;
+            ip::SurfaceOfInterest::relevance_map_t weights = _soi.get_weights()[_modality];
             std::map<std::string, Eigen::VectorXd> sample;
             for(const auto& sv : _soi.getSupervoxels()){
                 sample = _soi.get_features(sv.first);
@@ -300,7 +302,7 @@ void relevance_map_node::publish_feedback(){
 
     //visualisation of relevance map
     for(auto& pub: _weighted_cloud_pub){
-        w_cl = _soi.getColoredWeightedCloud(pub.first);
+        w_cl = _soi.getColoredWeightedCloud(pub.first,1);
         pcl::toROSMsg(w_cl, weighted_cloud);
         weighted_cloud.header = _images_sub->get_depth().header;
         pub.second->publish(weighted_cloud);

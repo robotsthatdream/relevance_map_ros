@@ -36,7 +36,7 @@ void RGBD_Subscriber::connect_callback()
     sub_depth_.subscribe(*depth_it_, _depth_topic, 1, depth_hints);
 
     // rgb uses normal ros transport hints.
-    image_transport::TransportHints hints("compressed", ros::TransportHints(), private_nh);
+    image_transport::TransportHints hints("raw", ros::TransportHints(), private_nh);
     sub_rgb_.subscribe(*rgb_it_, _rgb_topic, 1, hints);
     sub_rgb_info_.subscribe(*rgb_nh_, _rgb_info_topic, 1);
     sub_depth_info_.subscribe(*depth_nh_, _depth_info_topic, 1);

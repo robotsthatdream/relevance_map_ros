@@ -36,7 +36,7 @@ class score_computation{
             double w;
             uint32_t lbl;
             for(size_t i = r.begin(); i < r.end(); ++i){
-                w =_weights[_lbls[i]];
+                w =_weights[_lbls[i]][1];
                 lbl = _lbls[i];
                 bool is_in_back = is_in_cloud(_node->get_soi().getSupervoxels().at(lbl)->centroid_,_node->get_background());
                 if(!is_in_back && w >= _node->get_threshold())
@@ -124,18 +124,18 @@ class score_computation{
 
             std::stringstream str;
             str << "iteration_" << iter;
-            set_results(str.str(),{nb_samples,
-                                                 precision,
-                                                 recall,
-                                                 accuracy,
-                                                 nb_pos,
-                                                 nb_neg,
-                                                 nb_pos_comp,
-                                                 nb_neg_comp,
-                                                 nb_false_pos,
-                                                 nb_false_neg,
-                                                 rand_nb_pos,
-                                                 rand_nb_neg});
+            set_results(str.str(),{(double)nb_samples,
+                                   precision,
+                                   recall,
+                                   accuracy,
+                                   (double)nb_pos,
+                                   (double)nb_neg,
+                                   (double)nb_pos_comp,
+                                   (double)nb_neg_comp,
+                                   (double)nb_false_pos,
+                                   (double)nb_false_neg,
+                                   (double)rand_nb_pos,
+                                   (double)rand_nb_neg});
 
             if(!write_result(_output_file))
                 ROS_ERROR_STREAM("unable to open " << _output_file);
@@ -187,7 +187,7 @@ class score_computation{
 
 private:
         Node* _node;
-        ip::SurfaceOfInterest::saliency_map_t _weights;
+        ip::SurfaceOfInterest::relevance_map_t _weights;
         std::vector<uint32_t> _lbls;
         std::pair<std::string,result_array_t> _result;
         std::string _output_file;

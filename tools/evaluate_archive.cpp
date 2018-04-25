@@ -124,7 +124,7 @@ public:
 
         std::stringstream str;
         str << "iteration_" << _gmm_class[_modality].get_samples().size();
-        sc.set_results(str.str(),{_gmm_class[_modality].get_samples().size(),
+        sc.set_results(str.str(),{(double)_gmm_class[_modality].get_samples().size(),
                                                     P,R,A});
         sc.write_result(_output_file);
     }
