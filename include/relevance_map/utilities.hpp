@@ -47,7 +47,7 @@ typedef struct model_t{
     std::array<double,3> position;
 }model_t;
 
-typedef std::array<double,12> result_array_t;
+typedef std::vector<double> result_array_t;
 
 void define_frames(const std::string& robot, std::string& base_frame, std::string& camera_frame){
     if(robot == "baxter" || robot == "crustcrawler"){

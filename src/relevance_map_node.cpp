@@ -116,12 +116,20 @@ bool relevance_map_node::retrieve_input_cloud(ip::PointCloudT::Ptr cloud){
 
 }
 
-bool relevance_map_node::_compute_supervoxels(const ip::PointCloudT::Ptr input_cloud){
+bool relevance_map_node::_compute_supervoxels(const ip::PointCloudT::Ptr input_cloud, bool with_workspace){
     _soi.clear<sv_param>();
     _soi.setInputCloud(input_cloud);
-    if(!_soi.computeSupervoxel(*_workspace))
-        return false;
-//    _soi.filter_supervoxels(6);
+
+    if(with_workspace){
+        if(!_soi.computeSupervoxel(*_workspace))
+            return false;
+    }
+    else {
+        if(!_soi.computeSupervoxel())
+            return false;
+    }
+    _soi.filter_supervoxels(6);
+    return true;
 }
 
 bool relevance_map_node::_compute_relevance_map(){

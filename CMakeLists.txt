@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 2.8.3)
 project(relevance_map)
 
 file(GLOB_RECURSE INCLUDE_FILES include/${PROJECT_NAME}/*)
-file(GLOB_RECURSE SRC_FILES src/* include/${PROJECT_NAME}/*)
+file(GLOB_RECURSE SRC_FILES src/relevance_map_node.cpp include/${PROJECT_NAME}/*)
+file(GLOB_RECURSE RGBD_SRC_FILES src/rgbd_utils/*)
+file(GLOB_RECURSE RGBD_INCLUDE_FILES include/rgbd_utils/*)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -fPIC")
 
@@ -12,7 +14,8 @@ set(CATKIN_COMMON_COMPONENTS roscpp
                              message_generation
                              image_transport
                              image_geometry
-                             rgbd_utils
+                             cv_bridge
+                             pcl_conversions
                              message_filters
                              geometry_msgs
                              sensor_msgs
@@ -85,8 +88,21 @@ catkin_package(
 )
 
 
+
+add_library(rgbd_utils ${RGBD_SRC_FILES})
+target_link_libraries(rgbd_utils ${catkin_LIBRARIES} ${image_processing_LIBRARIES})
+
+install(TARGETS rgbd_utils
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
+
+install(DIRECTORY include/rgbd_utils
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}/..)
+
 add_library(${PROJECT_NAME} ${SRC_FILES})
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} rgbd_utils)
+
 
 ## Mark executables and/or libraries for installation
 install(TARGETS ${PROJECT_NAME}
@@ -95,8 +111,19 @@ install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
 
 
+
 ## Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 
 
+
+#TOOLS
+add_executable(pcd_to_relevance_map tools/pcd_to_relevance_map.cpp)
+target_link_libraries(pcd_to_relevance_map ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES})
+
+add_executable(evaluate_classifier tools/evaluate_classifier.cpp)
+target_link_libraries(evaluate_classifier ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
+
+add_executable(evaluate_archive tools/evaluate_archive.cpp)
+target_link_libraries(evaluate_archive ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
