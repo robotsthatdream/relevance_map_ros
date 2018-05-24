@@ -19,7 +19,7 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
     XmlRpc::XmlRpcValue modalities, moda;
     XmlRpc::XmlRpcValue wks;
 
-    nh->getParam("global", glob_params);
+    nh->getParam("/global", glob_params);
     nh->getParam("modalities",modalities);
     nh->getParam("experiment", exp_params);
     nh->getParam("experiment/workspace", wks);
@@ -30,13 +30,18 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
     _load_exp = static_cast<std::string>(exp_params["soi"]["load_exp"]);
     _modality = static_cast<std::string>(exp_params["soi"]["modality"]);
     _dimension = std::stoi(exp_params["soi"]["dimension"]);
-    _threshold = std::stod(exp_params["soi"]["threshold"]);
     _nbr_class = std::stod(exp_params["soi"]["nbr_class"]);
+    _threshold = /*std::stod(exp_params["soi"]["threshold"])*/ 1./(double)_nbr_class;
+
+    iagmm::Component::_alpha = std::stod(exp_params["soi"]["alpha"]);
 
     for(const auto& mod: modalities){
         moda = mod.second;
         _modalities.emplace(static_cast<std::string>(moda["name"]),moda["dimension"]);
     }
+
+
+
 
     // Initialisation of the RGB and Depth images subscriber.
     _images_sub.reset(new rgbd_utils::RGBD_Subscriber(glob_params["rgb_info_topic"],
@@ -45,14 +50,28 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
                                           glob_params["depth_topic"],
                                           *nh));
 
-    for(const auto& mod : _modalities)
-        _weighted_cloud_pub.emplace(mod.first,std::unique_ptr<ros::Publisher>(
-                                        new ros::Publisher(nh->advertise<sensor_msgs::PointCloud2>
-                                                      ("weighted_color_cloud_"+mod.first, 5))));
-    if(_method == "mcs")
-        _weighted_cloud_pub.emplace("merge",std::unique_ptr<ros::Publisher>(
-                                        new ros::Publisher(nh->advertise<sensor_msgs::PointCloud2>
-                                                      ("weighted_color_cloud_mcs", 5))));
+    for(const auto& mod : _modalities){
+        std::vector<std::shared_ptr<ros::Publisher>> vect;
+        for(int i = 0; i < _nbr_class; i++){
+            vect.push_back(std::shared_ptr<ros::Publisher>(
+                               new ros::Publisher(nh->advertise<sensor_msgs::PointCloud2>
+                                                  ("weighted_color_cloud_"+std::to_string(i)+"_"+mod.first, 5))));
+        }
+        _weighted_cloud_pub.emplace(mod.first,vect);
+    }
+
+    if(_method == "mcs"){
+        std::vector<std::shared_ptr<ros::Publisher>> vect;
+        for(int i = 0; i < _nbr_class; i++){
+            vect.push_back(std::shared_ptr<ros::Publisher>(
+                               new ros::Publisher(nh->advertise<sensor_msgs::PointCloud2>
+                                                  ("weighted_color_cloud_"+std::to_string(i)+"_mcs", 5))));
+        }
+        _weighted_cloud_pub.emplace("merge",vect);
+    }
+
+    _input_cloud_pub.reset(new ros::Publisher(nh->advertise<sensor_msgs::PointCloud2>("input_cloud",5)));
+
 
     _choice_dist_cloud_pub.reset(new ros::Publisher(nh->advertise<sensor_msgs::PointCloud2>("choice_dist_cloud",5)));
 
@@ -74,6 +93,8 @@ void relevance_map_node::init_classifiers(const std::string &folder_name){
         if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs))
             for(const auto& mod : _modalities)
                 _gmm_class.emplace(mod.first,iagmm::GMM(mod.second,_nbr_class));
+        for(auto& gmm: _gmm_class)
+            gmm.second.set_loglikelihood_driver(false);
     }
     else if (_method == "mcs"){
         if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs)){
@@ -90,9 +111,11 @@ void relevance_map_node::release(){
     _images_sub.reset();
 
     for(auto& pub : _weighted_cloud_pub)
-        pub.second.reset();
+        for(int i = 0; i < _nbr_class; i++)
+            pub.second[i].reset();
     _choice_dist_cloud_pub.reset();
     _background.reset();
+    _input_cloud_pub.reset();
 
 }
 
@@ -112,6 +135,10 @@ bool relevance_map_node::retrieve_input_cloud(ip::PointCloudT::Ptr cloud){
 
     rgbd_utils::RGBD_to_Pointcloud converter(depth_msg,rgb_msg,info_msg);
     sensor_msgs::PointCloud2 cloud_msg = converter.get_pointcloud();
+
+    cloud_msg.header = depth_msg->header;
+    _input_cloud_pub->publish(cloud_msg);
+
     pcl::fromROSMsg(cloud_msg,*cloud);
 
     return true;
@@ -301,10 +328,12 @@ void relevance_map_node::publish_feedback(){
 
     //visualisation of relevance map
     for(auto& pub: _weighted_cloud_pub){
-        w_cl = _soi.getColoredWeightedCloud(pub.first,1);
-        pcl::toROSMsg(w_cl, weighted_cloud);
-        weighted_cloud.header = _images_sub->get_depth().header;
-        pub.second->publish(weighted_cloud);
+        for(int i = 0; i < _nbr_class; i++){
+            w_cl = _soi.getColoredWeightedCloud(pub.first,i);
+            pcl::toROSMsg(w_cl, weighted_cloud);
+            weighted_cloud.header = _images_sub->get_depth().header;
+            pub.second[i]->publish(weighted_cloud);
+        }
     }
 
     //visualization of choice distribution map

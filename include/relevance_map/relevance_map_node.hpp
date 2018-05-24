@@ -35,6 +35,18 @@ public:
      * @brief default constructor
      */
     relevance_map_node(){}
+    relevance_map_node(const relevance_map_node& rm) :
+        _soi(rm._soi), _images_sub(rm._images_sub),
+        _method(rm._method), _mode(rm._mode), _load_exp(rm._load_exp),
+        _modality(rm._modality), _dimension(rm._dimension), _threshold(rm._threshold),
+        _nbr_class(rm._nbr_class), _modalities(rm._modalities),
+        _mcs_mod_mapping(rm._mcs_mod_mapping),
+        _background(rm._background), _background_saved(rm._background_saved),
+        _true_labels(rm._true_labels), _choice_map(rm._choice_map),
+        _workspace(rm._workspace)
+    {
+
+    }
 
     void initialize(const ros::NodeHandlePtr nh);
     void init_classifiers(const std::string& folder_name);
@@ -49,6 +61,7 @@ public:
     const std::string& get_modality(){return _modality;}
     const std::string& get_method(){return _method;}
     double get_threshold(){return _threshold;}
+    int get_nbr_class(){return _nbr_class;}
 
     std::map<std::string,iagmm::NNMap> _nnmap_class; /**< nnmap classifiers */
     std::map<std::string,iagmm::GMM> _gmm_class; /**< gmm classifiers */
@@ -71,13 +84,14 @@ protected:
     ip::PointCloudT::Ptr _background;/**< pointcloud of the background. only for export mode */
     bool _background_saved; /**< if the bachground is already saved */
 
-
+    std::map<uint32_t,int> _true_labels;
 
     map_t _choice_map;
-    std::unique_ptr<ip::workspace_t> _workspace; /**< workspace of the robot */
+    std::shared_ptr<ip::workspace_t> _workspace; /**< workspace of the robot */
 
-    std::map<std::string,std::unique_ptr<ros::Publisher>> _weighted_cloud_pub;
+    std::map<std::string,std::vector<std::shared_ptr<ros::Publisher>>> _weighted_cloud_pub;
     std::unique_ptr<ros::Publisher> _choice_dist_cloud_pub;
+    std::unique_ptr<ros::Publisher> _input_cloud_pub;
 
     bool _compute_supervoxels(const ip::PointCloudT::Ptr input_cloud, bool with_workspace = true);
     /**
