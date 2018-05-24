@@ -1,0 +1,2000 @@
+iteration_344:
+  nb_samples: 344
+  precision: 0.7546231977740857
+  recall: 0.239637216819485
+  accuracy: 0.6026876967897101
+iteration_270:
+  nb_samples: 270
+  precision: 0.8025659557628301
+  recall: 0.06427991610201082
+  accuracy: 0.5296540389692855
+iteration_11:
+  nb_samples: 11
+  precision: 0.9572188807725205
+  recall: 0.1341566374656873
+  accuracy: 0.5504570934830677
+iteration_21:
+  nb_samples: 21
+  precision: -nan
+  recall: 0.001270241963111227
+  accuracy: 0.4993686336396376
+iteration_319:
+  nb_samples: 319
+  precision: 0.761590945352562
+  recall: 0.2108758758019336
+  accuracy: 0.5907067954099828
+iteration_189:
+  nb_samples: 189
+  precision: 0.5655124922816505
+  recall: 0.3180342444751091
+  accuracy: 0.6306541543964913
+iteration_49:
+  nb_samples: 49
+  precision: -nan
+  recall: 0.001240409948889507
+  accuracy: 0.5004064409788126
+iteration_169:
+  nb_samples: 169
+  precision: 0.610925157817461
+  recall: 0.08038878982783552
+  accuracy: 0.5355799646209013
+iteration_149:
+  nb_samples: 149
+  precision: 0.5057709096698633
+  recall: 0.1722944177008578
+  accuracy: 0.5747153084736804
+iteration_115:
+  nb_samples: 115
+  precision: 0.3682404239430798
+  recall: 0.8506842574374153
+  accuracy: 0.83636817521634
+iteration_316:
+  nb_samples: 316
+  precision: 0.7482175102345165
+  recall: 0.1647985068533347
+  accuracy: 0.5711702149337928
+iteration_141:
+  nb_samples: 141
+  precision: 0.5003022225691811
+  recall: 0.7373871869124874
+  accuracy: 0.802725310867782
+iteration_137:
+  nb_samples: 137
+  precision: 0.591008328977048
+  recall: 0.6401640363299035
+  accuracy: 0.7747989067946054
+iteration_230:
+  nb_samples: 230
+  precision: -nan
+  recall: 0.06662537193846084
+  accuracy: 0.5308929719794333
+iteration_98:
+  nb_samples: 98
+  precision: 0.4153232555260469
+  recall: 0.4960449678846303
+  accuracy: 0.7074865748700166
+iteration_91:
+  nb_samples: 91
+  precision: 0.4143484089732541
+  recall: 0.3418633657705124
+  accuracy: 0.6433994193995235
+iteration_194:
+  nb_samples: 194
+  precision: 0.5720801178704858
+  recall: 0.4170248913733811
+  accuracy: 0.6685719162425124
+iteration_212:
+  nb_samples: 212
+  precision: -nan
+  recall: 0.01264753074621753
+  accuracy: 0.5056923377051052
+iteration_160:
+  nb_samples: 160
+  precision: 0.3855745449708602
+  recall: 0.878927651991236
+  accuracy: 0.8406121230817779
+iteration_75:
+  nb_samples: 75
+  precision: 0.3544095168037675
+  recall: 0.01123694120361981
+  accuracy: 0.5043201509485331
+iteration_338:
+  nb_samples: 338
+  precision: 0.7566778381450939
+  recall: 0.2306443604032705
+  accuracy: 0.5989170912709908
+iteration_372:
+  nb_samples: 372
+  precision: 0.8825546187433612
+  recall: 0.2355746714334651
+  accuracy: 0.601988874851213
+iteration_260:
+  nb_samples: 260
+  precision: 0.7871456692191708
+  recall: 0.06291986051918802
+  accuracy: 0.529087359328548
+iteration_103:
+  nb_samples: 103
+  precision: 0.3850812403607086
+  recall: 0.6732113914666954
+  accuracy: 0.7733283646849306
+iteration_57:
+  nb_samples: 57
+  precision: 0.3172402755315635
+  recall: 0.2394616671555225
+  accuracy: 0.5910488508383093
+iteration_241:
+  nb_samples: 241
+  precision: 0.6828293578474098
+  recall: 0.1000929049728843
+  accuracy: 0.5454169439485004
+iteration_307:
+  nb_samples: 307
+  precision: 0.871758355275196
+  recall: 0.05540151618622913
+  accuracy: 0.5258920864776896
+iteration_74:
+  nb_samples: 74
+  precision: 0.2906693691027021
+  recall: 0.01093748031870765
+  accuracy: 0.50380841038635
+iteration_358:
+  nb_samples: 358
+  precision: 0.8838726609859272
+  recall: 0.2100673664856192
+  accuracy: 0.5920012141289083
+iteration_32:
+  nb_samples: 32
+  precision: -nan
+  recall: 0.0006608868699679284
+  accuracy: 0.5001853012203663
+iteration_127:
+  nb_samples: 127
+  precision: 0.5495132353620948
+  recall: 0.6692711814301481
+  accuracy: 0.786545911289356
+iteration_164:
+  nb_samples: 164
+  precision: 0.635306056328353
+  recall: 0.07344438535339384
+  accuracy: 0.5329457978303237
+iteration_287:
+  nb_samples: 287
+  precision: 0.8408369417630724
+  recall: 0.05788631764143282
+  accuracy: 0.5270028915241602
+iteration_263:
+  nb_samples: 263
+  precision: 0.8054573614757274
+  recall: 0.06547240948335938
+  accuracy: 0.5303580307804767
+iteration_368:
+  nb_samples: 368
+  precision: 0.8643774774790534
+  recall: 0.2180643746096577
+  accuracy: 0.5945772386066283
+iteration_196:
+  nb_samples: 196
+  precision: 0.5603902480250628
+  recall: 0.4267285183309419
+  accuracy: 0.6717676376401652
+iteration_278:
+  nb_samples: 278
+  precision: 0.8011458393636057
+  recall: 0.05235222907802662
+  accuracy: 0.5242486876851309
+iteration_351:
+  nb_samples: 351
+  precision: 0.7934362294125062
+  recall: 0.2278347967805492
+  accuracy: 0.5987483527821995
+iteration_308:
+  nb_samples: 308
+  precision: 0.8770960175438327
+  recall: 0.05652716774696057
+  accuracy: 0.5263725147416364
+iteration_282:
+  nb_samples: 282
+  precision: 0.8001150788346379
+  recall: 0.05741535335771759
+  accuracy: 0.5265185886279654
+iteration_211:
+  nb_samples: 211
+  precision: -nan
+  recall: 0.01100210059149648
+  accuracy: 0.5048674025696815
+iteration_106:
+  nb_samples: 106
+  precision: 0.3877439328101425
+  recall: 0.6559734073902342
+  accuracy: 0.7650803796346147
+iteration_251:
+  nb_samples: 251
+  precision: 0.8401797139072684
+  recall: 0.08324105110881176
+  accuracy: 0.5389532308310511
+iteration_46:
+  nb_samples: 46
+  precision: -nan
+  recall: 0.00180984568464456
+  accuracy: 0.5006574805674139
+iteration_143:
+  nb_samples: 143
+  precision: 0.4415099222289634
+  recall: 0.8532087660339802
+  accuracy: 0.8450133720176883
+iteration_313:
+  nb_samples: 313
+  precision: 0.7503855512552926
+  recall: 0.1601390559716652
+  accuracy: 0.5693212081199007
+iteration_284:
+  nb_samples: 284
+  precision: 0.7014504224972407
+  recall: 0.6405088534496386
+  accuracy: 0.7723416823518373
+iteration_247:
+  nb_samples: 247
+  precision: 0.8227400536861742
+  recall: 0.08259191258538612
+  accuracy: 0.5383642140450899
+iteration_180:
+  nb_samples: 180
+  precision: 0.5916771980350178
+  recall: 0.06557852408154108
+  accuracy: 0.5291659459589145
+iteration_130:
+  nb_samples: 130
+  precision: 0.5374655440203089
+  recall: 0.680801964825099
+  accuracy: 0.7900557412931235
+iteration_317:
+  nb_samples: 317
+  precision: 0.7587844486143553
+  recall: 0.2108293846725033
+  accuracy: 0.590663524951855
+iteration_156:
+  nb_samples: 156
+  precision: 0.4595349584476612
+  recall: 0.5886211369955956
+  accuracy: 0.7316710486314624
+iteration_243:
+  nb_samples: 243
+  precision: 0.6779666542300034
+  recall: 0.1009550347626315
+  accuracy: 0.5457119546880079
+iteration_337:
+  nb_samples: 337
+  precision: 0.765975395755399
+  recall: 0.2249746155518829
+  accuracy: 0.596738066771307
+iteration_350:
+  nb_samples: 350
+  precision: 0.7857110101358151
+  recall: 0.2283296724385203
+  accuracy: 0.5988788638577659
+iteration_155:
+  nb_samples: 155
+  precision: 0.5639507165743785
+  recall: 0.2434335854288273
+  accuracy: 0.6056597755459058
+iteration_397:
+  nb_samples: 397
+  precision: 0.858959739596741
+  recall: 0.3384911906390904
+  accuracy: 0.6451808855546523
+iteration_327:
+  nb_samples: 327
+  precision: 0.7541894487595145
+  recall: 0.1926524266633484
+  accuracy: 0.5829215436346096
+iteration_118:
+  nb_samples: 118
+  precision: 0.3844405091552046
+  recall: 0.8473212537638686
+  accuracy: 0.8387028182384857
+iteration_124:
+  nb_samples: 124
+  precision: 0.5428827577413289
+  recall: 0.6728147677262218
+  accuracy: 0.7885127213281709
+iteration_367:
+  nb_samples: 367
+  precision: 0.847420866936092
+  recall: 0.2166164822277473
+  accuracy: 0.5937922138311207
+iteration_191:
+  nb_samples: 191
+  precision: 0.5801818225258976
+  recall: 0.4184484729290814
+  accuracy: 0.6700653909300698
+iteration_166:
+  nb_samples: 166
+  precision: 0.6049062069889488
+  recall: 0.07819284336874277
+  accuracy: 0.5345531526482364
+iteration_182:
+  nb_samples: 182
+  precision: 0.5623787479456815
+  recall: 0.07243236270383917
+  accuracy: 0.5314026816130667
+iteration_70:
+  nb_samples: 70
+  precision: 0.3229803733337678
+  recall: 0.2642434210757648
+  accuracy: 0.6020174344031679
+iteration_145:
+  nb_samples: 145
+  precision: 0.2550707425249746
+  recall: 0.9775087352228975
+  accuracy: 0.8255588945179286
+iteration_301:
+  nb_samples: 301
+  precision: 0.8763847378927102
+  recall: 0.05433357666642282
+  accuracy: 0.5254313525492262
+iteration_382:
+  nb_samples: 382
+  precision: 0.8977391075777885
+  recall: 0.2258330934670275
+  accuracy: 0.5979745745459113
+iteration_159:
+  nb_samples: 159
+  precision: 0.381722817352717
+  recall: 0.8754270805143564
+  accuracy: 0.838347369583705
+iteration_192:
+  nb_samples: 192
+  precision: 0.579712835387049
+  recall: 0.4274766256361548
+  accuracy: 0.6734867681792849
+iteration_322:
+  nb_samples: 322
+  precision: 0.7440424009667904
+  recall: 0.2070097047429215
+  accuracy: 0.5887730740166218
+iteration_117:
+  nb_samples: 117
+  precision: 0.3836380602694525
+  recall: 0.8439583007315175
+  accuracy: 0.8367959780312159
+iteration_44:
+  nb_samples: 44
+  precision: -nan
+  recall: 0.001806721462333532
+  accuracy: 0.5006945104680347
+iteration_336:
+  nb_samples: 336
+  precision: 0.7478566968102881
+  recall: 0.2204992270259206
+  accuracy: 0.5941425696849038
+iteration_132:
+  nb_samples: 132
+  precision: 0.5297838628754694
+  recall: 0.644536501944738
+  accuracy: 0.7687045355894649
+iteration_172:
+  nb_samples: 172
+  precision: 0.6345631635567893
+  recall: 0.0695669970923963
+  accuracy: 0.5311879255416206
+iteration_232:
+  nb_samples: 232
+  precision: 0.6637542521178829
+  recall: 0.09450507602013451
+  accuracy: 0.5427056882175273
+iteration_360:
+  nb_samples: 360
+  precision: 0.8752691643027377
+  recall: 0.2068166908264379
+  accuracy: 0.5906046856661364
+iteration_140:
+  nb_samples: 140
+  precision: 0.4090803119910445
+  recall: 0.9081738622039172
+  accuracy: 0.8662407381730637
+iteration_238:
+  nb_samples: 238
+  precision: 0.6385069551998728
+  recall: 0.1099011908774618
+  accuracy: 0.5492691233206931
+iteration_203:
+  nb_samples: 203
+  precision: 0.5732554891078805
+  recall: 0.3056078509008806
+  accuracy: 0.6265317477861959
+iteration_220:
+  nb_samples: 220
+  precision: -nan
+  recall: 0.06458916092411736
+  accuracy: 0.5296442285300531
+iteration_276:
+  nb_samples: 276
+  precision: 0.8003000166189673
+  recall: 0.05367047285442315
+  accuracy: 0.5247419893328297
+iteration_4:
+  nb_samples: 4
+  precision: 0.09195047185450365
+  recall: 1
+  accuracy: 0.25
+iteration_41:
+  nb_samples: 41
+  precision: -nan
+  recall: 0.001801382132160859
+  accuracy: 0.5006918167684669
+iteration_174:
+  nb_samples: 174
+  precision: 0.5970455281887487
+  recall: 0.06594104066400373
+  accuracy: 0.5292546151998154
+iteration_52:
+  nb_samples: 52
+  precision: -nan
+  recall: 0.001808896587552664
+  accuracy: 0.5006441296749777
+iteration_398:
+  nb_samples: 398
+  precision: 0.8593058648308929
+  recall: 0.330055217454306
+  accuracy: 0.6416029687377707
+iteration_399:
+  nb_samples: 399
+  precision: 0.8653666022450905
+  recall: 0.3301635519172164
+  accuracy: 0.6417661814689911
+iteration_207:
+  nb_samples: 207
+  precision: -nan
+  recall: 0.03396605053099293
+  accuracy: 0.515661595637106
+iteration_73:
+  nb_samples: 73
+  precision: 0.5862331541255629
+  recall: 0.09678292226898817
+  accuracy: 0.5429081482650152
+iteration_123:
+  nb_samples: 123
+  precision: 0.4493544735853037
+  recall: 0.8181736082419061
+  accuracy: 0.838550715094546
+iteration_391:
+  nb_samples: 391
+  precision: 0.8952073823279041
+  recall: 0.277819684910434
+  accuracy: 0.6201649742445084
+iteration_400:
+  nb_samples: 400
+  precision: 0.854705518764748
+  recall: 0.3238420583743208
+  accuracy: 0.6386011773677172
+iteration_1:
+  nb_samples: 1
+  precision: 0.09185471583993735
+  recall: 1
+  accuracy: 0.25
+iteration_290:
+  nb_samples: 290
+  precision: 0.8446013992907799
+  recall: 0.0540555455862697
+  accuracy: 0.5252673032420694
+iteration_318:
+  nb_samples: 318
+  precision: 0.7459845230350163
+  recall: 0.204011184941061
+  accuracy: 0.5875927350353973
+iteration_68:
+  nb_samples: 68
+  precision: 0.3540449644740095
+  recall: 0.2365955489607711
+  accuracy: 0.5929637673961242
+iteration_266:
+  nb_samples: 266
+  precision: 0.8027967203231282
+  recall: 0.0667633309322547
+  accuracy: 0.5308613036672698
+iteration_208:
+  nb_samples: 208
+  precision: -nan
+  recall: 0.03590296318216906
+  accuracy: 0.516606889207531
+iteration_357:
+  nb_samples: 357
+  precision: 0.8825222236351634
+  recall: 0.2105197958429564
+  accuracy: 0.5922627198974179
+iteration_272:
+  nb_samples: 272
+  precision: 0.7962487932194537
+  recall: 0.06692952950106296
+  accuracy: 0.5307575964273628
+iteration_15:
+  nb_samples: 15
+  precision: 0.9781422460979653
+  recall: 0.1347455941553862
+  accuracy: 0.5523390229368261
+iteration_204:
+  nb_samples: 204
+  precision: 0.5813115721524754
+  recall: 0.05965971486087013
+  accuracy: 0.5265075891692631
+iteration_105:
+  nb_samples: 105
+  precision: 0.3842841095421414
+  recall: 0.6645018747978539
+  accuracy: 0.7680088433261828
+iteration_152:
+  nb_samples: 152
+  precision: 0.4688403214945673
+  recall: 0.2361590453767456
+  accuracy: 0.6005512927449169
+iteration_298:
+  nb_samples: 298
+  precision: 0.8661124225250716
+  recall: 0.05206146861627458
+  accuracy: 0.5243330054838956
+iteration_87:
+  nb_samples: 87
+  precision: 0.3955953616033936
+  recall: 0.310964360369588
+  accuracy: 0.6286279765211583
+iteration_304:
+  nb_samples: 304
+  precision: 0.8810437603816962
+  recall: 0.05764954546126651
+  accuracy: 0.5268535289462726
+iteration_390:
+  nb_samples: 390
+  precision: 0.8963912788234393
+  recall: 0.2841096947228894
+  accuracy: 0.6225240554866286
+iteration_108:
+  nb_samples: 108
+  precision: 0.3889358594222296
+  recall: 0.6539872437751229
+  accuracy: 0.764690251944915
+iteration_306:
+  nb_samples: 306
+  precision: 0.8712580946815011
+  recall: 0.05383331165703675
+  accuracy: 0.5250929525361583
+iteration_386:
+  nb_samples: 386
+  precision: 0.8674293078891602
+  recall: 0.2722997480058042
+  accuracy: 0.6179974933347799
+iteration_329:
+  nb_samples: 329
+  precision: 0.7447780366851101
+  recall: 0.193162324382901
+  accuracy: 0.5829411099304123
+iteration_328:
+  nb_samples: 328
+  precision: 0.7550981762731297
+  recall: 0.1906569926759156
+  accuracy: 0.5821871492103496
+iteration_268:
+  nb_samples: 268
+  precision: 0.8075919761736152
+  recall: 0.06907600948495939
+  accuracy: 0.5318645010030705
+iteration_394:
+  nb_samples: 394
+  precision: 0.9009056975475163
+  recall: 0.27003627482645
+  accuracy: 0.6171537218450749
+iteration_190:
+  nb_samples: 190
+  precision: 0.5754560364686505
+  recall: 0.4200578191448145
+  accuracy: 0.6702995043946764
+iteration_379:
+  nb_samples: 379
+  precision: 0.8927706862075832
+  recall: 0.2235308891345344
+  accuracy: 0.5970807365900561
+iteration_47:
+  nb_samples: 47
+  precision: -nan
+  recall: 0.001809102746360498
+  accuracy: 0.5006951480915768
+iteration_377:
+  nb_samples: 377
+  precision: 0.893111100007783
+  recall: 0.224497423011837
+  accuracy: 0.5974279100980033
+iteration_387:
+  nb_samples: 387
+  precision: 0.8995339098607509
+  recall: 0.2894583256568148
+  accuracy: 0.6252837519879139
+iteration_288:
+  nb_samples: 288
+  precision: 0.8405446094061995
+  recall: 0.05097425968275033
+  accuracy: 0.5237850238453917
+iteration_88:
+  nb_samples: 88
+  precision: 0.393960162279739
+  recall: 0.3580289037484466
+  accuracy: 0.6473407160568481
+iteration_80:
+  nb_samples: 80
+  precision: 0.2461372646888924
+  recall: 0.00411753639767634
+  accuracy: 0.5012497487807007
+iteration_114:
+  nb_samples: 114
+  precision: 0.3688652285844415
+  recall: 0.8482820476498302
+  accuracy: 0.8350671563887492
+iteration_66:
+  nb_samples: 66
+  precision: 0.3592242601697821
+  recall: 0.2459966838322929
+  accuracy: 0.5987218072432883
+iteration_121:
+  nb_samples: 121
+  precision: 0.4498769104913892
+  recall: 0.8203169317877179
+  accuracy: 0.8384607383340668
+iteration_19:
+  nb_samples: 19
+  precision: -nan
+  recall: 0.005086732512277187
+  accuracy: 0.5017758983709437
+iteration_161:
+  nb_samples: 161
+  precision: 0.3904092973840176
+  recall: 0.8752481683290939
+  accuracy: 0.8419014011638143
+iteration_261:
+  nb_samples: 261
+  precision: 0.7861343913055157
+  recall: 0.06418816500835668
+  accuracy: 0.5297093416154648
+iteration_352:
+  nb_samples: 352
+  precision: 0.7765630516220697
+  recall: 0.2239572765500012
+  accuracy: 0.5966810127293225
+iteration_309:
+  nb_samples: 309
+  precision: 0.863980287416289
+  recall: 0.05315749908927352
+  accuracy: 0.5248140829646921
+iteration_147:
+  nb_samples: 147
+  precision: 0.5106847936672491
+  recall: 0.1859427496435977
+  accuracy: 0.5802892725466674
+iteration_253:
+  nb_samples: 253
+  precision: 0.8508393548782717
+  recall: 0.07188757679038064
+  accuracy: 0.5335215562307888
+iteration_90:
+  nb_samples: 90
+  precision: 0.4150848532792581
+  recall: 0.3409115163145822
+  accuracy: 0.6431454827306564
+iteration_267:
+  nb_samples: 267
+  precision: 0.8099664443814076
+  recall: 0.06686341402232522
+  accuracy: 0.5309100877677654
+iteration_222:
+  nb_samples: 222
+  precision: 0.7768195000352419
+  recall: 0.06608476962928535
+  accuracy: 0.5303896935282573
+iteration_215:
+  nb_samples: 215
+  precision: -nan
+  recall: 0.01899872059226139
+  accuracy: 0.5085601436223603
+iteration_113:
+  nb_samples: 113
+  precision: 0.4202777014748745
+  recall: 0.6364281371423849
+  accuracy: 0.7628948165306473
+iteration_120:
+  nb_samples: 120
+  precision: 0.4456852223500142
+  recall: 0.824753735653868
+  accuracy: 0.8396279951322753
+iteration_234:
+  nb_samples: 234
+  precision: 0.672207232747003
+  recall: 0.08715031934065606
+  accuracy: 0.5394223268376184
+iteration_370:
+  nb_samples: 370
+  precision: 0.9026298015355428
+  recall: 0.2412326891645059
+  accuracy: 0.6048450947948201
+iteration_201:
+  nb_samples: 201
+  precision: 0.6302858553997066
+  recall: 0.3511175743977979
+  accuracy: 0.6458754869761654
+iteration_60:
+  nb_samples: 60
+  precision: 0.3037550398028735
+  recall: 0.2449959319066616
+  accuracy: 0.5925646632284486
+iteration_291:
+  nb_samples: 291
+  precision: 0.8489843083417695
+  recall: 0.05507447919582998
+  accuracy: 0.5257411250208971
+iteration_256:
+  nb_samples: 256
+  precision: 0.8007311134583303
+  recall: 0.06204380237361799
+  accuracy: 0.5288286789595298
+iteration_342:
+  nb_samples: 342
+  precision: 0.7631842768742687
+  recall: 0.2436575195209111
+  accuracy: 0.60439390433721
+iteration_64:
+  nb_samples: 64
+  precision: 0.3079769518639972
+  recall: 0.2497030789546943
+  accuracy: 0.5957040557129865
+iteration_65:
+  nb_samples: 65
+  precision: 0.3122847557524365
+  recall: 0.2483016881041487
+  accuracy: 0.5952143652373542
+iteration_26:
+  nb_samples: 26
+  precision: -nan
+  recall: 0.001294431490109176
+  accuracy: 0.5005102434130643
+iteration_40:
+  nb_samples: 40
+  precision: -nan
+  recall: 0.001810273960534175
+  accuracy: 0.5006845352671473
+iteration_71:
+  nb_samples: 71
+  precision: 0.318643180505327
+  recall: 0.2408540732030084
+  accuracy: 0.5919262686477854
+iteration_29:
+  nb_samples: 29
+  precision: -nan
+  recall: 0.001172865182067119
+  accuracy: 0.5004867341994843
+iteration_393:
+  nb_samples: 393
+  precision: 0.8978096700491798
+  recall: 0.2656172249898441
+  accuracy: 0.6152795334741744
+iteration_310:
+  nb_samples: 310
+  precision: 0.7480021726496021
+  recall: 0.1646739609185897
+  accuracy: 0.5711764958572343
+iteration_373:
+  nb_samples: 373
+  precision: 0.8947706524800836
+  recall: 0.2358210260652973
+  accuracy: 0.6022760889555238
+iteration_314:
+  nb_samples: 314
+  precision: 0.7509673739983771
+  recall: 0.1607207049056772
+  accuracy: 0.56932145279399
+iteration_210:
+  nb_samples: 210
+  precision: -nan
+  recall: 0.01109190512875709
+  accuracy: 0.5049325735664261
+iteration_255:
+  nb_samples: 255
+  precision: 0.82366783091624
+  recall: 0.0685640057716241
+  accuracy: 0.5319448908139033
+iteration_280:
+  nb_samples: 280
+  precision: 0.8251428255392266
+  recall: 0.05370396650202215
+  accuracy: 0.5249975605390478
+iteration_79:
+  nb_samples: 79
+  precision: 0.2622893802383315
+  recall: 0.004508839819000361
+  accuracy: 0.501454956249739
+iteration_119:
+  nb_samples: 119
+  precision: 0.3821426825094151
+  recall: 0.844875991011933
+  accuracy: 0.8371855890823632
+iteration_186:
+  nb_samples: 186
+  precision: 0.5345140843735822
+  recall: 0.05692318885311076
+  accuracy: 0.5244621433198362
+iteration_7:
+  nb_samples: 7
+  precision: -nan
+  recall: 0.00586791957659332
+  accuracy: 0.4583234356189115
+iteration_376:
+  nb_samples: 376
+  precision: 0.8967936025978319
+  recall: 0.2371267555156474
+  accuracy: 0.6027027038364264
+iteration_167:
+  nb_samples: 167
+  precision: 0.6254913591647484
+  recall: 0.07686301595984506
+  accuracy: 0.5342958725949686
+iteration_43:
+  nb_samples: 43
+  precision: -nan
+  recall: 0.00180916319959147
+  accuracy: 0.5006957011236418
+iteration_385:
+  nb_samples: 385
+  precision: 0.920485595467235
+  recall: 0.1925090091196824
+  accuracy: 0.5845615392023461
+iteration_178:
+  nb_samples: 178
+  precision: 0.5999142105981204
+  recall: 0.06553632958531111
+  accuracy: 0.5291437566189002
+iteration_23:
+  nb_samples: 23
+  precision: -nan
+  recall: 0.0007325282589052316
+  accuracy: 0.500253884897443
+iteration_277:
+  nb_samples: 277
+  precision: 0.7974357550162045
+  recall: 0.05235035081339662
+  accuracy: 0.5242126538943439
+iteration_81:
+  nb_samples: 81
+  precision: 0.6410579093382434
+  recall: 0.02502694349848379
+  accuracy: 0.5115789027484412
+iteration_341:
+  nb_samples: 341
+  precision: 0.7669703885290637
+  recall: 0.2351530554878701
+  accuracy: 0.6008483240839166
+iteration_236:
+  nb_samples: 236
+  precision: 0.6425357244859797
+  recall: 0.09163491258887699
+  accuracy: 0.5415220139345891
+iteration_213:
+  nb_samples: 213
+  precision: -nan
+  recall: 0.01452566629065931
+  accuracy: 0.5066470016839295
+iteration_187:
+  nb_samples: 187
+  precision: 0.5224053792292299
+  recall: 0.0575276184248744
+  accuracy: 0.5245500315609231
+iteration_262:
+  nb_samples: 262
+  precision: 0.7953199917350102
+  recall: 0.0655212320851551
+  accuracy: 0.5302983531527415
+iteration_139:
+  nb_samples: 139
+  precision: 0.4169330546391318
+  recall: 0.9038282823986389
+  accuracy: 0.8662072647489889
+iteration_323:
+  nb_samples: 323
+  precision: 0.7561937144698575
+  recall: 0.1963142440679777
+  accuracy: 0.5845038535205029
+iteration_216:
+  nb_samples: 216
+  precision: -nan
+  recall: 0.01878294705796409
+  accuracy: 0.5084329200115729
+iteration_206:
+  nb_samples: 206
+  precision: -nan
+  recall: 0.03450269767348917
+  accuracy: 0.5159201290207569
+iteration_217:
+  nb_samples: 217
+  precision: -nan
+  recall: 0.01907326419709071
+  accuracy: 0.5085782888994079
+iteration_246:
+  nb_samples: 246
+  precision: 0.8161940784656462
+  recall: 0.083603841659497
+  accuracy: 0.5387786454588962
+iteration_93:
+  nb_samples: 93
+  precision: 0.4040199631654319
+  recall: 0.4924715623434385
+  accuracy: 0.7046167117948728
+iteration_67:
+  nb_samples: 67
+  precision: 0.4458535118201141
+  recall: 0.2419705126534648
+  accuracy: 0.6023367725701909
+iteration_100:
+  nb_samples: 100
+  precision: 0.3790945850480335
+  recall: 0.7066736545624284
+  accuracy: 0.7853003889705245
+iteration_381:
+  nb_samples: 381
+  precision: 0.9013281482801594
+  recall: 0.225793157988148
+  accuracy: 0.5979404499364427
+iteration_10:
+  nb_samples: 10
+  precision: 0.9372121152481445
+  recall: 0.1637282711311143
+  accuracy: 0.5460178508449919
+iteration_129:
+  nb_samples: 129
+  precision: 0.5196232454656211
+  recall: 0.6756556219058151
+  accuracy: 0.7864138564289982
+iteration_364:
+  nb_samples: 364
+  precision: 0.8892052947306851
+  recall: 0.2106797640838712
+  accuracy: 0.5924321241650183
+iteration_312:
+  nb_samples: 312
+  precision: 0.7545173595725145
+  recall: 0.1610224797491581
+  accuracy: 0.5699098952690976
+iteration_181:
+  nb_samples: 181
+  precision: 0.6165705969786753
+  recall: 0.07459043179655646
+  accuracy: 0.5330657588402032
+iteration_157:
+  nb_samples: 157
+  precision: 0.4604493417877309
+  recall: 0.5971672602785482
+  accuracy: 0.7359523875889881
+iteration_154:
+  nb_samples: 154
+  precision: 0.5510017115227072
+  recall: 0.2315947934797446
+  accuracy: 0.6005639306286503
+iteration_72:
+  nb_samples: 72
+  precision: 0.3494777145298996
+  recall: 0.2090030870709528
+  accuracy: 0.5810309917537519
+iteration_5:
+  nb_samples: 5
+  precision: -nan
+  recall: 0
+  accuracy: 0.4604575188290984
+iteration_89:
+  nb_samples: 89
+  precision: 0.4146713022495774
+  recall: 0.3398071588234685
+  accuracy: 0.6425376060187945
+iteration_33:
+  nb_samples: 33
+  precision: -nan
+  recall: 0.0008045116000618378
+  accuracy: 0.5002573518854416
+iteration_245:
+  nb_samples: 245
+  precision: 0.8366673047781923
+  recall: 0.08244958732042361
+  accuracy: 0.5383814475921977
+iteration_375:
+  nb_samples: 375
+  precision: 0.8915680778672094
+  recall: 0.2336373589499953
+  accuracy: 0.6010732951905812
+iteration_218:
+  nb_samples: 218
+  precision: -nan
+  recall: 0.07936021098293308
+  accuracy: 0.5348149083703425
+iteration_359:
+  nb_samples: 359
+  precision: 0.8805326261245057
+  recall: 0.2143105626361649
+  accuracy: 0.5938416474930903
+iteration_271:
+  nb_samples: 271
+  precision: 0.8139127449183283
+  recall: 0.06734283261243236
+  accuracy: 0.5311340655186317
+iteration_258:
+  nb_samples: 258
+  precision: 0.7910895045745687
+  recall: 0.06133111881768001
+  accuracy: 0.5284911527116816
+iteration_333:
+  nb_samples: 333
+  precision: 0.7483608931285528
+  recall: 0.2260691175714899
+  accuracy: 0.5966694415704312
+iteration_231:
+  nb_samples: 231
+  precision: -nan
+  recall: 0.01733585959631732
+  accuracy: 0.5078873913557189
+iteration_353:
+  nb_samples: 353
+  precision: 0.8786035563823588
+  recall: 0.2323605891396245
+  accuracy: 0.6018015363438139
+iteration_195:
+  nb_samples: 195
+  precision: 0.5747510353171116
+  recall: 0.4260872904084551
+  accuracy: 0.672368013161656
+iteration_24:
+  nb_samples: 24
+  precision: -nan
+  recall: 0.0007103979326827786
+  accuracy: 0.5002640486361566
+iteration_83:
+  nb_samples: 83
+  precision: 0.6643208779188789
+  recall: 0.08407046858952379
+  accuracy: 0.5385527773653753
+iteration_107:
+  nb_samples: 107
+  precision: 0.3896589116260195
+  recall: 0.6548338951713384
+  accuracy: 0.7663434979126539
+iteration_286:
+  nb_samples: 286
+  precision: 0.8329897215568879
+  recall: 0.05634954318068022
+  accuracy: 0.5262940679419188
+iteration_55:
+  nb_samples: 55
+  precision: -nan
+  recall: 0.002365874955817417
+  accuracy: 0.5009219006156961
+iteration_340:
+  nb_samples: 340
+  precision: 0.7724308757363957
+  recall: 0.2418002488899262
+  accuracy: 0.6037487880195792
+iteration_395:
+  nb_samples: 395
+  precision: 0.8958741090576777
+  recall: 0.2704799179502408
+  accuracy: 0.6174289039930682
+iteration_384:
+  nb_samples: 384
+  precision: 0.890804192067343
+  recall: 0.228634150955344
+  accuracy: 0.5989408249129563
+iteration_36:
+  nb_samples: 36
+  precision: -nan
+  recall: 0.0009836042350820069
+  accuracy: 0.5003598324301549
+iteration_324:
+  nb_samples: 324
+  precision: 0.7440357190953233
+  recall: 0.2026234202609031
+  accuracy: 0.586709143764113
+iteration_355:
+  nb_samples: 355
+  precision: 0.8566464743276565
+  recall: 0.2320740018682477
+  accuracy: 0.6010869281855552
+iteration_334:
+  nb_samples: 334
+  precision: 0.7493818158326654
+  recall: 0.2169156504724692
+  accuracy: 0.5930420010962114
+iteration_92:
+  nb_samples: 92
+  precision: 0.4162749628559317
+  recall: 0.3422526257783102
+  accuracy: 0.6436770671816626
+iteration_300:
+  nb_samples: 300
+  precision: 0.8615645814477193
+  recall: 0.05016639850767685
+  accuracy: 0.5234286707746425
+iteration_348:
+  nb_samples: 348
+  precision: 0.776121064801947
+  recall: 0.2289896484458382
+  accuracy: 0.5986835534296204
+iteration_295:
+  nb_samples: 295
+  precision: 0.8825422071608913
+  recall: 0.06057206595678696
+  accuracy: 0.5282460646157051
+iteration_51:
+  nb_samples: 51
+  precision: -nan
+  recall: 0.001804898295857345
+  accuracy: 0.5006458782579847
+iteration_225:
+  nb_samples: 225
+  precision: 0.7826758662302433
+  recall: 0.07505557353623081
+  accuracy: 0.5345786296682374
+iteration_173:
+  nb_samples: 173
+  precision: 0.5974131141974124
+  recall: 0.06585010759609997
+  accuracy: 0.529183669547146
+iteration_254:
+  nb_samples: 254
+  precision: 0.8452576373474322
+  recall: 0.07487062932289507
+  accuracy: 0.5348881806019861
+iteration_226:
+  nb_samples: 226
+  precision: -nan
+  recall: 0.060817795732425
+  accuracy: 0.5276553801365076
+iteration_297:
+  nb_samples: 297
+  precision: 0.8609509078481742
+  recall: 0.05066503290545788
+  accuracy: 0.5236577026911196
+iteration_109:
+  nb_samples: 109
+  precision: 0.3902607943027095
+  recall: 0.6572705709862702
+  accuracy: 0.7668516324150265
+iteration_62:
+  nb_samples: 62
+  precision: 0.314746716497537
+  recall: 0.2433868836401741
+  accuracy: 0.5927093817573185
+iteration_252:
+  nb_samples: 252
+  precision: 0.8394483941513807
+  recall: 0.08620559574191944
+  accuracy: 0.5403401697722466
+iteration_9:
+  nb_samples: 9
+  precision: 0.9299373763573847
+  recall: 0.1348977869169452
+  accuracy: 0.5211787785808448
+iteration_209:
+  nb_samples: 209
+  precision: -nan
+  recall: 0.03585952219333204
+  accuracy: 0.5165390953811706
+iteration_150:
+  nb_samples: 150
+  precision: 0.5190226168700685
+  recall: 0.1569153736878703
+  accuracy: 0.5682212858682041
+iteration_136:
+  nb_samples: 136
+  precision: 0.5711292848879556
+  recall: 0.6730992961674319
+  accuracy: 0.7904514751051301
+iteration_198:
+  nb_samples: 198
+  precision: 0.5756273211629435
+  recall: 0.4110003369963285
+  accuracy: 0.6674340814972162
+iteration_239:
+  nb_samples: 239
+  precision: 0.6470856898097054
+  recall: 0.1124706448841885
+  accuracy: 0.5507583358187493
+iteration_223:
+  nb_samples: 223
+  precision: 0.7787894341832632
+  recall: 0.06986178379095036
+  accuracy: 0.5322457240624313
+iteration_84:
+  nb_samples: 84
+  precision: 0.7770997349147529
+  recall: 0.06014711267728742
+  accuracy: 0.5286243736431308
+iteration_153:
+  nb_samples: 153
+  precision: 0.4807332461606284
+  recall: 0.2409448504327805
+  accuracy: 0.6028104768252848
+iteration_86:
+  nb_samples: 86
+  precision: 0.5002619333972371
+  recall: 0.2411222208610948
+  accuracy: 0.6047229251800611
+iteration_158:
+  nb_samples: 158
+  precision: 0.4648226620862711
+  recall: 0.601450704697959
+  accuracy: 0.7375030467748587
+iteration_38:
+  nb_samples: 38
+  precision: -nan
+  recall: 0.001793957546251147
+  accuracy: 0.5007433151284116
+iteration_34:
+  nb_samples: 34
+  precision: -nan
+  recall: 0.0006620369734030289
+  accuracy: 0.5001850849913169
+iteration_184:
+  nb_samples: 184
+  precision: 0.5655213763833276
+  recall: 0.05810992108660169
+  accuracy: 0.5250973488030847
+iteration_128:
+  nb_samples: 128
+  precision: 0.5446656577850348
+  recall: 0.6520222167141075
+  accuracy: 0.7792195615429242
+iteration_99:
+  nb_samples: 99
+  precision: 0.3995511697558423
+  recall: 0.636031177234213
+  accuracy: 0.7606208174209079
+iteration_365:
+  nb_samples: 365
+  precision: 0.8908737575043512
+  recall: 0.2200624562881645
+  accuracy: 0.5960410723997386
+iteration_6:
+  nb_samples: 6
+  precision: -nan
+  recall: 0.00324890784741825
+  accuracy: 0.4557390067692929
+iteration_31:
+  nb_samples: 31
+  precision: -nan
+  recall: 0.001154080894006519
+  accuracy: 0.5004328652373031
+iteration_361:
+  nb_samples: 361
+  precision: 0.8902278107722162
+  recall: 0.2084954369631862
+  accuracy: 0.5914191712339215
+iteration_363:
+  nb_samples: 363
+  precision: 0.8839380161968248
+  recall: 0.2098125131592189
+  accuracy: 0.5917628973383338
+iteration_250:
+  nb_samples: 250
+  precision: 0.8205291291560327
+  recall: 0.08198284843102677
+  accuracy: 0.5380732362432767
+iteration_320:
+  nb_samples: 320
+  precision: 0.7535727804821799
+  recall: 0.2052981573776651
+  accuracy: 0.5882335654767602
+iteration_362:
+  nb_samples: 362
+  precision: 0.8888986152763795
+  recall: 0.2110095698276346
+  accuracy: 0.5922112235822103
+iteration_235:
+  nb_samples: 235
+  precision: 0.6334298754356578
+  recall: 0.08972344231805721
+  accuracy: 0.5404708130648467
+iteration_126:
+  nb_samples: 126
+  precision: 0.5378268431910785
+  recall: 0.6596478111749626
+  accuracy: 0.7813123291243729
+iteration_228:
+  nb_samples: 228
+  precision: -nan
+  recall: 0.06811362534571699
+  accuracy: 0.5311547773067435
+iteration_53:
+  nb_samples: 53
+  precision: -nan
+  recall: 0.002360533915708887
+  accuracy: 0.5009576355875595
+iteration_125:
+  nb_samples: 125
+  precision: 0.5371219643176915
+  recall: 0.6608827008408708
+  accuracy: 0.7821608740136363
+iteration_95:
+  nb_samples: 95
+  precision: 0.4079702228066786
+  recall: 0.493280999345216
+  accuracy: 0.705592607105647
+iteration_205:
+  nb_samples: 205
+  precision: 0.6112339725067268
+  recall: 0.06033555446734274
+  accuracy: 0.527232343021632
+iteration_2:
+  nb_samples: 2
+  precision: 0.09212656172789496
+  recall: 1
+  accuracy: 0.25
+iteration_237:
+  nb_samples: 237
+  precision: 0.6421613140878456
+  recall: 0.09497528277495791
+  accuracy: 0.54294065311991
+iteration_28:
+  nb_samples: 28
+  precision: -nan
+  recall: 0.0006919210841805873
+  accuracy: 0.5002819473435529
+iteration_111:
+  nb_samples: 111
+  precision: 0.4041598347605278
+  recall: 0.6440625829406063
+  accuracy: 0.76343405452363
+iteration_16:
+  nb_samples: 16
+  precision: 0.9782174773536942
+  recall: 0.1348175141521291
+  accuracy: 0.5525296760071766
+iteration_188:
+  nb_samples: 188
+  precision: 0.4881165104767812
+  recall: 0.05244398861975388
+  accuracy: 0.5219103187167133
+iteration_219:
+  nb_samples: 219
+  precision: -nan
+  recall: 0.07680866779226028
+  accuracy: 0.5335702367579853
+iteration_354:
+  nb_samples: 354
+  precision: 0.858306979668066
+  recall: 0.2326851528911829
+  accuracy: 0.6013501621126169
+iteration_244:
+  nb_samples: 244
+  precision: 0.8219975522437991
+  recall: 0.08628751490235201
+  accuracy: 0.5400751405818626
+iteration_134:
+  nb_samples: 134
+  precision: 0.5436867341226709
+  recall: 0.6654678162534995
+  accuracy: 0.7809406168534815
+iteration_30:
+  nb_samples: 30
+  precision: -nan
+  recall: 0.0007336008929960651
+  accuracy: 0.5002821427565212
+iteration_388:
+  nb_samples: 388
+  precision: 0.8925825165523534
+  recall: 0.2753223446763155
+  accuracy: 0.619054544156599
+iteration_214:
+  nb_samples: 214
+  precision: -nan
+  recall: 0.01944666859913493
+  accuracy: 0.5087554829301653
+iteration_296:
+  nb_samples: 296
+  precision: 0.8830793472976392
+  recall: 0.06180635632346625
+  accuracy: 0.5288168295670479
+iteration_331:
+  nb_samples: 331
+  precision: 0.7613004613531998
+  recall: 0.2092051980519977
+  accuracy: 0.5900706185148024
+iteration_17:
+  nb_samples: 17
+  precision: 0.9659927265874663
+  recall: 0.1433398480222085
+  accuracy: 0.5551118108224838
+iteration_349:
+  nb_samples: 349
+  precision: 0.7781127892632533
+  recall: 0.2303206718371923
+  accuracy: 0.5993178687561034
+iteration_396:
+  nb_samples: 396
+  precision: 0.8755957466847127
+  recall: 0.3244525448913622
+  accuracy: 0.6397134905696744
+iteration_227:
+  nb_samples: 227
+  precision: -nan
+  recall: 0.06649133886819544
+  accuracy: 0.5304289558554286
+iteration_162:
+  nb_samples: 162
+  precision: 0.3915407728206021
+  recall: 0.8764406823593731
+  accuracy: 0.8435775361154275
+iteration_292:
+  nb_samples: 292
+  precision: 0.8482855574145902
+  recall: 0.05517543440766276
+  accuracy: 0.5258381247829808
+iteration_302:
+  nb_samples: 302
+  precision: 0.8665625864543338
+  recall: 0.05059331583799114
+  accuracy: 0.5236547345772142
+iteration_148:
+  nb_samples: 148
+  precision: 0.5020159922785881
+  recall: 0.1743024657478069
+  accuracy: 0.5754374119821488
+iteration_345:
+  nb_samples: 345
+  precision: 0.7783400913594746
+  recall: 0.2397303673240435
+  accuracy: 0.6028027211355189
+iteration_335:
+  nb_samples: 335
+  precision: 0.7605929773492669
+  recall: 0.2221631192754803
+  accuracy: 0.595242029843662
+iteration_294:
+  nb_samples: 294
+  precision: 0.8564037776042071
+  recall: 0.06064476316084944
+  accuracy: 0.5283894685476368
+iteration_369:
+  nb_samples: 369
+  precision: 0.8583475323498141
+  recall: 0.2216531404795809
+  accuracy: 0.5962963015801332
+iteration_8:
+  nb_samples: 8
+  precision: 0.9890867944025895
+  recall: 0.1144567628944411
+  accuracy: 0.5279266500288881
+iteration_193:
+  nb_samples: 193
+  precision: 0.567697699236125
+  recall: 0.4234909897774291
+  accuracy: 0.6708292057710191
+iteration_101:
+  nb_samples: 101
+  precision: 0.3767233516222758
+  recall: 0.7072646072069004
+  accuracy: 0.7842524897959733
+iteration_221:
+  nb_samples: 221
+  precision: -nan
+  recall: 0.06369305381139087
+  accuracy: 0.5293058409176452
+iteration_380:
+  nb_samples: 380
+  precision: 0.8967029413508395
+  recall: 0.2262238762779006
+  accuracy: 0.5983228304098344
+iteration_76:
+  nb_samples: 76
+  precision: 0.4211349148988597
+  recall: 0.01450535887574574
+  accuracy: 0.5060082111799837
+iteration_138:
+  nb_samples: 138
+  precision: 0.6342343223497022
+  recall: 0.6324053543223412
+  accuracy: 0.7741258196837089
+iteration_285:
+  nb_samples: 285
+  precision: 0.8264410907053897
+  recall: 0.05449790628275254
+  accuracy: 0.5254118842861086
+iteration_20:
+  nb_samples: 20
+  precision: -nan
+  recall: 0.001134338281747982
+  accuracy: 0.5003025638671263
+iteration_14:
+  nb_samples: 14
+  precision: 0.9708144253901483
+  recall: 0.1314593254987163
+  accuracy: 0.5496793469791458
+iteration_112:
+  nb_samples: 112
+  precision: 0.4075527231001935
+  recall: 0.6525421504465433
+  accuracy: 0.7686280069267579
+iteration_135:
+  nb_samples: 135
+  precision: 0.5773419553832924
+  recall: 0.6796570836453951
+  accuracy: 0.7937643146277417
+iteration_146:
+  nb_samples: 146
+  precision: 0.2576769406037729
+  recall: 0.9779869647133758
+  accuracy: 0.8274473091804004
+iteration_383:
+  nb_samples: 383
+  precision: 0.9064235460144603
+  recall: 0.2344784845805245
+  accuracy: 0.6018847969354055
+iteration_224:
+  nb_samples: 224
+  precision: -nan
+  recall: 0.06974729783361529
+  accuracy: 0.5319957946960772
+iteration_22:
+  nb_samples: 22
+  precision: 0.6973960143464706
+  recall: 0.03876929773671869
+  accuracy: 0.5173781018061717
+iteration_56:
+  nb_samples: 56
+  precision: -nan
+  recall: 0.002366425033292412
+  accuracy: 0.5009222147893045
+iteration_299:
+  nb_samples: 299
+  precision: 0.8651877848186973
+  recall: 0.05287532200625782
+  accuracy: 0.5247327503673465
+iteration_185:
+  nb_samples: 185
+  precision: 0.5555245809886565
+  recall: 0.06240002716566506
+  accuracy: 0.5270371913859055
+iteration_265:
+  nb_samples: 265
+  precision: 0.8059700739093688
+  recall: 0.06835011037009553
+  accuracy: 0.531595187351207
+iteration_279:
+  nb_samples: 279
+  precision: 0.8082699192855713
+  recall: 0.05216222414675817
+  accuracy: 0.5241261545759005
+iteration_392:
+  nb_samples: 392
+  precision: 0.9007609654325023
+  recall: 0.2788308786018376
+  accuracy: 0.6208725243904424
+iteration_12:
+  nb_samples: 12
+  precision: 0.9574240634020086
+  recall: 0.1349404084136402
+  accuracy: 0.5509140737656424
+iteration_264:
+  nb_samples: 264
+  precision: 0.8017100894937076
+  recall: 0.06346678520015261
+  accuracy: 0.5293528336290546
+iteration_242:
+  nb_samples: 242
+  precision: 0.6840602235030963
+  recall: 0.1048025531993235
+  accuracy: 0.5476144328733351
+iteration_104:
+  nb_samples: 104
+  precision: 0.3823339774940042
+  recall: 0.6610559543619473
+  accuracy: 0.7648963214306294
+iteration_171:
+  nb_samples: 171
+  precision: 0.6186694883559294
+  recall: 0.06579271728073971
+  accuracy: 0.5291531013621231
+iteration_332:
+  nb_samples: 332
+  precision: 0.7746253588809529
+  recall: 0.2205469686743656
+  accuracy: 0.5949818747027
+iteration_133:
+  nb_samples: 133
+  precision: 0.5515337921759483
+  recall: 0.6556725401604249
+  accuracy: 0.7763075843430987
+iteration_346:
+  nb_samples: 346
+  precision: 0.7672328725185957
+  recall: 0.2388195475915815
+  accuracy: 0.6024196987287326
+iteration_37:
+  nb_samples: 37
+  precision: -nan
+  recall: 0.00165653692621425
+  accuracy: 0.5006285059580918
+iteration_326:
+  nb_samples: 326
+  precision: 0.762524498952488
+  recall: 0.2013896722141237
+  accuracy: 0.5867303259221053
+iteration_330:
+  nb_samples: 330
+  precision: 0.7631201676663215
+  recall: 0.2049944372465945
+  accuracy: 0.5881694927615532
+iteration_97:
+  nb_samples: 97
+  precision: 0.4095177479588469
+  recall: 0.4995594095619388
+  accuracy: 0.7081543558942023
+iteration_48:
+  nb_samples: 48
+  precision: -nan
+  recall: 0.001809637837057555
+  accuracy: 0.5006575589308535
+iteration_229:
+  nb_samples: 229
+  precision: 0.8024957111036309
+  recall: 0.07500976016073316
+  accuracy: 0.5346519866619132
+iteration_199:
+  nb_samples: 199
+  precision: 0.5620844201769656
+  recall: 0.3117602840231939
+  accuracy: 0.6284276974896104
+iteration_200:
+  nb_samples: 200
+  precision: 0.5707955668578217
+  recall: 0.3038011764930436
+  accuracy: 0.6253475279006048
+iteration_269:
+  nb_samples: 269
+  precision: 0.8165696997214567
+  recall: 0.06897966305988532
+  accuracy: 0.5319395366529482
+iteration_63:
+  nb_samples: 63
+  precision: 0.3047807766403884
+  recall: 0.2482124258658986
+  accuracy: 0.5948429394844922
+iteration_281:
+  nb_samples: 281
+  precision: 0.8000038115635235
+  recall: 0.05467801759944946
+  accuracy: 0.5253015647416848
+iteration_13:
+  nb_samples: 13
+  precision: 0.9576513906331933
+  recall: 0.1357371303594282
+  accuracy: 0.5511304280702854
+iteration_179:
+  nb_samples: 179
+  precision: 0.5779874605756792
+  recall: 0.06473110953529827
+  accuracy: 0.528363820006916
+iteration_293:
+  nb_samples: 293
+  precision: 0.85308172157051
+  recall: 0.05914668778615529
+  accuracy: 0.5275868546035509
+iteration_131:
+  nb_samples: 131
+  precision: 0.5339254096341146
+  recall: 0.6444180335145171
+  accuracy: 0.7687039077806311
+iteration_347:
+  nb_samples: 347
+  precision: 0.7699373011721508
+  recall: 0.2331103474169376
+  accuracy: 0.6004091634368948
+iteration_122:
+  nb_samples: 122
+  precision: 0.4443575097822475
+  recall: 0.8152278887771565
+  accuracy: 0.8353637143456943
+iteration_374:
+  nb_samples: 374
+  precision: 0.8924378755608506
+  recall: 0.2343806376606035
+  accuracy: 0.6015745967389282
+iteration_142:
+  nb_samples: 142
+  precision: 0.5037533524123493
+  recall: 0.7452344817259191
+  accuracy: 0.8062059013378807
+iteration_257:
+  nb_samples: 257
+  precision: 0.821251204284159
+  recall: 0.06750526529912711
+  accuracy: 0.5314604752299867
+iteration_177:
+  nb_samples: 177
+  precision: 0.6311586963513982
+  recall: 0.07008126941379858
+  accuracy: 0.531491725304182
+iteration_343:
+  nb_samples: 343
+  precision: 0.7631897729735145
+  recall: 0.2405909154060874
+  accuracy: 0.6032612886090247
+iteration_168:
+  nb_samples: 168
+  precision: 0.613341714911433
+  recall: 0.07694185071867098
+  accuracy: 0.5340957858619928
+iteration_77:
+  nb_samples: 77
+  precision: 0.2402312177053013
+  recall: 0.005736357383280476
+  accuracy: 0.5016974612330454
+iteration_183:
+  nb_samples: 183
+  precision: 0.6206821465578323
+  recall: 0.07290581819002795
+  accuracy: 0.5324176084468932
+iteration_275:
+  nb_samples: 275
+  precision: 0.8047513399458728
+  recall: 0.05454132186142988
+  accuracy: 0.5251652287970827
+iteration_59:
+  nb_samples: 59
+  precision: 0.3025999068953926
+  recall: 0.2427717592434681
+  accuracy: 0.5912466728360601
+iteration_371:
+  nb_samples: 371
+  precision: 0.8917344031283332
+  recall: 0.2378961714426764
+  accuracy: 0.6030959611388594
+iteration_289:
+  nb_samples: 289
+  precision: 0.8458071949817568
+  recall: 0.05503361243578982
+  accuracy: 0.5257246567930036
+iteration_305:
+  nb_samples: 305
+  precision: 0.8704991595274331
+  recall: 0.05672832353117606
+  accuracy: 0.5264264430404386
+iteration_165:
+  nb_samples: 165
+  precision: 0.6232713278011937
+  recall: 0.07142815894164606
+  accuracy: 0.5317757322019571
+iteration_321:
+  nb_samples: 321
+  precision: 0.7464078267523432
+  recall: 0.2070536895478954
+  accuracy: 0.5887630868497263
+iteration_248:
+  nb_samples: 248
+  precision: 0.8263024899334863
+  recall: 0.08487058905285397
+  accuracy: 0.5394474778583996
+iteration_311:
+  nb_samples: 311
+  precision: 0.7423940873950221
+  recall: 0.1592492036753133
+  accuracy: 0.5687797297504905
+iteration_378:
+  nb_samples: 378
+  precision: 0.8826346497015212
+  recall: 0.23117716913054
+  accuracy: 0.6000879951591928
+iteration_94:
+  nb_samples: 94
+  precision: 0.4066906085047988
+  recall: 0.4941509473998334
+  accuracy: 0.7056267773374972
+iteration_315:
+  nb_samples: 315
+  precision: 0.7571625774378399
+  recall: 0.1687245243289376
+  accuracy: 0.5731231254899374
+iteration_233:
+  nb_samples: 233
+  precision: -nan
+  recall: 0.01868980504308679
+  accuracy: 0.5085695697492082
+iteration_78:
+  nb_samples: 78
+  precision: 0.2683252914742428
+  recall: 0.005187333794459233
+  accuracy: 0.5017026106570156
+iteration_176:
+  nb_samples: 176
+  precision: 0.6115734960960278
+  recall: 0.06641704232935405
+  accuracy: 0.5295786125036198
+iteration_110:
+  nb_samples: 110
+  precision: 0.3903647102904909
+  recall: 0.6509323476662225
+  accuracy: 0.7639702718124043
+iteration_240:
+  nb_samples: 240
+  precision: 0.6440014613359106
+  recall: 0.1083353835402564
+  accuracy: 0.5488456575812003
+iteration_273:
+  nb_samples: 273
+  precision: 0.7960256013015354
+  recall: 0.06002527679937669
+  accuracy: 0.5276706471596448
+iteration_85:
+  nb_samples: 85
+  precision: 0.6368941160497932
+  recall: 0.1680382385518753
+  accuracy: 0.5753791169396506
+iteration_58:
+  nb_samples: 58
+  precision: 0.3132547533834969
+  recall: 0.2414031120947916
+  accuracy: 0.5922499128719294
+iteration_96:
+  nb_samples: 96
+  precision: 0.4057851810029514
+  recall: 0.4899661396949431
+  accuracy: 0.7037430528704454
+iteration_151:
+  nb_samples: 151
+  precision: 0.5203485234815316
+  recall: 0.1575307364178272
+  accuracy: 0.5685939325047622
+iteration_69:
+  nb_samples: 69
+  precision: 0.3035316206845982
+  recall: 0.2664728037878824
+  accuracy: 0.600943304884486
+iteration_274:
+  nb_samples: 274
+  precision: 0.8011454370998753
+  recall: 0.06190088704202816
+  accuracy: 0.5286035690524145
+iteration_82:
+  nb_samples: 82
+  precision: 0.6815009243742174
+  recall: 0.08391784035915999
+  accuracy: 0.5386601753625484
+iteration_356:
+  nb_samples: 356
+  precision: 0.8712103120899708
+  recall: 0.2226777298954537
+  accuracy: 0.5972117649996503
+iteration_339:
+  nb_samples: 339
+  precision: 0.7663017193107905
+  recall: 0.232342084645237
+  accuracy: 0.5997474574417689
+iteration_42:
+  nb_samples: 42
+  precision: -nan
+  recall: 0.001812312868615291
+  accuracy: 0.5006972956897333
+iteration_175:
+  nb_samples: 175
+  precision: 0.6216604390331177
+  recall: 0.06761773973997487
+  accuracy: 0.5302614563658705
+iteration_197:
+  nb_samples: 197
+  precision: 0.5617785263831553
+  recall: 0.3923605214949661
+  accuracy: 0.6582356828899882
+iteration_163:
+  nb_samples: 163
+  precision: 0.3909527490039807
+  recall: 0.8797376122552074
+  accuracy: 0.8446958259412166
+iteration_389:
+  nb_samples: 389
+  precision: 0.8939577721678797
+  recall: 0.2796149340487156
+  accuracy: 0.6207580158569745
+iteration_102:
+  nb_samples: 102
+  precision: 0.3830882158990628
+  recall: 0.6790088846742128
+  accuracy: 0.7746473459521532
+iteration_39:
+  nb_samples: 39
+  precision: -nan
+  recall: 0.001806191360733377
+  accuracy: 0.5006530523533722
+iteration_259:
+  nb_samples: 259
+  precision: 0.7886137422557974
+  recall: 0.06193939505936798
+  accuracy: 0.5286946540806352
+iteration_303:
+  nb_samples: 303
+  precision: 0.8749770841425127
+  recall: 0.05294967242211085
+  accuracy: 0.5247381434216798
+iteration_50:
+  nb_samples: 50
+  precision: -nan
+  recall: 0.001804735147136266
+  accuracy: 0.5006421549827289
+iteration_18:
+  nb_samples: 18
+  precision: -nan
+  recall: 0.007412954803186659
+  accuracy: 0.5033369442894053
+iteration_249:
+  nb_samples: 249
+  precision: 0.8284243982399982
+  recall: 0.08415446002033007
+  accuracy: 0.5392437661008409
+iteration_45:
+  nb_samples: 45
+  precision: -nan
+  recall: 0.001805996681598189
+  accuracy: 0.5007071049425218
+iteration_144:
+  nb_samples: 144
+  precision: 0.2465319179717481
+  recall: 0.9824745891701652
+  accuracy: 0.8215445787437197
+iteration_366:
+  nb_samples: 366
+  precision: 0.856453830554623
+  recall: 0.217526282479203
+  accuracy: 0.5944376048867941
+iteration_25:
+  nb_samples: 25
+  precision: -nan
+  recall: 0
+  accuracy: 0.499962626940878
+iteration_27:
+  nb_samples: 27
+  precision: -nan
+  recall: 0.0007310272663877634
+  accuracy: 0.5002870898135172
+iteration_3:
+  nb_samples: 3
+  precision: 0.09173431127537986
+  recall: 1
+  accuracy: 0.25
+iteration_116:
+  nb_samples: 116
+  precision: 0.3659072737190026
+  recall: 0.8496968514139829
+  accuracy: 0.8355756495973666
+iteration_54:
+  nb_samples: 54
+  precision: -nan
+  recall: 0.002359214001524521
+  accuracy: 0.5009473050283415
+iteration_170:
+  nb_samples: 170
+  precision: 0.6138150344311812
+  recall: 0.06515474725465975
+  accuracy: 0.5289050870258395
+iteration_325:
+  nb_samples: 325
+  precision: 0.7601928252586819
+  recall: 0.2044578234266136
+  accuracy: 0.587862502281834
+iteration_61:
+  nb_samples: 61
+  precision: 0.3000236639383022
+  recall: 0.2350575318136235
+  accuracy: 0.588243286925871
+iteration_35:
+  nb_samples: 35
+  precision: -nan
+  recall: 0.000660509587386757
+  accuracy: 0.5001964343775912
+iteration_202:
+  nb_samples: 202
+  precision: 0.6238182406521531
+  recall: 0.3540315574006769
+  accuracy: 0.6471466627656541
+iteration_283:
+  nb_samples: 283
+  precision: 0.6957937694113184
+  recall: 0.6421284103515975
+  accuracy: 0.7728024405192945
