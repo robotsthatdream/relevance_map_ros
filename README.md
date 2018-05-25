@@ -14,6 +14,6 @@ Library to facilate implementation of ros node for relevance map building, explo
 After cloning this repository into your catkin worksapce,
 follow the command lines :
 <pre>
-cd <catkin workspace>
+cd < catkin workspace >
 catkin_make -DCATKIN_WHITE_LIST=relevance_map install
 </pre>
