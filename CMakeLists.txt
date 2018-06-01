@@ -31,7 +31,6 @@ include_directories(include
 	${PCL_INCLUDE_DIRS}
 	${catkin_INCLUDE_DIRS}
         ${OpencCV_INCLUDE_DIRS}
-        ${RGBD_UTILS_INCLUDE_DIR}
 BEFORE SYSTEM        ${image_processing_INCLUDE} ${IAGMM_INCLUDE_DIR}
 )
 
@@ -82,7 +81,7 @@ set(image_processing_LIBRARIES ${LOCAL_LIB_DIR}/lib/libimage_processing.so)
 catkin_package(
         INCLUDE_DIRS include
         LIBRARIES relevance_map
-        CATKIN_DEPENDS roscpp rospy std_msgs message_runtime rgbd_utils gazebo_msgs sensor_msgs
+        CATKIN_DEPENDS roscpp rospy std_msgs message_runtime gazebo_msgs sensor_msgs
         DEPENDS ${IMAGE_PROCESSING_LIBRARY}
         #  DEPENDS system_lib
 )

@@ -30,7 +30,7 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
     _load_exp = static_cast<std::string>(exp_params["soi"]["load_exp"]);
     _modality = static_cast<std::string>(exp_params["soi"]["modality"]);
     _dimension = std::stoi(exp_params["soi"]["dimension"]);
-    _nbr_class = std::stod(exp_params["soi"]["nbr_class"]);
+    _nbr_class = 2; /*std::stod(exp_params["soi"]["nbr_class"]);*/
     _threshold = /*std::stod(exp_params["soi"]["threshold"])*/ 1./(double)_nbr_class;
 
     iagmm::Component::_alpha = std::stod(exp_params["soi"]["alpha"]);
