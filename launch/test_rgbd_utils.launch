@@ -1,0 +1,5 @@
+<launch>
+
+    <rosparam command="load" file="$(find dream_babbling)/launch/params/global_params.yml" ns="global"/>
+    <node name="test_rgbd_utils" pkg="relevance_map" type="test_rgbd_utils"/>
+</launch>

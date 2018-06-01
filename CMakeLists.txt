@@ -126,3 +126,7 @@ target_link_libraries(pcd_to_relevance_map ${catkin_LIBRARIES} relevance_map ${I
 
 add_executable(evaluate_archive tools/evaluate_archive.cpp)
 target_link_libraries(evaluate_archive ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
+
+#TEST
+add_executable(test_rgbd_utils src/rgbd_utils/test_rgbd_utils.cpp)
+target_link_libraries(test_rgbd_utils ${catkin_LIBRARIES} rgbd_utils)
