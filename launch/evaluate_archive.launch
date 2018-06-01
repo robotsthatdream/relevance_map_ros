@@ -1,0 +1,10 @@
+<launch>
+	<arg name="cloud_file" default=""/>
+	<arg name="map_file" default=""/>
+	<node name="display_cloud" pkg="pcl_ros" type="pcd_to_pointcloud" args="$(arg cloud_file)">
+		<remap from="cloud_pcd" to="cloud"/>
+	</node>
+	<node name="display_map" pkg="pcl_ros" type="pcd_to_pointcloud" args="$(arg map_file)">
+		<remap from="cloud_pcd" to="map"/>
+	</node>
+</launch>

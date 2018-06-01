@@ -73,9 +73,14 @@ public:
             return;
         }
         _iter_list.pop();
-        double p = 0, r = 0, a = 0,P = 0, R = 0, A = 0;
+        std::vector<double> p = std::vector<double>(_nbr_class,0),
+                r = std::vector<double>(_nbr_class,0),
+                a = std::vector<double>(_nbr_class,0),
+                P = std::vector<double>(_nbr_class,0),
+                R = std::vector<double>(_nbr_class,0),
+                A = std::vector<double>(_nbr_class,0);
         rm::score_computation<evaluate_archive> sc(this,_output_file);
-        sc.statistics_name = {"nb_samples","precision","recall","accuracy"};
+        sc.statistics_name = {"nbr_samples","precision","recall","accuracy"};
         for(const auto& cloud : _input_clouds){
             compute_rm(cloud);
             sc.init();
@@ -83,7 +88,14 @@ public:
                 _progress += 1.;
                 _background = back;
 
-                double precision, recall, accuracy;
+                std::map<uint32_t,int> true_labels;
+                for(const auto& sv: _soi.getSupervoxels()){
+                    if(rm::is_in_cloud(sv.second->centroid_,_background))
+                        true_labels.emplace(sv.first,0);
+                    else true_labels.emplace(sv.first,1);
+                }
+                sc.set_true_labels(true_labels);
+                std::vector<double> precision, recall, accuracy;
                 sc.compute_precision_recall(precision,recall,accuracy);
 //                ROS_INFO_STREAM("--------------------------------------------------------");
 //                ROS_INFO_STREAM("scores \n"
@@ -91,41 +103,47 @@ public:
 //                                << " recall : " << recall << "\n"
 //                                << " accuracy : " << accuracy << "\n");
 //                ROS_INFO_STREAM("--------------------------------------------------------");
-
-                p += precision;
-                r += recall;
-                a += accuracy;
+                for(int i = 0; i < precision.size(); i++){
+                    p[i] += precision[i];
+                    r[i] += recall[i];
+                    a[i] += accuracy[i];
+                }
             }
-            p = p/(double)_backgrounds.size();
-            r = r/(double)_backgrounds.size();
-            a = a/(double)_backgrounds.size();
-            P += p;
-            R += r;
-            A += a;
+            for(int i = 0; i < p.size(); i++){
+                p[i] = p[i]/(double)_backgrounds.size();
+                r[i] = r[i]/(double)_backgrounds.size();
+                a[i] = a[i]/(double)_backgrounds.size();
+                P[i] += p[i];
+                R[i] += r[i];
+                A[i] += a[i];
+            }
 //            ROS_INFO_STREAM("--------------------------------------------------------");
 //            ROS_INFO_STREAM("scores \n"
 //                            << " precision : " << p << "\n"
 //                            << " recall : " << r << "\n"
 //                            << " accuracy : " << a << "\n");
 //            ROS_INFO_STREAM("--------------------------------------------------------");
-            p = 0; r = 0; a = 0;
+            p = std::vector<double>(_nbr_class,0); r = std::vector<double>(_nbr_class,0); a = std::vector<double>(_nbr_class,0);
             ROS_INFO_STREAM(_progress/_files_total_nb*100. << "% progress");
         }
-        P = P/(double)_input_clouds.size();
-        R = R/(double)_input_clouds.size();
-        A = A/(double)_input_clouds.size();
+        for(int i = 0; i < P.size(); i++){
+            P[i] = P[i]/(double)_input_clouds.size();
+            R[i] = R[i]/(double)_input_clouds.size();
+            A[i] = A[i]/(double)_input_clouds.size();
+        }
 
-        ROS_INFO_STREAM("--------------------------------------------------------");
-        ROS_INFO_STREAM("scores for iteration " << _gmm_class[_modality].get_samples().size() << "\n"
-                        << " precision : " << P << "\n"
-                        << " recall : " << R << "\n"
-                        << " accuracy : " << A << "\n");
-        ROS_INFO_STREAM("--------------------------------------------------------");
 
         std::stringstream str;
         str << "iteration_" << _gmm_class[_modality].get_samples().size();
-        sc.set_results(str.str(),{(double)_gmm_class[_modality].get_samples().size(),
-                                                    P,R,A});
+        std::vector<std::vector<double>> scores = {P,R,A};
+        sc.set_results(str.str(),std::make_tuple((double)_gmm_class[_modality].get_samples().size(),scores));
+
+
+        ROS_INFO_STREAM("--------------------------------------------------------");
+        ROS_INFO_STREAM("scores for iteration " << str.str() << "\n"
+                        << sc.results_to_string());
+        ROS_INFO_STREAM("--------------------------------------------------------");
+
         sc.write_result(_output_file);
     }
 

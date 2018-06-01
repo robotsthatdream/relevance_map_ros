@@ -31,7 +31,6 @@ include_directories(include
 	${PCL_INCLUDE_DIRS}
 	${catkin_INCLUDE_DIRS}
         ${OpencCV_INCLUDE_DIRS}
-        ${RGBD_UTILS_INCLUDE_DIR}
 BEFORE SYSTEM        ${image_processing_INCLUDE} ${IAGMM_INCLUDE_DIR}
 )
 
@@ -82,7 +81,7 @@ set(image_processing_LIBRARIES ${LOCAL_LIB_DIR}/lib/libimage_processing.so)
 catkin_package(
         INCLUDE_DIRS include
         LIBRARIES relevance_map
-        CATKIN_DEPENDS roscpp rospy std_msgs message_runtime rgbd_utils gazebo_msgs sensor_msgs
+        CATKIN_DEPENDS roscpp rospy std_msgs message_runtime gazebo_msgs sensor_msgs
         DEPENDS ${IMAGE_PROCESSING_LIBRARY}
         #  DEPENDS system_lib
 )
@@ -122,8 +121,12 @@ install(DIRECTORY include/${PROJECT_NAME}/
 add_executable(pcd_to_relevance_map tools/pcd_to_relevance_map.cpp)
 target_link_libraries(pcd_to_relevance_map ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb)
 
-add_executable(evaluate_classifier tools/evaluate_classifier.cpp)
-target_link_libraries(evaluate_classifier ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
+#add_executable(evaluate_classifier tools/evaluate_classifier.cpp)
+#target_link_libraries(evaluate_classifier ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
 
 add_executable(evaluate_archive tools/evaluate_archive.cpp)
 target_link_libraries(evaluate_archive ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
+
+#TEST
+add_executable(test_rgbd_utils src/rgbd_utils/test_rgbd_utils.cpp)
+target_link_libraries(test_rgbd_utils ${catkin_LIBRARIES} rgbd_utils)
