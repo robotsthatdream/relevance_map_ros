@@ -38,7 +38,6 @@
     <run_depend>geometry_msgs</run_depend>
     <run_depend>gazebo_msgs</run_depend>
     <run_depend>pcl_conversions</run_depend>
-    <run_depend>rgbd_utils</run_depend>
 
  <export>
         <!-- Other tools can request additional information be placed here -->

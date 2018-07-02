@@ -4,6 +4,7 @@
 #include <memory>
 #include <iostream>
 #include <fstream>
+#include <functional>
 
 #include <ros/ros.h>
 
@@ -45,9 +46,11 @@ typedef struct setup_param_t{
 typedef struct model_t{
     std::string desc;
     std::array<double,3> position;
+    int label;
 }model_t;
 
-typedef std::vector<double> result_array_t;
+typedef std::map<std::string,model_t> model_map_t;
+
 
 void define_frames(const std::string& robot, std::string& base_frame, std::string& camera_frame){
     if(robot == "baxter" || robot == "crustcrawler"){
@@ -61,15 +64,7 @@ void define_frames(const std::string& robot, std::string& base_frame, std::strin
 
 typedef std::map<std::string,model_t> model_map_t;
 
-std::array<double,3> load_start_models_pose(const std::string& file_name){
-    YAML::Node yml_file = YAML::LoadFile(file_name);
-    std::array<double,3> position;
 
-    position[0] = yml_file["start_pose"]["position"][0].as<double>();
-    position[1] = yml_file["start_pose"]["position"][1].as<double>();
-    position[2] = yml_file["start_pose"]["position"][2].as<double>();
-    return position;
-}
 
 int load_results(std::string file_name, int &fp, int &fn, int &nbr_iteration){
     std::cout << "load results : " << file_name << std::endl;
@@ -88,17 +83,16 @@ int load_results(std::string file_name, int &fp, int &fn, int &nbr_iteration){
 }
 
 bool load_models(XmlRpc::XmlRpcValue &params,
-                 std::map<std::string,std::string>& sdf_models,
+                 model_map_t& sdf_models,
                  setup_param_t& setup_params){
     std::ifstream ifs;
-    std::string file;
+    std::string file,yml_file;
     std::string folder = static_cast<std::string>(params["models_folder"]);
-    std::cout << "load models : " << folder << std::endl;
-
     XmlRpc::XmlRpcValue models = params["models"];
     for(int i = 0; i < models.size(); i++){
         file = folder + static_cast<std::string>(models[i]) + ".sdf";
-        ROS_ERROR_STREAM(file);
+        yml_file = folder + static_cast<std::string>(models[i]) + ".yml";
+
 
         ifs.open(file);
         if(!ifs){
@@ -111,7 +105,20 @@ bool load_models(XmlRpc::XmlRpcValue &params,
         while(std::getline(ifs,buff))
             sdf += buff;
         ifs.close();
-        sdf_models.emplace(static_cast<std::string>(models[i]),sdf);
+
+        YAML::Node yml_node = YAML::LoadFile(yml_file);
+        std::array<double,3> position;
+
+        position[0] = yml_node["start_pose"]["position"][0].as<double>();
+        position[1] = yml_node["start_pose"]["position"][1].as<double>();
+        position[2] = yml_node["start_pose"]["position"][2].as<double>();
+
+        model_t model;
+        model.desc = sdf;
+        model.position = position;
+        model.label = yml_node["class"].as<int>();
+
+        sdf_models.emplace(static_cast<std::string>(models[i]),model);
     }
 
     setup_params.x_max = params["environments"]["positions"]["x_max"];
@@ -257,23 +264,50 @@ bool load_archive(std::string folder_name, std::queue<std::string> &folder_list)
     return true;
 }
 
-Eigen::Vector3d get_model_position(const std::string& model_name,std::unique_ptr<ros::ServiceClient> &client){
+int label_of_object(const std::array<double,3> position,model_map_t models){
+    std::function<double(std::array<double,3>,std::array<double,3>)> distance =
+            [](std::array<double,3> p1,std::array<double,3> p2) -> double{
+       return sqrt((p1[0]-p2[0])*(p1[0]-p2[0])
+               + (p1[1]-p2[1])*(p1[1]-p2[1])
+               + (p1[2]-p2[2])*(p1[2]-p2[2]));
+    };
+
+    double min_dist = distance(position,models.begin()->second.position);
+    std::string min_name = models.begin()->first;
+    for(const auto& model: models){
+        double dist = distance(position,model.second.position);
+//        std::cout << model.first << " : " << dist << std::endl;
+        if(min_dist > dist){
+            min_dist = dist;
+            min_name = model.first;
+        }
+    }
+//    std::cout << min_name << std::endl;
+    return models[min_name].label;
+}
+
+std::array<double,3> get_model_position(const std::string& model_name,std::unique_ptr<ros::ServiceClient> &client){
+    //USE this client : ros::ServiceClient client = ros_nh->serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
+
     gazebo_msgs::GetModelState msg;
-    Eigen::Vector3d position;
-    position << 0, 0, 0;
+    std::array<double,3> position = {0,0,0};
     msg.request.model_name = model_name;
-//    ros::ServiceClient client = ros_nh->serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
+    msg.request.relative_entity_name = "base";
 
     if(client->call(msg)){
         if(msg.response.success){
-            position(0) = msg.response.pose.position.x;
-            position(1) = msg.response.pose.position.y;
-            position(2) = msg.response.pose.position.z;
+            position[0] = msg.response.pose.position.x;
+            position[1] = msg.response.pose.position.y;
+            position[2] = msg.response.pose.position.z;
         }else ROS_ERROR_STREAM("Unable to get state of model of name " << model_name);
     }else ROS_ERROR_STREAM("Unable to call get_model_state service");
     return position;
 }
 
+void update_model_positions(model_map_t& models,std::unique_ptr<ros::ServiceClient> &client){
+    for(auto& model: models)
+        model.second.position = get_model_position(model.first,client);
+}
 
 bool change_models_state(const model_map_t &sdf_models,
                          const setup_param_t &setup_params,
@@ -323,82 +357,35 @@ bool change_models_state(const model_map_t &sdf_models,
     return true;
 }
 
-bool change_model_state(const std::string& model_name,
-                         const setup_param_t &setup_params,
-                         std::unique_ptr<ros::ServiceClient> &client,
-                         boost::random::mt19937& gen, bool with_orientation = false){
-    gazebo_msgs::SetModelState model_state_msg;
 
-    boost::random::uniform_real_distribution<> dist_x(setup_params.x_min,setup_params.x_max);
-    boost::random::uniform_real_distribution<> dist_y(setup_params.y_min,setup_params.y_max);
-    boost::random::uniform_real_distribution<> dist_z(setup_params.z_min,setup_params.z_max);
-    boost::random::uniform_real_distribution<> roll(-3.14,3.14);
-    boost::random::uniform_real_distribution<> pitch(-3.14,3.14);
-    boost::random::uniform_real_distribution<> yaw(-3.14,3.14);
-
-    float r = roll(gen),p = pitch(gen),y = yaw(gen);
-    model_state_msg.request.model_state.model_name = model_name;
-
-    if(setup_params.x_min == setup_params.x_max)
-        model_state_msg.request.model_state.pose.position.x = setup_params.x_min;
-    else model_state_msg.request.model_state.pose.position.x = dist_x(gen);
-    if(setup_params.y_min == setup_params.y_max)
-        model_state_msg.request.model_state.pose.position.y = setup_params.y_min;
-    else model_state_msg.request.model_state.pose.position.y = dist_y(gen);
-    if(setup_params.z_min == setup_params.z_max)
-        model_state_msg.request.model_state.pose.position.z = setup_params.z_min;
-    else model_state_msg.request.model_state.pose.position.z = dist_z(gen);
-
-    if(with_orientation)
-    {
-        model_state_msg.request.model_state.pose.orientation.x = cos(y)*cos(r)*cos(p) + sin(y)*sin(r)*sin(p);
-        model_state_msg.request.model_state.pose.orientation.y = cos(y)*sin(r)*cos(p) - sin(y)*cos(r)*sin(p);
-        model_state_msg.request.model_state.pose.orientation.z = cos(y)*cos(r)*sin(p) + sin(y)*sin(r)*cos(p);
-        model_state_msg.request.model_state.pose.orientation.w = sin(y)*cos(r)*cos(p) - cos(y)*sin(r)*sin(p);
-    }
-    model_state_msg.request.model_state.reference_frame = "world";
-
-    if(client->call(model_state_msg)){
-        if(model_state_msg.response.success)
-            ROS_INFO_STREAM(model_name << " state modified");
-        else ROS_INFO_STREAM("fail to modify state of " << model_name);
-    }else{
-        ROS_ERROR_STREAM("unbale to call service set_model_state");
-        return false;
-    }
-
-    return true;
-}
-
-bool spawn_models(const std::map<std::string,std::string> &sdf_models,
+bool spawn_models(const model_map_t &sdf_models,
                   const setup_param_t &setup_params,
                   std::unique_ptr<ros::ServiceClient> &client,
                   boost::random::mt19937& gen){
-    gazebo_msgs::SpawnModel msg;
+    gazebo_msgs::SpawnModel spawn_msg;
 
     boost::random::uniform_real_distribution<> dist_x(setup_params.x_min,setup_params.x_max);
     boost::random::uniform_real_distribution<> dist_y(setup_params.y_min,setup_params.y_max);
     boost::random::uniform_real_distribution<> dist_z(setup_params.z_min,setup_params.z_max);
 
+
     for(const auto& model: sdf_models){
-        msg.request.model_name = model.first;
-        msg.request.model_xml = model.second;
+        spawn_msg.request.model_name = model.first;
+        spawn_msg.request.model_xml = model.second.desc;
         if(setup_params.x_min == setup_params.x_max)
-            msg.request.initial_pose.position.x = setup_params.x_min;
-        else msg.request.initial_pose.position.x = dist_x(gen);
+            spawn_msg.request.initial_pose.position.x = setup_params.x_min;
+        else spawn_msg.request.initial_pose.position.x = dist_x(gen);
         if(setup_params.y_min == setup_params.y_max)
-            msg.request.initial_pose.position.y = setup_params.y_min;
-        else msg.request.initial_pose.position.y = dist_y(gen);
+            spawn_msg.request.initial_pose.position.y = setup_params.y_min;
+        else spawn_msg.request.initial_pose.position.y = dist_y(gen);
         if(setup_params.z_min == setup_params.z_max)
-            msg.request.initial_pose.position.z = setup_params.z_min;
-        else msg.request.initial_pose.position.z = dist_z(gen);
+            spawn_msg.request.initial_pose.position.z = setup_params.z_min;
+        else spawn_msg.request.initial_pose.position.z = dist_z(gen);
 
-        ROS_INFO_STREAM(model.first << " : " << msg.request.initial_pose.position.x << " "
-                        << msg.request.initial_pose.position.y << " "
-                        << msg.request.initial_pose.position.z);
 
-        if(client->call(msg)){
-            if(msg.response.success)
+
+        if(client->call(spawn_msg)){
+            if(spawn_msg.response.success)
                 ROS_INFO_STREAM(model.first << " spawned");
             else
                 ROS_ERROR_STREAM("fail to spawn " << model.first);
@@ -441,7 +428,7 @@ bool spawn_models(const model_map_t &sdf_models,
     return true;
 }
 
-bool delete_models(const std::map<std::string, std::string> &sdf_models,
+bool delete_models(const model_map_t &sdf_models,
                    std::unique_ptr<ros::ServiceClient> &client){
     gazebo_msgs::DeleteModel msg;
     for(const auto& model: sdf_models){
@@ -462,20 +449,24 @@ bool delete_models(const std::map<std::string, std::string> &sdf_models,
     return true;
 }
 
-bool is_in_cloud(const image_processing::PointT &pt, const ip::PointCloudT::Ptr cloud){
-    pcl::KdTreeFLANN<ip::PointT>::Ptr tree(new pcl::KdTreeFLANN<ip::PointT>);
-    tree->setInputCloud(cloud);
+
+
+bool is_in_cloud(const image_processing::PointT &pt, const ip::PointCloudT::Ptr& cloud){
+    pcl::KdTreeFLANN<ip::PointT> tree;
+    tree.setInputCloud(cloud);
 
     std::vector<int> nn_indices(1);
     std::vector<float> nn_distance(1);
 
-    if(!tree->nearestKSearch(pt,1,nn_indices,nn_distance))
-        return true;
+    if(!tree.nearestKSearch(pt,1,nn_indices,nn_distance))
+        return false;
 
     if(nn_distance[0] < 0.0001)
         return true;
     else return false;
 }
+
+
 
 Eigen::VectorXd noise(const Eigen::VectorXd& v,double std_dev,boost::random::mt19937& gen){
     Eigen::VectorXd v_noise(v.rows());
@@ -487,7 +478,7 @@ Eigen::VectorXd noise(const Eigen::VectorXd& v,double std_dev,boost::random::mt1
     return v_noise;
 }
 
-void init_workspace(XmlRpc::XmlRpcValue &wks, std::unique_ptr<ip::workspace_t>& workspace){
+void init_workspace(XmlRpc::XmlRpcValue &wks, std::shared_ptr<ip::workspace_t>& workspace){
 
     workspace.reset(
                 new ip::workspace_t(true,
@@ -502,6 +493,16 @@ void init_workspace(XmlRpc::XmlRpcValue &wks, std::unique_ptr<ip::workspace_t>& 
                 static_cast<double>(wks["csg_intersect_cuboid"]["y_max"]),
                 static_cast<double> (wks["csg_intersect_cuboid"]["z_min"]),
                 static_cast<double>(wks["csg_intersect_cuboid"]["z_max"])}));
+}
+
+void write_data(const std::string& file, std::string content){
+    std::ofstream ofs(file);
+    if(!ofs){
+        ROS_ERROR_STREAM("unable to open : " << file);
+        return;
+    }
+    ofs << content;
+    ofs.close();
 }
 
 }

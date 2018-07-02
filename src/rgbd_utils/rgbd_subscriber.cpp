@@ -14,7 +14,7 @@ void RGBD_Subscriber::init()
     depth_it_.reset(new image_transport::ImageTransport(*depth_nh_));
 
     // Read parameters
-    private_nh.param("queue_size", queue_size, 5);
+    private_nh.param("queue_size", queue_size, 100);
 
     // Synchronize inputs. Topic subscriptions happen on demand in the connection callback.
     sync_.reset(
@@ -33,11 +33,11 @@ void RGBD_Subscriber::connect_callback()
 
     // depth image can use different transport.(e.g. compressedDepth)
     image_transport::TransportHints depth_hints("raw", ros::TransportHints(), private_nh, depth_image_transport_param);
-    sub_depth_.subscribe(*depth_it_, _depth_topic, 1, depth_hints);
+    sub_depth_.subscribe(*depth_it_, _depth_topic, 100, depth_hints);
 
     // rgb uses normal ros transport hints.
     image_transport::TransportHints hints("raw", ros::TransportHints(), private_nh);
-    sub_rgb_.subscribe(*rgb_it_, _rgb_topic, 1, hints);
-    sub_rgb_info_.subscribe(*rgb_nh_, _rgb_info_topic, 1);
-    sub_depth_info_.subscribe(*depth_nh_, _depth_info_topic, 1);
+    sub_rgb_.subscribe(*rgb_it_, _rgb_topic, 100, hints);
+    sub_rgb_info_.subscribe(*rgb_nh_, _rgb_info_topic, 100);
+    sub_depth_info_.subscribe(*depth_nh_, _depth_info_topic, 100);
 }
