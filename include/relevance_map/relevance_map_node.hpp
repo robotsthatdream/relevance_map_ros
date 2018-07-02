@@ -93,6 +93,11 @@ protected:
     std::unique_ptr<ros::Publisher> _choice_dist_cloud_pub;
     std::unique_ptr<ros::Publisher> _input_cloud_pub;
 
+    template <typename param>
+    void _clear_supervoxels(){
+              _soi.clear<param>();
+    }
+
     bool _compute_supervoxels(const ip::PointCloudT::Ptr input_cloud, bool with_workspace = true);
     /**
      * @brief Compute the saliency map for the next iteration and choose the next supervoxel to explore.

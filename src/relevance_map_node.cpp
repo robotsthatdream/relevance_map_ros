@@ -121,6 +121,11 @@ void relevance_map_node::release(){
 
 bool relevance_map_node::retrieve_input_cloud(ip::PointCloudT::Ptr cloud){
 
+    if(_images_sub->get_depth().data.empty() || _images_sub->get_rgb().data.empty()){
+        ROS_ERROR_STREAM("Waiting for input images");
+        return false;
+    }
+
     sensor_msgs::ImageConstPtr depth_msg(
                 new sensor_msgs::Image(_images_sub->get_depth()));
     sensor_msgs::ImageConstPtr rgb_msg(
@@ -128,10 +133,6 @@ bool relevance_map_node::retrieve_input_cloud(ip::PointCloudT::Ptr cloud){
     sensor_msgs::CameraInfoConstPtr info_msg(
                 new sensor_msgs::CameraInfo(_images_sub->get_rgb_info()));
 
-    if(depth_msg->data.empty() || rgb_msg->data.empty()){
-        ROS_ERROR_STREAM("Waiting for input images");
-        return false;
-    }
 
     rgbd_utils::RGBD_to_Pointcloud converter(depth_msg,rgb_msg,info_msg);
     sensor_msgs::PointCloud2 cloud_msg = converter.get_pointcloud();
@@ -146,7 +147,6 @@ bool relevance_map_node::retrieve_input_cloud(ip::PointCloudT::Ptr cloud){
 }
 
 bool relevance_map_node::_compute_supervoxels(const ip::PointCloudT::Ptr input_cloud, bool with_workspace){
-    _soi.clear<sv_param>();
     _soi.setInputCloud(input_cloud);
 
     if(with_workspace){
@@ -308,6 +308,8 @@ bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, ui
         }
         else ROS_ERROR_STREAM("Unknown soi method" << _method);
         // TODO the other modes !
+    }else if(_mode == "exploitation"){
+            _soi.choice_of_soi(_modality,sv, lbl);
     }
 
         // -_- TODO _-_ EXPLOITATION MODE
@@ -315,7 +317,7 @@ bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, ui
 //                _possible_choice = _soi.choice_of_soi_by_uncertainty(_sv,_lbl);
 
     //*/
-    ROS_INFO_STREAM("Computing saliency map finish, time spent : "
+    ROS_INFO_STREAM("Computing relevance map finish, time spent : "
               << std::chrono::duration_cast<std::chrono::milliseconds>(
                      std::chrono::system_clock::now() - timer).count());
     return true;
@@ -341,12 +343,13 @@ void relevance_map_node::publish_feedback(){
     pcl::PointCloud<pcl::PointXYZI> choice_ptcl;
     for(const auto& val: _choice_map){
         pcl::Supervoxel<ip::PointT>::Ptr current_sv = _soi.getSupervoxels()[val.first];
+        float i = val.second;
         pcl::PointXYZI pt;
         for(auto v : *(current_sv->voxels_)){
             pt.x = v.x;
             pt.y = v.y;
             pt.z = v.z;
-            pt.intensity = val.second;
+            pt.intensity = i;
             choice_ptcl.push_back(pt);
         }
     }

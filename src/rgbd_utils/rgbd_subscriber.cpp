@@ -32,7 +32,7 @@ void RGBD_Subscriber::connect_callback()
     std::string depth_image_transport_param = "depth_image_transport";
 
     // depth image can use different transport.(e.g. compressedDepth)
-    image_transport::TransportHints depth_hints("raw", ros::TransportHints(), private_nh, depth_image_transport_param);
+    image_transport::TransportHints depth_hints("compressed", ros::TransportHints(), private_nh, depth_image_transport_param);
     sub_depth_.subscribe(*depth_it_, _depth_topic, 100, depth_hints);
 
     // rgb uses normal ros transport hints.
