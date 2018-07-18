@@ -95,7 +95,7 @@ protected:
 
     template <typename param>
     void _clear_supervoxels(){
-              _soi.clear<param>();
+        _soi.clear<param>();
     }
 
     bool _compute_supervoxels(const ip::PointCloudT::Ptr input_cloud, bool with_workspace = true);

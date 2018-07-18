@@ -177,6 +177,7 @@ class score_computation{
             for(int i = 0; i < nbr_class; i++){
                 _lbl = i;
                 _tp = 0; _tn = 0; _fn = 0; _fp = 0; _total_neg = 0; _total_pos = 0;
+
                 tbb::parallel_reduce(tbb::blocked_range<size_t>(0,_node->get_soi().get_weights()[_node->get_modality()].size()),*this);
 
 

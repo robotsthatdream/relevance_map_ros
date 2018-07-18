@@ -451,6 +451,7 @@ bool delete_models(const model_map_t &sdf_models,
 
 
 
+
 bool is_in_cloud(const image_processing::PointT &pt, const ip::PointCloudT::Ptr& cloud){
     pcl::KdTreeFLANN<ip::PointT> tree;
     tree.setInputCloud(cloud);
@@ -466,6 +467,23 @@ bool is_in_cloud(const image_processing::PointT &pt, const ip::PointCloudT::Ptr&
     else return false;
 }
 
+
+void compute_ground_truth(std::map<uint32_t,int>& true_labels, const ip::SupervoxelArray& supervoxels,  const ip::PointCloudT::Ptr& cloud){
+
+    std::vector<uint32_t> sv_lbls;
+    for(const auto& sv: supervoxels){
+        true_labels.emplace(sv.first,0);
+        sv_lbls.push_back(sv.first);
+    }
+
+    tbb::parallel_for(tbb::blocked_range<size_t>(0,sv_lbls.size()),[&](tbb::blocked_range<size_t> r){
+        for(int i = r.begin(); i != r.end(); i++){
+            if(is_in_cloud(supervoxels.at(sv_lbls[i])->centroid_,cloud))
+                true_labels[sv_lbls[i]] = 0;
+            else true_labels[sv_lbls[i]] = 1;
+        }
+    });
+}
 
 
 Eigen::VectorXd noise(const Eigen::VectorXd& v,double std_dev,boost::random::mt19937& gen){
