@@ -1,0 +1,16 @@
+<launch>
+    <arg name="ns" default=""/>
+    <arg name="exec_name" default="features_variability"/>
+    
+    <node name="$(arg exec_name)" pkg="dream_babbling" type="$(arg exec_name)" output="log" launch-prefix="terminator -x">        
+        <rosparam ns="params">
+            rgb_info: ""
+            rgb_topic: ""
+            depth_topic: ""
+            depth_info: ""
+            modality: ""
+            number_of_iteration: ""
+	    output_file: ""       
+        </rosparam>
+    </node>
+</launch>

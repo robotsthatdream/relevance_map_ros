@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>
 #include <relevance_map/relevance_map_node.hpp>
 #include <rgbd_utils/rgbd_subscriber.hpp>
 #include <rgbd_utils/rgbd_to_pointcloud.h>
@@ -22,8 +23,6 @@ class features_variablity : public rm::relevance_map_node
 
 public:
     features_variablity(){
-
-
         XmlRpc::XmlRpcValue params;
         _nh.getParam("params",params);
 
@@ -34,8 +33,12 @@ public:
                             static_cast<std::string>(params["depth_topic"]),_nh));
 
         _modality = static_cast<std::string>(params["modality"]);
+        _nbr_iteration = std::stod(params["number_of_iteration"]);
 
         _octree.reset(new pcl::octree::OctreePointCloudSearch<pcl::PointXYZ>(128.0f));
+
+        _var_pub.reset(new ros::Publisher(
+                           _nh.advertise<sensor_msgs::PointCloud2>("variance_cloud",5)));
     }
 
 
@@ -64,6 +67,7 @@ public:
                 _statistics.push_back(stat);
             }
             _octree->setInputCloud(_base_cloud);
+            _iteration++;
             return;
         }
 
@@ -93,7 +97,32 @@ public:
                     N/((N-1)*(N-1))*(X-mean)*(X-mean).transpose();
         }
 
+        _iteration++;
+    }
 
+    bool is_finish(){return _iteration > _nbr_iteration;}
+
+
+    void build_variance_cloud(){
+        for(size_t i = 0; i < _statistics.size(); i++){
+            pcl::PointXYZI pt;
+            pt.x = _base_cloud->at(i).x;
+            pt.y = _base_cloud->at(i).y;
+            pt.z = _base_cloud->at(i).z;
+            Eigen::VectorXd variance(_statistics[i].covariance.rows());
+            for(size_t k = 0; k < variance.rows(); k++)
+                variance(k) = _statistics[i].covariance(k,k);
+
+            pt.intensity = variance.squaredNorm();
+            _variance_cloud.push_back(pt);
+        }
+    }
+
+    void publish_results(){
+        sensor_msgs::PointCloud2 cloud_msg;
+        pcl::toROSMsg(_variance_cloud,cloud_msg);
+
+        _var_pub->publish(cloud_msg);
     }
 
 private:
@@ -101,10 +130,33 @@ private:
     std::vector<data_stats_t> _statistics;
     pcl::octree::OctreePointCloudSearch<pcl::PointXYZ>::Ptr _octree;
     pcl::PointCloud<pcl::PointXYZ>::Ptr _base_cloud;
-//    std::map<Eigen::VectorXd,data_stats_t> _statistics;
+    pcl::PointCloud<pcl::PointXYZI> _variance_cloud;
+    std::shared_ptr<ros::Publisher> _var_pub;
     int _iteration = 0;
+    int _nbr_iteration;
 };
 
 int main(int argc, char** argv){
+
+    ros::init(argc,argv,"features_variability");
+
+    features_variablity fv;
+
+    while(ros::ok() && !fv.is_finish()){
+        fv.update();
+        fv.build_variance_cloud();
+        fv.publish_results();
+        usleep(10000);
+        ros::spinOnce();
+    }
+
+    fv.build_variance_cloud();
+
+    while(ros::ok()){
+        fv.publish_results();
+        usleep(10000);
+        ros::spinOnce();
+    }
+
     return 0;
 }
