@@ -16,6 +16,7 @@
 #include <rgbd_utils/rgbd_subscriber.hpp>
 #include <rgbd_utils/rgbd_to_pointcloud.h>
 
+#include <relevance_map/cnn_features.h>
 
 namespace ip = image_processing;
 namespace rgbd = rgbd_utils;
@@ -92,6 +93,7 @@ protected:
     std::map<std::string,std::vector<std::shared_ptr<ros::Publisher>>> _weighted_cloud_pub;
     std::unique_ptr<ros::Publisher> _choice_dist_cloud_pub;
     std::unique_ptr<ros::Publisher> _input_cloud_pub;
+    std::unique_ptr<ros::ServiceClient> _cnn_features_client;
 
     template <typename param>
     void _clear_supervoxels(){

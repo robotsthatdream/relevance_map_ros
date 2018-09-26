@@ -13,12 +13,14 @@
 
 #include <image_processing/pcl_types.h>
 #include <image_processing/SupervoxelSet.h>
+#include <image_processing/SurfaceOfInterest.h>
 
 #include <iagmm/data.hpp>
 #include <iagmm/gmm.hpp>
 #include <iagmm/nnmap.hpp>
 #include <iagmm/mcs.hpp>
 
+#include <image_geometry/pinhole_camera_model.h>
 
 #include <gazebo_msgs/SpawnModel.h>
 #include <gazebo_msgs/DeleteModel.h>
@@ -29,6 +31,10 @@
 #include <boost/archive/text_iarchive.hpp>
 
 #include <pcl/kdtree/kdtree_flann.h>
+
+#include <cv_bridge/cv_bridge.h>
+
+#include <relevance_map/cnn_features.h>
 
 namespace ip = image_processing;
 
@@ -521,6 +527,93 @@ void write_data(const std::string& file, std::string content){
     }
     ofs << content;
     ofs.close();
+}
+
+void camera_info_to_proj_matrix(const sensor_msgs::CameraInfo& cam_info,
+                                 Eigen::Matrix4f& trans_mat){
+
+    trans_mat << cam_info.P[0], cam_info.P[1], cam_info.P[2], cam_info.P[3],
+                 cam_info.P[4], cam_info.P[5], cam_info.P[6], cam_info.P[7],
+                 cam_info.P[8], cam_info.P[9], cam_info.P[10], cam_info.P[11],
+                             0,             0,              0,              1;
+
+}
+
+void compute_patch_coordinates(const ip::PointCloudT::Ptr cloud, Eigen::Vector4i& coord
+                               , const Eigen::Matrix4f &cam_model, bool square){
+
+
+    cv::Point tmpPt;
+    Eigen::Vector4f pt, vec;
+    // Initialization
+    pt = Eigen::Vector4f(cloud->points[0].x, cloud->points[0].y, cloud->points[0].z, 1);
+    vec = cam_model * pt;
+    tmpPt =  cv::Point(round(vec[0] / vec[2]), round(vec[1] / vec[2]));
+    coord[0] = tmpPt.x;
+    coord[1] = tmpPt.x;
+    coord[2] = tmpPt.y;
+    coord[3] = tmpPt.y;
+    // Iterate on every voxels of the cloud.
+    for (ip::PointCloudT::iterator pts = cloud->begin(); pts != cloud->end(); ++pts)
+    {
+        pt = Eigen::Vector4f(pts->x, pts->y, pts->z, 1);
+        vec = cam_model * pt;
+        tmpPt =  cv::Point(round(vec[0] / vec[2]), round(vec[1] / vec[2]));
+
+        coord[0] = std::min(coord[0], tmpPt.x);
+        coord[1] = std::max(coord[1], tmpPt.x);
+        coord[2] = std::min(coord[2], tmpPt.y);
+        coord[3] = std::max(coord[3], tmpPt.y);
+    }
+    // Make the patch square (for further processing requiring images of same dimensions.
+    if (square)
+    {
+        int width = coord[1] - coord[0];
+        int height = coord[3] - coord[2];
+        if (height > width)
+        {
+            coord[0] -= (height - width)/2;
+            coord[1] += (height - width)/2 + (height - width)%2;
+        }
+        else if (height < width)
+        {
+            coord[2] -= (width - height)/2;
+            coord[3] += (width - height)/2 + (width - height)%2;
+        }
+    }
+}
+
+void compute_cnn_features(std::unique_ptr<ros::ServiceClient>& serv,
+                          const cv_bridge::CvImage& image,
+                          ip::SurfaceOfInterest& soi,
+                          const Eigen::Matrix4f& projection_m){
+    cnn_features msg;
+    Eigen::Vector4i bounding_rect;
+    int x, y, w, h;
+    cv::Mat img = image.image;
+    for(const auto& supervoxel : soi.getSupervoxels()){
+        compute_patch_coordinates(supervoxel.second->voxels_, bounding_rect, projection_m, true);
+
+        //Take the part of image corresponding to the bounding_rect
+        x = std::max(bounding_rect[0] - 1, 0);
+        y = std::max(bounding_rect[2] - 1, 0);
+        w = (bounding_rect[1] + 1) >= img.cols ? (img.cols - x) : (bounding_rect[1] - x + 1);
+        h = (bounding_rect[3] + 1) >= img.rows ? (img.rows - y) : (bounding_rect[3] - y + 1);
+        cv::Rect patch_rect(x, y, w, h);
+        cv::Mat patch_image = img(patch_rect);
+
+        cv_bridge::CvImage converter(image.header,image.encoding,patch_image);
+
+        msg.request.supervoxel = *(converter.toImageMsg());
+
+        if(serv->call(msg)){
+
+            Eigen::VectorXd feat(msg.response.feature.size());
+            for(size_t i = 0; i < msg.response.feature.size(); i++ )
+                feat(i) = msg.response.feature[i];
+            soi.set_feature("cnn",supervoxel.first,feat);
+        }
+    }
 }
 
 }
