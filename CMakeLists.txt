@@ -58,10 +58,10 @@ set(image_processing_LIBRARIES ${LOCAL_LIB_DIR}/lib/libimage_processing.so)
 #)
 
 ## Generate services in the 'srv' folder
-#add_service_files(
-#        FILES
-#        is_moving.srv
-#)
+add_service_files(
+        FILES
+        cnn_features.srv
+)
 
 ## Generate actions in the 'action' folder
 #add_action_files(
@@ -70,13 +70,11 @@ set(image_processing_LIBRARIES ${LOCAL_LIB_DIR}/lib/libimage_processing.so)
 #)
 
 ## Generate added messages and services with any dependencies listed here
-#generate_messages(
-#        DEPENDENCIES
-#        std_msgs
-#        sensor_msgs
-#        actionlib_msgs
-#        geometry_msgs
-#)
+generate_messages(
+        DEPENDENCIES
+        std_msgs
+        sensor_msgs
+)
 
 catkin_package(
         INCLUDE_DIRS include
@@ -100,6 +98,7 @@ install(DIRECTORY include/rgbd_utils
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}/..)
 
 add_library(${PROJECT_NAME} ${SRC_FILES})
+add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} rgbd_utils)
 
 

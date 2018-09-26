@@ -53,8 +53,9 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
         std::vector<std::shared_ptr<ros::Publisher>> vect;
         for(int i = 0; i < _nbr_class; i++){
             vect.push_back(std::shared_ptr<ros::Publisher>(
-                               new ros::Publisher(nh->advertise<sensor_msgs::PointCloud2>
-                                                  ("weighted_color_cloud_"+std::to_string(i)+"_"+mod.first, 5))));
+                               new ros::Publisher(
+                                   nh->advertise<sensor_msgs::PointCloud2>
+                                   ("weighted_color_cloud_"+std::to_string(i)+"_"+mod.first, 5))));
         }
         _weighted_cloud_pub.emplace(mod.first,vect);
     }
@@ -63,17 +64,22 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
         std::vector<std::shared_ptr<ros::Publisher>> vect;
         for(int i = 0; i < _nbr_class; i++){
             vect.push_back(std::shared_ptr<ros::Publisher>(
-                               new ros::Publisher(nh->advertise<sensor_msgs::PointCloud2>
-                                                  ("weighted_color_cloud_"+std::to_string(i)+"_mcs", 5))));
+                               new ros::Publisher(
+                                   nh->advertise<sensor_msgs::PointCloud2>
+                                   ("weighted_color_cloud_"+std::to_string(i)+"_mcs", 5))));
         }
         _weighted_cloud_pub.emplace("merge",vect);
     }
 
-    _input_cloud_pub.reset(new ros::Publisher(nh->advertise<sensor_msgs::PointCloud2>("input_cloud",5)));
+    _input_cloud_pub.reset(new ros::Publisher(
+                               nh->advertise<sensor_msgs::PointCloud2>("input_cloud",5)));
 
 
-    _choice_dist_cloud_pub.reset(new ros::Publisher(nh->advertise<sensor_msgs::PointCloud2>("choice_dist_cloud",5)));
+    _choice_dist_cloud_pub.reset(new ros::Publisher(
+                                 nh->advertise<sensor_msgs::PointCloud2>("choice_dist_cloud",5)));
 
+    _cnn_features_client.reset(new ros::ServiceClient(
+                             nh->serviceClient<cnn_features>("cnn_feature")));
 
     _soi.init<sv_param>();
 
@@ -100,7 +106,8 @@ void relevance_map_node::init_classifiers(const std::string &folder_name){
             std::map<std::string,iagmm::GMM::Ptr> gmms;
             for(const auto& mod: _modalities){
                 gmms.emplace(mod.first,iagmm::GMM::Ptr(new iagmm::GMM(mod.second,_nbr_class)));
-                _mcs = iagmm::MCS(gmms,iagmm::combinatorial::fct_map.at("sum"),iagmm::param_estimation::fct_map.at("linear"));
+                _mcs = iagmm::MCS(gmms,iagmm::combinatorial::fct_map.at("sum"),
+                                  iagmm::param_estimation::fct_map.at("linear"));
             }
         }
     }
@@ -145,7 +152,8 @@ bool relevance_map_node::retrieve_input_cloud(ip::PointCloudT::Ptr cloud){
 
 }
 
-bool relevance_map_node::_compute_supervoxels(const ip::PointCloudT::Ptr input_cloud, bool with_workspace){
+bool relevance_map_node::_compute_supervoxels(const ip::PointCloudT::Ptr input_cloud,
+                                              bool with_workspace){
     _soi.clear<sv_param>();
     _soi.setInputCloud(input_cloud);
 
@@ -175,7 +183,14 @@ bool relevance_map_node::_compute_relevance_map(){
         for(auto& classifier: _nnmap_class){
            _soi.init_weights(classifier.first,2,.5);
            classifier.second.default_estimation = .5;
-           _soi.compute_feature(classifier.first);
+           if(classifier.first == "cnn"){
+                Eigen::Matrix4f projection_matrix;
+                camera_info_to_proj_matrix(_images_sub->get_rgb_info(),projection_matrix);
+                compute_cnn_features(_cnn_features_client,
+                                     *(cv_bridge::toCvCopy(_images_sub->get_rgb(),"rgb8")),
+                                     _soi,projection_matrix);
+           }else
+               _soi.compute_feature(classifier.first);
            ROS_INFO_STREAM("Computing features finish for " << classifier.first << ", time spent : "
                                           << std::chrono::duration_cast<std::chrono::milliseconds>(
                                               std::chrono::system_clock::now() - timer2).count());
@@ -189,7 +204,14 @@ bool relevance_map_node::_compute_relevance_map(){
     }
     if(_method == "gmm"){ // Use Collaborative Mixture Models
         for(auto& classifier: _gmm_class){
-           _soi.compute_feature(classifier.first);
+            if(classifier.first == "cnn"){
+                 Eigen::Matrix4f projection_matrix;
+                 camera_info_to_proj_matrix(_images_sub->get_rgb_info(),projection_matrix);
+                 compute_cnn_features(_cnn_features_client,
+                                      *(cv_bridge::toCvCopy(_images_sub->get_rgb(),"rgb8")),
+                                      _soi,projection_matrix);
+            }else
+                _soi.compute_feature(classifier.first);
            ROS_INFO_STREAM("Computing features finish for " << classifier.first << ", time spent : "
                                           << std::chrono::duration_cast<std::chrono::milliseconds>(
                                               std::chrono::system_clock::now() - timer2).count());
@@ -204,7 +226,14 @@ bool relevance_map_node::_compute_relevance_map(){
     }
     if(_method == "mcs"){ //Use Multi Classifier System with GMM
         for(const auto& classifier: _mcs.access_classifiers()){
-            _soi.compute_feature(classifier.first);
+            if(classifier.first == "cnn"){
+                 Eigen::Matrix4f projection_matrix;
+                 camera_info_to_proj_matrix(_images_sub->get_rgb_info(),projection_matrix);
+                 compute_cnn_features(_cnn_features_client,
+                                      *(cv_bridge::toCvCopy(_images_sub->get_rgb(),"rgb8")),
+                                      _soi,projection_matrix);
+            }else
+                _soi.compute_feature(classifier.first);
             ROS_INFO_STREAM("Computing features finish for " << classifier.first << ", time spent : "
                                           << std::chrono::duration_cast<std::chrono::milliseconds>(
                                               std::chrono::system_clock::now() - timer2).count());
