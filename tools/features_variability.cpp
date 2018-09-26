@@ -6,6 +6,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <eigen3/Eigen/Core>
 #include <pcl/octree/octree_search.h>
+#include <relevance_map/utilities.hpp>
 
 namespace rm = relevance_map;
 namespace ip = image_processing;
@@ -18,22 +19,25 @@ typedef struct data_stats_t{
     int nb_samples;
 } data_stats_t;
 
-class features_variablity : public rm::relevance_map_node
+class features_variability : public rm::relevance_map_node
 {
 
 public:
-    features_variablity(){
+    features_variability() : rm::relevance_map_node(){
         XmlRpc::XmlRpcValue params;
+        XmlRpc::XmlRpcValue wks_params;
         _nh.getParam("params",params);
+        _nh.getParam("workspace",wks_params);
+        rm::init_workspace(wks_params,_workspace);
 
         _images_sub.reset(new rgbd_utils::RGBD_Subscriber(
-                            static_cast<std::string>(params["rgb_info"]),
-                            static_cast<std::string>(params["rgb_topic"]),
-                            static_cast<std::string>(params["depth_info"]),
-                            static_cast<std::string>(params["depth_topic"]),_nh));
+                            params["rgb_info"],
+                            params["rgb_topic"],
+                            params["depth_info"],
+                            params["depth_topic"],_nh));
 
         _modality = static_cast<std::string>(params["modality"]);
-        _nbr_iteration = std::stod(params["number_of_iteration"]);
+        _nbr_iteration = (int) params["number_of_iteration"];
 
         _octree.reset(new pcl::octree::OctreePointCloudSearch<pcl::PointXYZ>(128.0f));
 
@@ -43,14 +47,17 @@ public:
 
 
     void update(){
-        ip::PointCloudT::Ptr input_cloud;
+
+        std::cout << "iteration " << _iteration << std::endl;
+
+        ip::PointCloudT::Ptr input_cloud(new ip::PointCloudT);
         if(!retrieve_input_cloud(input_cloud))
             return;
 
-        ip::SurfaceOfInterest soi;
-        soi.compute_feature(_modality);
+        _compute_supervoxels(input_cloud);
+        _soi.compute_feature(_modality);
 
-        ip::SupervoxelArray supervoxels = soi.getSupervoxels();
+        ip::SupervoxelArray supervoxels = _soi.getSupervoxels();
 
         if(_iteration == 0){
             _base_cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
@@ -61,19 +68,23 @@ public:
                 coord.z = sv.second->centroid_.z;
                 _base_cloud->push_back(coord);
                 data_stats_t stat;
-                stat.mean = soi.get_feature(sv.first,_modality);
-                stat.covariance = Eigen::MatrixXd::Zero(stat.mean.rows(),stat.mean.cols());
+                stat.mean = _soi.get_feature(sv.first,_modality);
+                stat.covariance = Eigen::MatrixXd::Zero(stat.mean.rows(),stat.mean.rows());
                 stat.nb_samples = 1;
                 _statistics.push_back(stat);
             }
             _octree->setInputCloud(_base_cloud);
+            _octree->addPointsFromInputCloud();
             _iteration++;
             return;
         }
 
-        int N;
+
+        std::cout << "computing mean and variance" << std::endl;
+        double N;
         Eigen::VectorXd X;
         Eigen::VectorXd mean;
+        Eigen::MatrixXd covariance;
         for(const auto& sv : supervoxels){
             pcl::PointXYZ coord;
             coord.x = sv.second->centroid_.x;
@@ -83,19 +94,25 @@ public:
             std::vector<float> dist;
             _octree->nearestKSearch(coord,1,index,dist);
 
+            X = _soi.get_feature(sv.first,_modality);
+            mean = _statistics[index[0]].mean;
+            covariance = _statistics[index[0]].covariance;
 
-            std::cout << "actual centroid " << coord
-                      << " centroid found in map " << _base_cloud->at(index[0]) << std::endl;
-
-            X = soi.get_feature(sv.first,_modality);
             _statistics[index[0]].nb_samples++;
             N = _statistics[index[0]].nb_samples;
-            _statistics[index[0]].mean = 1/N*X +
-                    (N-1)/N*_statistics[index[0]].mean;
+            _statistics[index[0]].mean = 1.f/N*X + (N-1.f)/N*mean;
+
             mean = _statistics[index[0]].mean;
-            _statistics[index[0]].covariance =  (N - 2)/(N - 1)*_statistics[index[0]].covariance +
-                    N/((N-1)*(N-1))*(X-mean)*(X-mean).transpose();
+
+
+            _statistics[index[0]].covariance =  (N - 2.f)/(N - 1.f)*covariance +
+                    N/((N-1.f)*(N-1.f))*(X-mean)*(X-mean).transpose();
+
+
         }
+
+
+
 
         _iteration++;
     }
@@ -104,6 +121,8 @@ public:
 
 
     void build_variance_cloud(){
+        std::cout << "building variance cloud" << std::endl;
+        _variance_cloud.clear();
         for(size_t i = 0; i < _statistics.size(); i++){
             pcl::PointXYZI pt;
             pt.x = _base_cloud->at(i).x;
@@ -122,6 +141,7 @@ public:
         sensor_msgs::PointCloud2 cloud_msg;
         pcl::toROSMsg(_variance_cloud,cloud_msg);
 
+        cloud_msg.header = _images_sub->get_depth().header;
         _var_pub->publish(cloud_msg);
     }
 
@@ -140,13 +160,13 @@ int main(int argc, char** argv){
 
     ros::init(argc,argv,"features_variability");
 
-    features_variablity fv;
+    features_variability fv;
 
     while(ros::ok() && !fv.is_finish()){
         fv.update();
         fv.build_variance_cloud();
         fv.publish_results();
-        usleep(10000);
+//        usleep(10000);
         ros::spinOnce();
     }
 

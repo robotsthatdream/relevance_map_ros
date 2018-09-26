@@ -128,7 +128,8 @@ bool relevance_map_node::retrieve_input_cloud(ip::PointCloudT::Ptr cloud){
                 new sensor_msgs::CameraInfo(_images_sub->get_rgb_info()));
 
     if(depth_msg->data.empty() || rgb_msg->data.empty()){
-        ROS_ERROR_STREAM("Waiting for input images");
+        ROS_ERROR_STREAM("Waiting for input images : depth " <<  !depth_msg->data.empty()
+                         << "; rgb " << !rgb_msg->data.empty());
         return false;
     }
 
@@ -136,7 +137,7 @@ bool relevance_map_node::retrieve_input_cloud(ip::PointCloudT::Ptr cloud){
     sensor_msgs::PointCloud2 cloud_msg = converter.get_pointcloud();
 
     cloud_msg.header = depth_msg->header;
-    _input_cloud_pub->publish(cloud_msg);
+//    _input_cloud_pub->publish(cloud_msg);
 
     pcl::fromROSMsg(cloud_msg,*cloud);
 

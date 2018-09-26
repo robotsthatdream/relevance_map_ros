@@ -1,16 +1,31 @@
 <launch>
-    <arg name="ns" default=""/>
     <arg name="exec_name" default="features_variability"/>
     
-    <node name="$(arg exec_name)" pkg="dream_babbling" type="$(arg exec_name)" output="log" launch-prefix="terminator -x">        
-        <rosparam ns="params">
-            rgb_info: ""
-            rgb_topic: ""
-            depth_topic: ""
-            depth_info: ""
-            modality: ""
-            number_of_iteration: ""
-	    output_file: ""       
-        </rosparam>
-    </node>
+    <rosparam ns="params" subst_value="True">
+        rgb_topic: "/kinect2/qhd/image_color"
+        rgb_info: "/kinect2/qhd/camera_info"
+        depth_topic: "/kinect2/qhd/image_depth_rect"
+        depth_info: "/kinect2/qhd/camera_info"
+        modality: "centralFPFHLabHist"
+        number_of_iteration: 400
+    </rosparam>
+
+    <rosparam ns="workspace" subst_value="True">
+        sphere:
+            x: 0.
+            y: 0.
+            z: 1.
+            radius: 10.
+            threshold: 0.35
+        csg_intersect_cuboid:
+            x_min: -0.45
+            x_max: 0.2
+            y_min: -0.3
+            y_max: 0.2
+            z_min: -0.5
+            z_max: 1.3       
+    </rosparam>
+
+    <node name="$(arg exec_name)" pkg="relevance_map" type="$(arg exec_name)" output="screen"/>          
+    
 </launch>
