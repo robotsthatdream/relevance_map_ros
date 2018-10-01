@@ -539,9 +539,9 @@ void camera_info_to_proj_matrix(const sensor_msgs::CameraInfo& cam_info,
 
 }
 
-void compute_patch_coordinates(const ip::PointCloudT::Ptr cloud, Eigen::Vector4i& coord
-                               , const Eigen::Matrix4f &cam_model, bool square){
-
+void compute_patch_coordinates(const ip::PointCloudT::Ptr cloud, Eigen::Vector4i& coord,
+                               const Eigen::Matrix4f &cam_model,
+                               bool square, int min_width, int min_height){
 
     cv::Point tmpPt;
     Eigen::Vector4f pt, vec;
@@ -553,6 +553,7 @@ void compute_patch_coordinates(const ip::PointCloudT::Ptr cloud, Eigen::Vector4i
     coord[1] = tmpPt.x;
     coord[2] = tmpPt.y;
     coord[3] = tmpPt.y;
+
     // Iterate on every voxels of the cloud.
     for (ip::PointCloudT::iterator pts = cloud->begin(); pts != cloud->end(); ++pts)
     {
@@ -565,11 +566,24 @@ void compute_patch_coordinates(const ip::PointCloudT::Ptr cloud, Eigen::Vector4i
         coord[2] = std::min(coord[2], tmpPt.y);
         coord[3] = std::max(coord[3], tmpPt.y);
     }
+
+
+    int width = coord[1] - coord[0];
+    int height = coord[3] - coord[2];
+    if(width < min_width){
+        coord[0] = coord[0] - (min_width - width)/2;
+        coord[1] = coord[1] + (min_width - width)/2;
+    }
+    if(height < min_height){
+        coord[2] = coord[2] - (min_height - height)/2;
+        coord[3] = coord[3] + (min_height - height)/2;
+    }
+
     // Make the patch square (for further processing requiring images of same dimensions.
     if (square)
     {
-        int width = coord[1] - coord[0];
-        int height = coord[3] - coord[2];
+        width = coord[1] - coord[0];
+        height = coord[3] - coord[2];
         if (height > width)
         {
             coord[0] -= (height - width)/2;
@@ -594,7 +608,8 @@ void compute_cnn_features(std::unique_ptr<ros::ServiceClient>& serv,
     int x, y, w, h;
     cv::Mat img = image.image;
     for(const auto& supervoxel : soi.getSupervoxels()){
-        compute_patch_coordinates(supervoxel.second->voxels_, bounding_rect, projection_m, true);
+        compute_patch_coordinates(supervoxel.second->voxels_,
+                                  bounding_rect, projection_m, true,128,128);
 
         //Take the part of image corresponding to the bounding_rect
         x = std::max(bounding_rect[0] - 1, 0);
