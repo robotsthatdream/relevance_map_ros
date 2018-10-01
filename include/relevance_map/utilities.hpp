@@ -587,6 +587,8 @@ void compute_cnn_features(std::unique_ptr<ros::ServiceClient>& serv,
                           const cv_bridge::CvImage& image,
                           ip::SurfaceOfInterest& soi,
                           const Eigen::Matrix4f& projection_m){
+    ROS_INFO_STREAM("Start computing cnn features");
+
     cnn_features msg;
     Eigen::Vector4i bounding_rect;
     int x, y, w, h;
@@ -612,8 +614,9 @@ void compute_cnn_features(std::unique_ptr<ros::ServiceClient>& serv,
             for(size_t i = 0; i < msg.response.feature.size(); i++ )
                 feat(i) = msg.response.feature[i];
             soi.set_feature("cnn",supervoxel.first,feat);
-        }
+        }else ROS_ERROR_STREAM("Unable to call service : " << serv->getService());
     }
+    ROS_INFO_STREAM("Finish computing cnn features");
 }
 
 }

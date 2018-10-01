@@ -79,7 +79,7 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
                                  nh->advertise<sensor_msgs::PointCloud2>("choice_dist_cloud",5)));
 
     _cnn_features_client.reset(new ros::ServiceClient(
-                             nh->serviceClient<cnn_features>("cnn_feature")));
+                             nh->serviceClient<cnn_features>("cnn_features")));
 
     _soi.init<sv_param>();
 
@@ -210,8 +210,7 @@ bool relevance_map_node::_compute_relevance_map(){
                  compute_cnn_features(_cnn_features_client,
                                       *(cv_bridge::toCvCopy(_images_sub->get_rgb(),"rgb8")),
                                       _soi,projection_matrix);
-            }else
-                _soi.compute_feature(classifier.first);
+            }else _soi.compute_feature(classifier.first);
            ROS_INFO_STREAM("Computing features finish for " << classifier.first << ", time spent : "
                                           << std::chrono::duration_cast<std::chrono::milliseconds>(
                                               std::chrono::system_clock::now() - timer2).count());
