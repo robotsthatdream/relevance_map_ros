@@ -97,7 +97,7 @@ void relevance_map_node::init_classifiers(const std::string &folder_name){
         _gmm_class.clear();
         if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs))
             for(const auto& mod : _modalities)
-                _gmm_class.emplace(mod.first,iagmm::GMM(mod.second,_nbr_class));
+                _gmm_class.emplace(mod.first,iagmm::GMM(mod.second,_nbr_class,4));
         for(auto& gmm: _gmm_class)
             gmm.second.set_loglikelihood_driver(false);
     }
