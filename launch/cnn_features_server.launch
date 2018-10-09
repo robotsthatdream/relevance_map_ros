@@ -1,0 +1,4 @@
+<launch>
+	<arg name="namespace" default="cnn_features_server"/>
+	<node name="cnn_features_server" pkg="relevance_map" type="cnn_features_serv.py" ns="$(arg namespace)" output="screen"/>
+</launch>

@@ -1,3 +1,4 @@
-sensor_msgs/Image supervoxel 
+sensor_msgs/Image[] supervoxels
 ---
-float32[] feature
+float32[] features
+int32 dimension

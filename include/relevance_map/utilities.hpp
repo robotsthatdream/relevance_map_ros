@@ -570,31 +570,53 @@ void compute_patch_coordinates(const ip::PointCloudT::Ptr cloud, Eigen::Vector4i
 
     int width = coord[1] - coord[0];
     int height = coord[3] - coord[2];
-    if(width < min_width){
-        coord[0] = coord[0] - (min_width - width)/2;
-        coord[1] = coord[1] + (min_width - width)/2;
-    }
-    if(height < min_height){
-        coord[2] = coord[2] - (min_height - height)/2;
-        coord[3] = coord[3] + (min_height - height)/2;
+
+    int diff_w = (min_width - width);
+    int diff_h = (min_height - height);
+//    std::cout << diff_w << " " << diff_h << std::endl;
+    if(diff_w){
+        if(diff_w%2 == 0){
+            coord[0] = coord[0] - diff_w/2;
+            coord[1] = coord[1] + diff_w/2;
+        }else{
+            coord[0] = coord[0] - diff_w/2;
+            coord[1] = coord[1] + diff_w/2 + 1*diff_w/abs(diff_w);
+        }
     }
 
-    // Make the patch square (for further processing requiring images of same dimensions.
-    if (square)
-    {
-        width = coord[1] - coord[0];
-        height = coord[3] - coord[2];
-        if (height > width)
-        {
-            coord[0] -= (height - width)/2;
-            coord[1] += (height - width)/2 + (height - width)%2;
-        }
-        else if (height < width)
-        {
-            coord[2] -= (width - height)/2;
-            coord[3] += (width - height)/2 + (width - height)%2;
+    if(diff_h){
+        if(diff_h%2 == 0){
+            coord[2] = coord[2] - diff_h/2;
+            coord[3] = coord[3] + diff_h/2;
+        }else{
+            coord[2] = coord[2] - diff_h/2;
+            coord[3] = coord[3] + diff_h/2 + 1*diff_h/abs(diff_h);
         }
     }
+    if(coord[1] - coord[0] != min_width){
+        std::cout << "diff_w " <<  diff_w << std::endl;
+    }
+    if(coord[3] - coord[2] != min_height){
+        std::cout << "diff_h " <<  diff_h << std::endl;
+    }
+
+
+//    // Make the patch square (for further processing requiring images of same dimensions.
+//    if (square)
+//    {
+//        width = coord[1] - coord[0];
+//        height = coord[3] - coord[2];
+//        if (height > width)
+//        {
+//            coord[0] -= (height - width)/2;
+//            coord[1] += (height - width)/2 + (height - width)%2;
+//        }
+//        else if (height < width)
+//        {
+//            coord[2] -= (width - height)/2;
+//            coord[3] += (width - height)/2 + (width - height)%2;
+//        }
+//    }
 }
 
 void compute_cnn_features(std::unique_ptr<ros::ServiceClient>& serv,
@@ -607,30 +629,47 @@ void compute_cnn_features(std::unique_ptr<ros::ServiceClient>& serv,
     Eigen::Vector4i bounding_rect;
     int x, y, w, h;
     cv::Mat img = image.image;
+    std::vector<uint32_t> lbls;
     for(const auto& supervoxel : soi.getSupervoxels()){
         compute_patch_coordinates(supervoxel.second->voxels_,
                                   bounding_rect, projection_m, true,128,128);
 
         //Take the part of image corresponding to the bounding_rect
-        x = std::max(bounding_rect[0] - 1, 0);
-        y = std::max(bounding_rect[2] - 1, 0);
-        w = (bounding_rect[1] + 1) >= img.cols ? (img.cols - x) : (bounding_rect[1] - x + 1);
-        h = (bounding_rect[3] + 1) >= img.rows ? (img.rows - y) : (bounding_rect[3] - y + 1);
+        if((bounding_rect[1]) >= img.cols)
+            bounding_rect[0] = bounding_rect[0] - ((bounding_rect[1]) - img.cols + 1);
+        if((bounding_rect[3]) >= img.rows)
+            bounding_rect[2] = bounding_rect[2] - ((bounding_rect[3]) - img.rows + 1);
+
+        x = std::max(bounding_rect[0], 0);
+        y = std::max(bounding_rect[2], 0);
+//        w = (bounding_rect[1]) >= img.cols ? (img.cols - x) : (bounding_rect[1] - x);
+//        h = (bounding_rect[3]) >= img.rows ? (img.rows - y) : (bounding_rect[3] - y);
+        w = 128;
+        h = 128;
         cv::Rect patch_rect(x, y, w, h);
         cv::Mat patch_image = img(patch_rect);
 
         cv_bridge::CvImage converter(image.header,image.encoding,patch_image);
 
-        msg.request.supervoxel = *(converter.toImageMsg());
-
-        if(serv->call(msg)){
-
-            Eigen::VectorXd feat(msg.response.feature.size());
-            for(size_t i = 0; i < msg.response.feature.size(); i++ )
-                feat(i) = msg.response.feature[i];
-            soi.set_feature("cnn",supervoxel.first,feat);
-        }else ROS_ERROR_STREAM("Unable to call service : " << serv->getService());
+        msg.request.supervoxels.push_back(*(converter.toImageMsg()));
+        lbls.push_back(supervoxel.first);
     }
+
+
+    if(serv->call(msg)){
+
+        int j = 0;
+        Eigen::VectorXd feat(msg.response.dimension);
+        for(size_t i = 0; i < msg.response.features.size(); i++){
+            feat(j) = msg.response.features[i];
+            j++;
+            if(j%msg.response.dimension == 0){
+                j = 0;
+                soi.set_feature("cnn",lbls[i/msg.response.dimension],feat);
+            }
+        }
+    }else ROS_ERROR_STREAM("Unable to call service : " << serv->getService());
+
     ROS_INFO_STREAM("Finish computing cnn features");
 }
 
