@@ -64,6 +64,8 @@ public:
     double get_threshold(){return _threshold;}
     int get_nbr_class(){return _nbr_class;}
 
+    void set_nbr_max_comp(int n){_nbr_max_comp = n;}
+
     std::map<std::string,iagmm::NNMap> _nnmap_class; /**< nnmap classifiers */
     std::map<std::string,iagmm::GMM> _gmm_class; /**< gmm classifiers */
     iagmm::MCS _mcs;
@@ -81,6 +83,8 @@ protected:
     int _nbr_class = 2;
     std::map<std::string,int> _modalities;
     std::vector<std::string> _mcs_mod_mapping;
+
+    int _nbr_max_comp = 0;
 
     ip::PointCloudT::Ptr _background;/**< pointcloud of the background. only for export mode */
     bool _background_saved; /**< if the bachground is already saved */
