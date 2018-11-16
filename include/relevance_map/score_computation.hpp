@@ -1,6 +1,7 @@
 #ifndef SCORE_COMPUTATION_HPP
 #define SCORE_COMPUTATION_HPP
 
+
 #include <tbb/tbb.h>
 #include <image_processing/SurfaceOfInterest.h>
 #include <relevance_map/utilities.hpp>
@@ -178,8 +179,28 @@ class score_computation{
                 _lbl = i;
                 _tp = 0; _tn = 0; _fn = 0; _fp = 0; _total_neg = 0; _total_pos = 0;
 
-                tbb::parallel_reduce(tbb::blocked_range<size_t>(0,_node->get_soi().get_weights()[_node->get_modality()].size()),*this);
+//                int w_size =  _node->get_soi().get_weights()[_node->get_modality()].size();
 
+//                double w;
+//                uint32_t lbl;
+//                for(size_t i = 0; i < w_size; ++i){
+//                    w =_weights[_lbls[i]][_lbl];
+//                    lbl = _lbls[i];
+
+//                    if(_lbl == _true_labels.at(lbl) && w >= _node->get_threshold())
+//                        _tp += w;
+//                    else if(_lbl != _true_labels.at(lbl) && w >= _node->get_threshold())
+//                        _fp += w;
+//                    else if(_lbl == _true_labels.at(lbl) && w < _node->get_threshold())
+//                        _fn += (1-w);
+//                    else if(_lbl != _true_labels.at(lbl)  && w < _node->get_threshold())
+//                        _tn += (1-w);
+//                    if(_lbl != _true_labels.at(lbl))
+//                        _total_neg += 1;
+//                    else _total_pos += 1;
+//                }
+
+                tbb::parallel_reduce(tbb::blocked_range<size_t>(0,_node->get_soi().get_weights()[_node->get_modality()].size()),*this);
 
                 precision[i] = _tp / (_tp + _fp);
                 recall[i] = _tp / (_tp + _fn);

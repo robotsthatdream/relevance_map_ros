@@ -34,7 +34,7 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
     _threshold = /*std::stod(exp_params["soi"]["threshold"])*/ 1./(double)_nbr_class;
 
     iagmm::Component::_alpha = std::stod(exp_params["soi"]["alpha"]);
-    iagmm::Component::_outlier_thres = std::stod(exp_params["soi"]["outlier_thres"]);
+    iagmm::Component::_outlier_thres = 0;
 
 
     for(const auto& mod: modalities){
