@@ -246,6 +246,16 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
     return true;
 }
 
+bool load_compo_gmm(const std::string path, iagmm::GMM& gmm){
+    std::ifstream ifs(path);
+    if(!ifs || ifs.peek() == std::ifstream::traits_type::eof())
+        return false;
+    boost::archive::text_iarchive iarch(ifs);
+    iarch >> gmm;
+    ifs.close();
+    return true;
+}
+
 bool load_archive(std::string folder_name, std::queue<std::string> &folder_list){
     std::cout << "load archive : " << folder_name << std::endl;
     if(folder_name.empty())

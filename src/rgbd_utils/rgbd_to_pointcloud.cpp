@@ -163,6 +163,8 @@ void RGBD_to_Pointcloud::_convert(const sensor_msgs::ImageConstPtr& depth_msg,
       else
       {
         // Fill in XYZ
+         if(_with_noise) //Noise would work only for float encoding
+             depth = _noise<T>(depth,_std_dev);
         *iter_x = (u - center_x) * depth * constant_x;
         *iter_y = (v - center_y) * depth * constant_y;
         *iter_z = depth_image_proc::DepthTraits<T>::toMeters(depth);
@@ -176,7 +178,4 @@ void RGBD_to_Pointcloud::_convert(const sensor_msgs::ImageConstPtr& depth_msg,
     }
   }
 }
-
-
-
 

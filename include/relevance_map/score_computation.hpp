@@ -111,7 +111,7 @@ class score_computation{
                 for(int i = 0; i < nbr_class; i++)
                     nbr_comp[i] = 0;
             }
-            else if(_node->get_method() == "gmm"){
+            else if(_node->get_method() == "gmm" || _node->get_method() == "composition"){
                 nb_samples = _node->_gmm_class[_node->get_modality()].get_samples().size();
                 nbr_class = _node->_gmm_class[_node->get_modality()].get_nbr_class();
                 nbr_spl.resize(nbr_class);
@@ -130,7 +130,7 @@ class score_computation{
                 nbr_comp.resize(nbr_class);
                 for(int i = 0; i < nbr_class; i++)
                     nbr_comp[i] = 0;
-            }
+            }else ROS_ERROR_STREAM(_node->get_method() << " unknown relevance map method");
             rand_nb_pos = nb_samples*_total_pos/(_total_pos+_total_neg);
             rand_nb_neg = nb_samples - rand_nb_pos;
 

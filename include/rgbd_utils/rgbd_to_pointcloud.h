@@ -17,6 +17,9 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <cv_bridge/cv_bridge.h>
 
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/normal_distribution.hpp>
+
 
 using namespace message_filters::sync_policies;
 namespace enc = sensor_msgs::image_encodings;
@@ -87,6 +90,9 @@ public:
     const sensor_msgs::Image& get_rgb(){return *_rgb_msg;}
     const sensor_msgs::Image& get_depth(){return *_depth_msg;}
 
+    void set_with_noise(bool b){ _with_noise = b;}
+    void set_std_dev_noise(float stddev){_std_dev = stddev;}
+
 private:
 
     template<typename T>
@@ -95,6 +101,12 @@ private:
                  const sensor_msgs::PointCloud2Ptr& cloud_msg,
                  int red_offset = 0, int green_offset = 1, int blue_offset = 2, int color_step = 3);
 
+
+    template<typename T>
+    T _noise(T value, T std_dev){
+        boost::random::normal_distribution<> dist(value,std_dev);
+        return dist(_gen);
+    }
 
 //    ros::NodeHandlePtr rgb_nh_;
 //    boost::shared_ptr<image_transport::ImageTransport> rgb_it_, depth_it_;
@@ -117,6 +129,9 @@ private:
     sensor_msgs::ImagePtr _depth_msg;
     sensor_msgs::CameraInfoPtr _info_rgb;
 
+    boost::random::mt19937 _gen;
+    bool _with_noise = false;
+    float _std_dev = 0.01;
 };
 
 }

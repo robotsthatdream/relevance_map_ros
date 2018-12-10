@@ -35,16 +35,19 @@ public:
     /**
      * @brief default constructor
      */
-    relevance_map_node(){}
+    relevance_map_node(){
+        srand(time(NULL));
+        _gen.seed(rand());
+    }
     relevance_map_node(const relevance_map_node& rm) :
         _soi(rm._soi), _images_sub(rm._images_sub),
-        _method(rm._method), _mode(rm._mode), _load_exp(rm._load_exp),
+        _method(rm._method), _mode(rm._mode), _load_exp(rm._load_exp), _load_comp(rm._load_comp),
         _modality(rm._modality), _dimension(rm._dimension), _threshold(rm._threshold),
         _nbr_class(rm._nbr_class), _modalities(rm._modalities),
         _mcs_mod_mapping(rm._mcs_mod_mapping),
         _background(rm._background), _background_saved(rm._background_saved),
         _true_labels(rm._true_labels), _choice_map(rm._choice_map),
-        _workspace(rm._workspace)
+        _workspace(rm._workspace), _gen(rm._gen), _composition_gmm(rm._composition_gmm)
     {
 
     }
@@ -53,7 +56,7 @@ public:
     void init_classifiers(const std::string& folder_name);
     void release();
 
-    bool retrieve_input_cloud(ip::PointCloudT::Ptr cloud);
+    bool retrieve_input_cloud(ip::PointCloudT::Ptr cloud, bool with_noise = false, float noise_intensity = 0.);
 
     void publish_feedback();
 
@@ -77,14 +80,20 @@ protected:
     std::string _method; /**< which classifier will be use to compute the saliency map : expert, nnmap, gmm, random or sift */
     std::string _mode; /**< exploration or exploitation mode */
     std::string _load_exp; /**< path to archive of a previous experiment*/
+    std::string _load_comp; /**<path to an archive of classifier to compose with current classifier into training*/
     std::string _modality;
     int _dimension;
     double _threshold = 0.5;
     int _nbr_class = 2;
     std::map<std::string,int> _modalities;
     std::vector<std::string> _mcs_mod_mapping;
+    boost::random::mt19937 _gen;
+
+
 
     int _nbr_max_comp = 0;
+
+    iagmm::GMM _composition_gmm;
 
     ip::PointCloudT::Ptr _background;/**< pointcloud of the background. only for export mode */
     bool _background_saved; /**< if the bachground is already saved */

@@ -21,7 +21,7 @@ public:
 
         _output_file = exp_archive + std::string("/classifier_reeval.yml");
         _method = "gmm";
-        _modality = "meanFPFHLabHist";
+        _modality = "centralFPFHLabHist";
         _modalities.emplace(_modality,0);
 
         rm::load_archive(exp_archive,_iter_list);

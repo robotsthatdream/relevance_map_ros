@@ -28,6 +28,7 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
     _method = static_cast<std::string>(exp_params["soi"]["method"]);
     _mode = static_cast<std::string>(exp_params["soi"]["mode"]);
     _load_exp = static_cast<std::string>(exp_params["soi"]["load_exp"]);
+    _load_comp = static_cast<std::string>(exp_params["soi"]["load_comp"]);
     _modality = static_cast<std::string>(exp_params["soi"]["modality"]);
     _dimension = std::stoi(exp_params["soi"]["dimension"]);
     _nbr_class = 2; /*std::stod(exp_params["soi"]["nbr_class"]);*/
@@ -35,6 +36,7 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
 
     iagmm::Component::_alpha = std::stod(exp_params["soi"]["alpha"]);
     iagmm::Component::_outlier_thres = 0;
+
 
 
     for(const auto& mod: modalities){
@@ -96,10 +98,27 @@ void relevance_map_node::init_classifiers(const std::string &folder_name){
     else if (_method == "gmm"){
         _gmm_class.clear();
         if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs))
-            for(const auto& mod : _modalities)
-                _gmm_class.emplace(mod.first,iagmm::GMM(mod.second,_nbr_class,_nbr_max_comp));
+            for(const auto& mod : _modalities){
+                iagmm::GMM gmm(mod.second,_nbr_class,_nbr_max_comp);
+                _gmm_class.emplace(mod.first,gmm);
+            }
         for(auto& gmm: _gmm_class)
             gmm.second.set_loglikelihood_driver(false);
+    }
+    else if (_method == "composition"){
+        _gmm_class.clear();
+        if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs)){
+            for(const auto& mod : _modalities){
+                iagmm::GMM gmm(mod.second,_nbr_class,_nbr_max_comp);
+                _gmm_class.emplace(mod.first,gmm);
+            }
+        }
+        for(auto& gmm: _gmm_class){
+            gmm.second.set_loglikelihood_driver(false);
+            gmm.second.skip_bootstrap = true;
+        }
+        load_compo_gmm(_load_comp,_composition_gmm);
+        _composition_gmm.skip_bootstrap = true;
     }
     else if (_method == "mcs"){
         if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs)){
@@ -110,7 +129,7 @@ void relevance_map_node::init_classifiers(const std::string &folder_name){
                                   iagmm::param_estimation::fct_map.at("linear"));
             }
         }
-    }
+    }else ROS_ERROR_STREAM(_method << " unknown relevance map method");
 }
 
 void relevance_map_node::release(){
@@ -125,7 +144,7 @@ void relevance_map_node::release(){
 
 }
 
-bool relevance_map_node::retrieve_input_cloud(ip::PointCloudT::Ptr cloud){
+bool relevance_map_node::retrieve_input_cloud(ip::PointCloudT::Ptr cloud, bool with_noise, float noise_intensity){
 
     sensor_msgs::ImageConstPtr depth_msg(
                 new sensor_msgs::Image(_images_sub->get_depth()));
@@ -140,7 +159,13 @@ bool relevance_map_node::retrieve_input_cloud(ip::PointCloudT::Ptr cloud){
         return false;
     }
 
-    rgbd_utils::RGBD_to_Pointcloud converter(depth_msg,rgb_msg,info_msg);
+    rgbd_utils::RGBD_to_Pointcloud converter;
+    converter.set_depth(*depth_msg);
+    converter.set_rgb(*rgb_msg);
+    converter.set_rgb_info(*info_msg);
+    converter.set_with_noise(with_noise);
+    converter.set_std_dev_noise(noise_intensity);
+    converter.convert();
     sensor_msgs::PointCloud2 cloud_msg = converter.get_pointcloud();
 
     cloud_msg.header = depth_msg->header;
@@ -202,8 +227,8 @@ bool relevance_map_node::_compute_relevance_map(){
                                               std::chrono::system_clock::now() - timer2).count());
         }
     }
-    if(_method == "gmm"){ // Use Collaborative Mixture Models
-        for(auto& classifier: _gmm_class){
+    else if(_method == "gmm"){ // Use Collaborative Mixture Models
+        for(const auto& classifier: _gmm_class){
             if(classifier.first == "cnn"){
                  Eigen::Matrix4f projection_matrix;
                  camera_info_to_proj_matrix(_images_sub->get_rgb_info(),projection_matrix);
@@ -223,7 +248,29 @@ bool relevance_map_node::_compute_relevance_map(){
 
         }
     }
-    if(_method == "mcs"){ //Use Multi Classifier System with GMM
+    else if(_method == "composition"){ // Use Collaborative Mixture Models
+        for(const auto& classifier: _gmm_class){
+            if(classifier.first == "cnn"){
+                 Eigen::Matrix4f projection_matrix;
+                 camera_info_to_proj_matrix(_images_sub->get_rgb_info(),projection_matrix);
+                 compute_cnn_features(_cnn_features_client,
+                                      *(cv_bridge::toCvCopy(_images_sub->get_rgb(),"rgb8")),
+                                      _soi,projection_matrix);
+            }else _soi.compute_feature(classifier.first);
+           ROS_INFO_STREAM("Computing features finish for " << classifier.first << ", time spent : "
+                                          << std::chrono::duration_cast<std::chrono::milliseconds>(
+                                              std::chrono::system_clock::now() - timer2).count());
+                          timer2 = std::chrono::system_clock::now();
+
+           _soi.compute_weights<iagmm::GMM>(classifier.first,classifier.second,_composition_gmm);
+           ROS_INFO_STREAM("Computing weights finish for " << classifier.first << ", time spent : "
+                                          << std::chrono::duration_cast<std::chrono::milliseconds>(
+                                              std::chrono::system_clock::now() - timer2).count());
+
+        }
+    }
+
+    else if(_method == "mcs"){ //Use Multi Classifier System with GMM
         for(const auto& classifier: _mcs.access_classifiers()){
             if(classifier.first == "cnn"){
                  Eigen::Matrix4f projection_matrix;
@@ -246,14 +293,17 @@ bool relevance_map_node::_compute_relevance_map(){
                                        std::chrono::system_clock::now() - timer2).count());
 
     }
-    if (_method == "random") { // Use nothing. the choice of the next supervoxel will be random.
+    else if (_method == "random") { // Use nothing. the choice of the next supervoxel will be random.
         _soi.init_weights("random",2);
 
     }
-    if (_method == "expert") { // Use a background substraction.
+    else if (_method == "expert") { // Use a background substraction.
         if (!_soi.generate(_background, *_workspace)) {
             return false;
         }
+    }else {
+        ROS_ERROR_STREAM(_method << " unknown relevance map method");
+        return false;
     }
 //        if (_method == "sift") { // Use SIFT Keypoints.
 //            ip::DescriptorExtraction de(cv_bridge::toCvShare(_images_sub->get_rgbConstPtr())->image, "SIFT");
@@ -310,8 +360,51 @@ bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, ui
                 _choice_map.emplace(lbl_vct[i], choice_dist_map(i));
 
 
-        }
-        else if(_method == "mcs"){
+        }else if(_method == "composition"){
+            std::vector<std::pair<Eigen::VectorXd,std::vector<double>>> samples;
+            Eigen::VectorXd comp_cdm;
+            std::vector<uint32_t> lbl_vct;
+            ip::SurfaceOfInterest::relevance_map_t weights = _soi.get_weights()[_modality];
+            for(const auto& sv : _soi.getSupervoxels()){
+                samples.push_back(std::make_pair(_soi.get_feature(sv.first,_modality),weights[sv.first]));
+                lbl_vct.push_back(sv.first);
+            }
+
+            _gmm_class[_modality].set_distance_function(ip::HistogramFactory::chi_squared_distance);
+            int index = _gmm_class[_modality].next_sample(samples,choice_dist_map);
+
+            boost::random::uniform_int_distribution<> dist_uni(0,samples.size()-1);
+            boost::random::uniform_real_distribution<> distrib(0,1);
+
+//            int index;
+//            double cumul = 0, total = 0;
+//            bool all_zero = true;
+//            for(int i = 0; i < choice_dist_map.rows(); ++i){
+//                all_zero = all_zero && choice_dist_map(i) == 0;
+//                total += choice_dist_map(i);
+//            }
+//            if(all_zero)
+//                index =  dist_uni(_gen);
+//            else{
+//                double rand_nb = distrib(_gen);
+//                for(int i = 0; i < choice_dist_map.rows(); ++i){
+//                    cumul += choice_dist_map(i);
+//                    if(rand_nb < cumul/total){
+//                        index = i;
+//                        break;
+//                    }
+//                }
+//            }
+
+            lbl = lbl_vct[index];
+            sv = *(_soi.getSupervoxels()[lbl]);
+
+            _choice_map.clear();
+            for(int i = 0; i < choice_dist_map.rows(); i++)
+                _choice_map.emplace(lbl_vct[i], choice_dist_map(i));
+
+
+        }else if(_method == "mcs"){
             std::vector<uint32_t> lbl_vct;
 
             std::map<std::string,std::vector<std::pair<Eigen::VectorXd,std::vector<double>>>> samples;
@@ -334,7 +427,8 @@ bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, ui
             sv = *(_soi.getSupervoxels()[lbl]);
 
         }
-        else ROS_ERROR_STREAM("Unknown soi method" << _method);
+        else ROS_ERROR_STREAM(_method << " unknown relevance map method");
+
         // TODO the other modes !
     }
 

@@ -25,9 +25,9 @@ public:
             return;
         }
         _method = "gmm";
-        _modality = "meanFPFHLabHist";
+        _modality = "centralFPFHLabHist";
         boost::archive::text_iarchive iarch(ifs);
-        iarch >> _gmm_class["meanFPFHLabHist"];
+        iarch >> _gmm_class["centralFPFHLabHist"];
     }
 
     bool compute_rm(){
