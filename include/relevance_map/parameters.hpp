@@ -14,7 +14,7 @@ struct sv_param {
     static constexpr double color_importance = 0.2f;
     static constexpr double spatial_importance = 0.4f;
     static constexpr double normal_importance = 0.4f;
-    static constexpr double seed_resolution = 0.08f;
+    static constexpr double seed_resolution = 0.05f;
     //Camera intrisic parameters
     static constexpr float depth_princ_pt_x = 479.75;
     static constexpr float depth_princ_pt_y = 269.75;

@@ -196,7 +196,7 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
         for(const auto& mod : modalities){
             if(split_str[0] == mod.first)
             {
-                if(type == "gmm" && (soi_method == "gmm" || soi_method == "mcs"))
+                if(type == "gmm" && (soi_method == "gmm" || soi_method == "mcs" || soi_method == "composition"))
                     gmm_arch_file.emplace(split_str[0],dir_it->path().string());
                 if(type == "dataset")
                     dataset_file.emplace(split_str[0],dir_it->path().string());
@@ -207,7 +207,7 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
     if(gmm_arch_file.empty() || dataset_file.empty())
         return false;
 
-    if(soi_method == "gmm"){
+    if(soi_method == "gmm" || soi_method == "composition"){
         for(const auto& arch: gmm_arch_file){
             iagmm::GMM gmm;
             std::ifstream ifs(arch.second);
@@ -236,7 +236,7 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
 
     for(const auto& file : dataset_file){
         iagmm::TrainingData data = load_dataset(file.second);
-        if(soi_method == "gmm")
+        if(soi_method == "gmm" || soi_method == "composition")
             gmm_class[file.first].set_samples(data);
         else if(soi_method == "nnmap")
             nnmap_class[file.first].set_samples(data);
