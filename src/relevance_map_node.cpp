@@ -97,13 +97,19 @@ void relevance_map_node::init_classifiers(const std::string &folder_name){
     }
     else if (_method == "gmm"){
         _gmm_class.clear();
-        if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs))
+        if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs)){
             for(const auto& mod : _modalities){
                 iagmm::GMM gmm(mod.second,_nbr_class,_nbr_max_comp);
                 _gmm_class.emplace(mod.first,gmm);
             }
-        for(auto& gmm: _gmm_class)
+        }
+        for(auto& gmm: _gmm_class){
             gmm.second.set_loglikelihood_driver(false);
+            gmm.second.set_max_nb_components(4);
+            gmm.second.use_confidence(true);
+            gmm.second.use_uncertainty(true);
+            gmm.second.use_novelty(false);
+        }
     }
     else if (_method == "composition"){
         _gmm_class.clear();
@@ -115,6 +121,10 @@ void relevance_map_node::init_classifiers(const std::string &folder_name){
         }
         for(auto& gmm: _gmm_class){
             gmm.second.set_loglikelihood_driver(false);
+            gmm.second.set_max_nb_components(4);
+            gmm.second.use_confidence(true);
+            gmm.second.use_uncertainty(true);
+            gmm.second.use_novelty(false);
             gmm.second.skip_bootstrap = true;
         }
         load_compo_gmm(_load_comp,_composition_gmm);
@@ -361,20 +371,24 @@ bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, ui
 
 
         }else if(_method == "composition"){
-            std::vector<std::pair<Eigen::VectorXd,std::vector<double>>> samples;
-            Eigen::VectorXd comp_cdm;
+            std::vector<std::pair<Eigen::VectorXd,std::vector<double>>> samples_est;
+            std::vector<Eigen::VectorXd> samples;
+            Eigen::VectorXd comp_filter;
             std::vector<uint32_t> lbl_vct;
             ip::SurfaceOfInterest::relevance_map_t weights = _soi.get_weights()[_modality];
             for(const auto& sv : _soi.getSupervoxels()){
-                samples.push_back(std::make_pair(_soi.get_feature(sv.first,_modality),weights[sv.first]));
+                Eigen::VectorXd feat = _soi.get_feature(sv.first,_modality);
+                samples_est.push_back(std::make_pair(feat,weights[sv.first]));
                 lbl_vct.push_back(sv.first);
+                samples.push_back(feat);
             }
 
             _gmm_class[_modality].set_distance_function(ip::HistogramFactory::chi_squared_distance);
-            int index = _gmm_class[_modality].next_sample(samples,choice_dist_map);
+            _composition_gmm.estimate_features(samples,comp_filter);
+            int index = _gmm_class[_modality].next_sample(samples_est,choice_dist_map,comp_filter);
 
-            boost::random::uniform_int_distribution<> dist_uni(0,samples.size()-1);
-            boost::random::uniform_real_distribution<> distrib(0,1);
+//            boost::random::uniform_int_distribution<> dist_uni(0,samples.size()-1);
+//            boost::random::uniform_real_distribution<> distrib(0,1);
 
 //            int index;
 //            double cumul = 0, total = 0;
