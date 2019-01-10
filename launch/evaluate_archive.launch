@@ -1,16 +1,13 @@
 <launch>
-	<arg name="name" default="evaluate_archive"/>
-	<arg name="clouds_folder" default=""/>
-	<arg name="evaluate_archive" default =""/>
-	<node name="$(arg name)" pkg="relevance_map" type="evaluate_archive" args="$(arg clouds_folder) $(arg archive_folder)" output="screen"/>
+    <arg name="name" default="evaluate_archive"/>
+    <arg name="clouds_folder" default=""/>
+    <arg name="evaluate_archive" default=""/>
+    <arg name="output_file" default="classifier_reeval.yml"/>
+    <rosparam ns="/eval_arch_param" subst_value="True">
+        output_file: "$(arg output_file)"
+        method: "composition"
+    </rosparam>
+    
+
+    <node name="$(arg name)" pkg="relevance_map" type="evaluate_archive" args="$(arg clouds_folder) $(arg archive_folder)" output="screen"/>
 </launch>
-<!-- <launch>
-	<arg name="cloud_file" default=""/>
-	<arg name="map_file" default=""/>
-	<node name="display_cloud" pkg="pcl_ros" type="pcd_to_pointcloud" args="$(arg cloud_file)">
-		<remap from="cloud_pcd" to="cloud"/>
-	</node>
-	<node name="display_map" pkg="pcl_ros" type="pcd_to_pointcloud" args="$(arg map_file)">
-		<remap from="cloud_pcd" to="map"/>
-	</node>
-</launch> -->

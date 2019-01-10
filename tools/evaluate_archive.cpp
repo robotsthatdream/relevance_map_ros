@@ -15,13 +15,21 @@ namespace rm = relevance_map;
 
 class evaluate_archive : public rm::relevance_map_node{
 public:
-    evaluate_archive(const std::string& clouds_folder, const std::string& exp_archive){
+    evaluate_archive(const std::string& clouds_folder, const std::string& exp_archive, const ros::NodeHandlePtr& nh){
+
+//        initialize(nh);
+
+
 
         load_clouds(clouds_folder);
+        XmlRpc::XmlRpcValue param;
+        nh->getParam("/eval_arch_param", param);
+        std::string output_file = static_cast<std::string>(param["output_file"]);
 
-        _output_file = exp_archive + std::string("/classifier_reeval.yml");
-        _method = "gmm";
+        _output_file = exp_archive + std::string("/") + output_file;
+        _method = static_cast<std::string>(param["method"]);
         _modality = "centralFPFHLabHist";
+        _dimension = 48;
         _modalities.emplace(_modality,0);
 
         rm::load_archive(exp_archive,_iter_list);
@@ -72,6 +80,9 @@ public:
             _progress+=_input_clouds.size()*_backgrounds.size();
             return;
         }
+        if(_method=="composition")
+            rm::load_compo_gmm(_load_comp,_composition_gmm);
+
         _iter_list.pop();
         std::vector<double> p = std::vector<double>(_nbr_class,0),
                 r = std::vector<double>(_nbr_class,0),
@@ -166,12 +177,13 @@ private:
 int main(int argc, char** argv){
 
     ros::init(argc,argv,"evaluate_archive");
+    ros::NodeHandlePtr nh(new ros::NodeHandle);
 
     if(argc != 3){
         ROS_WARN_STREAM("Usage :\n\targ1 : path to a folder containing point cloud pcd files\n\targ2 : archive of a classifier");
         return 1;
     }
-    evaluate_archive ea(argv[1],argv[2]);
+    evaluate_archive ea(argv[1],argv[2],nh);
     while(ros::ok() && !ea.is_finish()){
         ea.run();
         ros::spinOnce();

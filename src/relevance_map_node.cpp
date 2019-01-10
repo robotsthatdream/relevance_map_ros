@@ -32,7 +32,7 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
     _modality = static_cast<std::string>(exp_params["soi"]["modality"]);
     _dimension = std::stoi(exp_params["soi"]["dimension"]);
     _nbr_class = 2; /*std::stod(exp_params["soi"]["nbr_class"]);*/
-    _threshold = /*std::stod(exp_params["soi"]["threshold"])*/ 1./(double)_nbr_class;
+    _threshold = std::stod(exp_params["soi"]["threshold"]); // 1./(double)_nbr_class;
 
     iagmm::Component::_alpha = std::stod(exp_params["soi"]["alpha"]);
     iagmm::Component::_outlier_thres = 0;
@@ -202,7 +202,7 @@ bool relevance_map_node::_compute_relevance_map(){
 
 
     //* compute the relevance map according the method selected
-
+    _soi.init_features();
 
     if (_method == "nnmap"){ // Use a Nearst Neighbor map (only for 2 class problem)
         for(auto& classifier: _nnmap_class){
