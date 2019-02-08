@@ -27,21 +27,26 @@ find_package(PCL REQUIRED)
 find_library(BASE64 NAMES b64)
 
 
+SET(IAGMM_DIR FALSE CACHE STRING "Path to IAGMM.")
+SET(IMAGE_PROCESSING_DIR FALSE CACHE STRING "Path to image_processing.")
+
+message("IAGMM_DIR is ${IAGMM_DIR}")
+
+set(IAGMM_INCLUDE_DIR ${IAGMM_DIR}/include/)
+set(IAGMM_LIBRARIES ${IAGMM_DIR}/lib/libiagmm.so)
+set(image_processing_INCLUDE_DIR ${IMAGE_PROCESSING_DIR}/include/)
+set(image_processing_LIBRARIES ${IMAGE_PROCESSING_DIR}/lib/libimage_processing.so)
+
+
 include_directories(include
 	${PCL_INCLUDE_DIRS}
 	${catkin_INCLUDE_DIRS}
         ${OpencCV_INCLUDE_DIRS}
-BEFORE SYSTEM        ${image_processing_INCLUDE} ${IAGMM_INCLUDE_DIR}
+BEFORE SYSTEM        ${image_processing_INCLUDE_DIR} ${IAGMM_INCLUDE_DIR}
 )
 
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
-
-set(LOCAL_LIB_DIR /usr/local/ CACHE STRING "local libraries directory for iagmm and image_processing")
-set(IAGMM_INCLUDE_DIR ${LOCAL_LIB_DIR}/include/)
-set(IAGMM_LIBRARIES ${LOCAL_LIB_DIR}/lib/libiagmm.so)
-set(image_processing_INCLUDE_DIR ${LOCAL_LIB_DIR}/include/)
-set(image_processing_LIBRARIES ${LOCAL_LIB_DIR}/lib/libimage_processing.so)
 
 ## Generate messages in the 'msg' folder
 #add_message_files(
