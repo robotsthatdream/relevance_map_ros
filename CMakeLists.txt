@@ -67,8 +67,7 @@ BEFORE SYSTEM        ${IMAGE_PROCESSING_INSTALL_TREE}/include "${CMM_INSTALL_TRE
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
-set(image_processing_INCLUDE_DIR ${LOCAL_LIB_DIR}/include/)
-set(image_processing_LIBRARIES ${LOCAL_LIB_DIR}/lib/libimage_processing.so)
+
 
 
 
