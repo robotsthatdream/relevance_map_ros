@@ -34,8 +34,8 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
     _nbr_class = 2; /*std::stod(exp_params["soi"]["nbr_class"]);*/
     _threshold = std::stod(exp_params["soi"]["threshold"]); // 1./(double)_nbr_class;
 
-    iagmm::Component::_alpha = std::stod(exp_params["soi"]["alpha"]);
-    iagmm::Component::_outlier_thres = 0;
+    cmm::Component::_alpha = std::stod(exp_params["soi"]["alpha"]);
+    cmm::Component::_outlier_thres = 0;
 
 
 
@@ -93,13 +93,13 @@ void relevance_map_node::init_classifiers(const std::string &folder_name){
     if(_method == "nnmap"){
         _nnmap_class.clear();
         for(const auto& mod : _modalities)
-            _nnmap_class.emplace(mod.first,iagmm::NNMap(mod.second,.3,0.05));
+            _nnmap_class.emplace(mod.first,cmm::NNMap(mod.second,.3,0.05));
     }
     else if (_method == "gmm"){
         _gmm_class.clear();
         if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs)){
             for(const auto& mod : _modalities){
-                iagmm::GMM gmm(mod.second,_nbr_class,_nbr_max_comp);
+                cmm::CollabMM gmm(mod.second,_nbr_class,_nbr_max_comp);
                 _gmm_class.emplace(mod.first,gmm);
             }
         }
@@ -115,7 +115,7 @@ void relevance_map_node::init_classifiers(const std::string &folder_name){
         _gmm_class.clear();
         if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs)){
             for(const auto& mod : _modalities){
-                iagmm::GMM gmm(mod.second,_nbr_class,_nbr_max_comp);
+                cmm::CollabMM gmm(mod.second,_nbr_class,_nbr_max_comp);
                 _gmm_class.emplace(mod.first,gmm);
             }
         }
@@ -132,11 +132,11 @@ void relevance_map_node::init_classifiers(const std::string &folder_name){
     }
     else if (_method == "mcs"){
         if(!load_experiment(_method,folder_name,_modalities,_gmm_class,_nnmap_class,_mcs)){
-            std::map<std::string,iagmm::GMM::Ptr> gmms;
+            std::map<std::string,cmm::CollabMM::Ptr> gmms;
             for(const auto& mod: _modalities){
-                gmms.emplace(mod.first,iagmm::GMM::Ptr(new iagmm::GMM(mod.second,_nbr_class)));
-                _mcs = iagmm::MCS(gmms,iagmm::combinatorial::fct_map.at("sum"),
-                                  iagmm::param_estimation::fct_map.at("linear"));
+                gmms.emplace(mod.first,cmm::CollabMM::Ptr(new cmm::CollabMM(mod.second,_nbr_class)));
+                _mcs = cmm::MCS(gmms,cmm::combinatorial::fct_map.at("sum"),
+                                  cmm::param_estimation::fct_map.at("linear"));
             }
         }
     }else ROS_ERROR_STREAM(_method << " unknown relevance map method");
@@ -231,7 +231,7 @@ bool relevance_map_node::_compute_relevance_map(){
                                               std::chrono::system_clock::now() - timer2).count());
                           timer2 = std::chrono::system_clock::now();
 
-           _soi.compute_weights<iagmm::NNMap>(classifier.first,classifier.second);
+           _soi.compute_weights<cmm::NNMap>(classifier.first,classifier.second);
            ROS_INFO_STREAM("Computing weights finish for " << classifier.first << ", time spent : "
                                           << std::chrono::duration_cast<std::chrono::milliseconds>(
                                               std::chrono::system_clock::now() - timer2).count());
@@ -251,7 +251,7 @@ bool relevance_map_node::_compute_relevance_map(){
                                               std::chrono::system_clock::now() - timer2).count());
                           timer2 = std::chrono::system_clock::now();
 
-           _soi.compute_weights<iagmm::GMM>(classifier.first,classifier.second);
+           _soi.compute_weights<cmm::CollabMM>(classifier.first,classifier.second);
            ROS_INFO_STREAM("Computing weights finish for " << classifier.first << ", time spent : "
                                           << std::chrono::duration_cast<std::chrono::milliseconds>(
                                               std::chrono::system_clock::now() - timer2).count());
@@ -272,7 +272,7 @@ bool relevance_map_node::_compute_relevance_map(){
                                               std::chrono::system_clock::now() - timer2).count());
                           timer2 = std::chrono::system_clock::now();
 
-           _soi.compute_weights<iagmm::GMM>(classifier.first,classifier.second,_composition_gmm);
+           _soi.compute_weights<cmm::CollabMM>(classifier.first,classifier.second,_composition_gmm);
            ROS_INFO_STREAM("Computing weights finish for " << classifier.first << ", time spent : "
                                           << std::chrono::duration_cast<std::chrono::milliseconds>(
                                               std::chrono::system_clock::now() - timer2).count());
@@ -280,7 +280,7 @@ bool relevance_map_node::_compute_relevance_map(){
         }
     }
 
-    else if(_method == "mcs"){ //Use Multi Classifier System with GMM
+    else if(_method == "mcs"){ //Use Multi Classifier System with CollabMM
         for(const auto& classifier: _mcs.access_classifiers()){
             if(classifier.first == "cnn"){
                  Eigen::Matrix4f projection_matrix;
@@ -295,9 +295,9 @@ bool relevance_map_node::_compute_relevance_map(){
                                               std::chrono::system_clock::now() - timer2).count());
                           timer2 = std::chrono::system_clock::now();
 
-            _soi.compute_weights<iagmm::GMM>(classifier.first,*dynamic_cast<iagmm::GMM*>(classifier.second.get()));
+            _soi.compute_weights<cmm::CollabMM>(classifier.first,*dynamic_cast<cmm::CollabMM*>(classifier.second.get()));
         }
-        _soi.compute_weights<iagmm::MCS>(_mcs);
+        _soi.compute_weights<cmm::MCS>(_mcs);
         ROS_INFO_STREAM("Computing weights finish for mcs, time spent : "
                                    << std::chrono::duration_cast<std::chrono::milliseconds>(
                                        std::chrono::system_clock::now() - timer2).count());

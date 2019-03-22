@@ -15,10 +15,10 @@
 #include <image_processing/SupervoxelSet.h>
 #include <image_processing/SurfaceOfInterest.h>
 
-#include <iagmm/data.hpp>
-#include <iagmm/gmm.hpp>
-#include <iagmm/nnmap.hpp>
-#include <iagmm/mcs.hpp>
+#include <cmm/data.hpp>
+#include <cmm/gmm.hpp>
+#include <cmm/nnmap.hpp>
+#include <cmm/mcs.hpp>
 
 #include <image_geometry/pinhole_camera_model.h>
 
@@ -137,10 +137,10 @@ bool load_models(XmlRpc::XmlRpcValue &params,
     return true;
 }
 
-iagmm::TrainingData load_dataset(const std::string& filename){
+cmm::TrainingData load_dataset(const std::string& filename){
     std::cout << "load dataset : " << filename << std::endl;
 
-    iagmm::TrainingData dataset;
+    cmm::TrainingData dataset;
 
     YAML::Node fileNode = YAML::LoadFile(filename);
     if (fileNode.IsNull()) {
@@ -172,9 +172,9 @@ iagmm::TrainingData load_dataset(const std::string& filename){
 */
 bool load_experiment(const std::string& soi_method, const std::string &folder,
                 const std::map<std::string,int>& modalities,
-                std::map<std::string,iagmm::GMM> &gmm_class,
-                std::map<std::string,iagmm::NNMap> &nnmap_class,
-                iagmm::MCS &mcs){
+                std::map<std::string,cmm::CollabMM> &gmm_class,
+                std::map<std::string,cmm::NNMap> &nnmap_class,
+                cmm::MCS &mcs){
     std::cout << "load experiment : " << folder << std::endl;
     if(folder.empty()){
         std::cerr << folder << " is empty" << std::endl;
@@ -209,7 +209,7 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
 
     if(soi_method == "gmm" || soi_method == "composition"){
         for(const auto& arch: gmm_arch_file){
-            iagmm::GMM gmm;
+            cmm::CollabMM gmm;
             std::ifstream ifs(arch.second);
             if(!ifs || ifs.peek() == std::ifstream::traits_type::eof())
                 return false;
@@ -220,22 +220,22 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
         }
     }
     else if(soi_method == "mcs"){
-        std::map<std::string,iagmm::GMM::Ptr> gmms;
+        std::map<std::string,cmm::CollabMM::Ptr> gmms;
         for(const auto& arch: gmm_arch_file){
-            iagmm::GMM gmm;
+            cmm::CollabMM gmm;
             std::ifstream ifs(arch.second);
             if(!ifs || ifs.peek() == std::ifstream::traits_type::eof())
                 return false;
             boost::archive::text_iarchive iarch(ifs);
             iarch >> gmm;
-            gmms.emplace(arch.first,iagmm::GMM::Ptr(new iagmm::GMM(gmm)));
+            gmms.emplace(arch.first,cmm::CollabMM::Ptr(new cmm::CollabMM(gmm)));
             ifs.close();
         }
-        mcs = iagmm::MCS(gmms,iagmm::combinatorial::fct_map.at("sum"),iagmm::param_estimation::fct_map.at("linear"));
+        mcs = cmm::MCS(gmms,cmm::combinatorial::fct_map.at("sum"),cmm::param_estimation::fct_map.at("linear"));
     }
 
     for(const auto& file : dataset_file){
-        iagmm::TrainingData data = load_dataset(file.second);
+        cmm::TrainingData data = load_dataset(file.second);
         if(soi_method == "gmm" || soi_method == "composition")
             gmm_class[file.first].set_samples(data);
         else if(soi_method == "nnmap")
@@ -246,7 +246,7 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
     return true;
 }
 
-bool load_compo_gmm(const std::string path, iagmm::GMM& gmm){
+bool load_compo_gmm(const std::string path, cmm::CollabMM& gmm){
     std::ifstream ifs(path);
     if(!ifs || ifs.peek() == std::ifstream::traits_type::eof())
         return false;

@@ -59,7 +59,7 @@ private:
     ros::NodeHandle _nh;
     ros::Publisher _rm_pub;
     ros::Publisher _cloud_pub;
-    iagmm::GMM _gmm;
+    cmm::CollabMM _gmm;
 };
 
 int main(int argc, char** argv){

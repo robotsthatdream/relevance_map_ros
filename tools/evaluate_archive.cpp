@@ -166,7 +166,7 @@ private:
     std::vector<ip::PointCloudT::Ptr> _input_clouds;
     std::vector<ip::PointCloudT::Ptr> _backgrounds;
     ros::NodeHandle _nh;
-    iagmm::GMM _gmm;
+    cmm::CollabMM _gmm;
     std::queue<std::string> _iter_list;
     std::string _output_file;
     double _progress;
