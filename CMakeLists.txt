@@ -19,6 +19,7 @@ set(CATKIN_COMMON_COMPONENTS roscpp
                              message_filters
                              geometry_msgs
                              sensor_msgs
+                             depth_image_proc
                             )
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_COMMON_COMPONENTS})
