@@ -22,7 +22,7 @@ set(CATKIN_COMMON_COMPONENTS roscpp
                             )
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_COMMON_COMPONENTS})
-find_package(OpenCV 2.4.8 REQUIRED)
+find_package(OpenCV REQUIRED) # FIXME nice to tell a version range.
 find_package(PCL REQUIRED)
 find_library(BASE64 NAMES b64)
 
