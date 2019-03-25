@@ -6,6 +6,7 @@
     <rosparam ns="/eval_arch_param" subst_value="True">
         output_file: "$(arg output_file)"
         method: "composition"
+        load_comp: "/media/le_goff/Data/ros_home/cafer_db/dream_babbling/archive/aff_map_exp/push/logs/6thseries-svsize-0.5/iteration_289/gmm_archive_centralFPFHLabHist"
     </rosparam>
     
 

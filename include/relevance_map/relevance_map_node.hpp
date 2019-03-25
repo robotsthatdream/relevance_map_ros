@@ -52,74 +52,121 @@ public:
 
     }
 
+    /**
+     * @brief initialize the node : retrieve all the parameter of the ros parameter server and initialise the subscribers, publishers, clients and services.
+     * @param nh : a Nodehandler
+     */
     void initialize(const ros::NodeHandlePtr nh);
+
+    /**
+     * @brief initialize the classifiers
+     * @param name of the folder in which the archive of the classifiers can be found.
+     */
     void init_classifiers(const std::string& folder_name);
+
+    /**
+     * @brief release the memory of the different pointers
+     */
     void release();
 
-    bool retrieve_input_cloud(ip::PointCloudT::Ptr cloud, bool with_noise = false, float noise_intensity = 0.);
+    /**
+     * @brief retrieve the input cloud from the topic of an color and depth stream.
+     * @param The inputcloud
+     * @param True if artificial noise must be added (default at false)
+     * @param the noise intensity
+     * @return true if the pointcloud have been retrieved successfully
+     */
+    bool retrieve_input_cloud(ip::PointCloudT::Ptr cloud, bool with_noise = false,
+                              float noise_intensity = 0.);
 
+    /**
+     * @brief publish visual feedback on topics to be displayed in rviz
+     */
     void publish_feedback();
 
+    //** GETTERS & SETTERS **\\
     const ip::PointCloudT::Ptr get_background(){return _background;}
     ip::SurfaceOfInterest& get_soi(){return _soi;}
     const std::string& get_modality(){return _modality;}
     const std::string& get_method(){return _method;}
     double get_threshold(){return _threshold;}
     int get_nbr_class(){return _nbr_class;}
-
     void set_nbr_max_comp(int n){_nbr_max_comp = n;}
+    //*/
 
     std::map<std::string,iagmm::NNMap> _nnmap_class; /**< nnmap classifiers */
     std::map<std::string,iagmm::GMM> _gmm_class; /**< gmm classifiers */
-    iagmm::MCS _mcs;
+    iagmm::MCS _mcs; /**<the multi classifier system*/
 
 protected:
     rgbd::RGBD_Subscriber::Ptr _images_sub; /**<RGB image, Depth image and camera info subscriber*/
     ip::SurfaceOfInterest _soi;/**<Attribute to compute the saliency map*/
 
-    std::string _method; /**< which classifier will be use to compute the saliency map : expert, nnmap, gmm, random or sift */
-    std::string _mode; /**< exploration or exploitation mode */
-    std::string _load_exp; /**< path to archive of a previous experiment*/
-    std::string _load_comp; /**<path to an archive of classifier to compose with current classifier into training*/
-    std::string _modality;
-    int _dimension;
-    double _threshold = 0.5;
-    int _nbr_class = 2;
-    std::map<std::string,int> _modalities;
-    std::vector<std::string> _mcs_mod_mapping;
-    boost::random::mt19937 _gen;
+    std::string _method; /**<Which classifier will be use to compute the saliency map : expert, nnmap, gmm, random or sift */
+    std::string _mode; /**<Exploration or exploitation mode */
+    std::string _load_exp; /**<Path to archive of a previous experiment*/
+    std::string _load_comp; /**<Path to an archive of classifier to compose with current classifier into training*/
+    std::string _modality; /**<The name of the visual feature extracted*/
+    int _dimension; /**<Dimension of the feature space*/
+    double _threshold = 0.5; /**<The threshold to binarize the classification*/
+    int _nbr_class = 2; /**<The number of classes in the problem*/
+    std::map<std::string,int> _modalities; /**<A list of names of visual features, one classifier for each of this modality will be trained*/
+    std::vector<std::string> _mcs_mod_mapping; /**<Computation operation used by the multiclassifier system*/
+    boost::random::mt19937 _gen; /**<Boost random number generator*/
 
 
 
-    int _nbr_max_comp = 0;
+    int _nbr_max_comp = 0; /**<The number of component in the GMMs of each class. If set at 0 then no limit is defined.*/
 
-    iagmm::GMM _composition_gmm;
+    iagmm::GMM _composition_gmm; /**<The classifier on top of which the new classifier is trained*/
 
-    ip::PointCloudT::Ptr _background;/**< pointcloud of the background. only for export mode */
-    bool _background_saved; /**< if the bachground is already saved */
+    ip::PointCloudT::Ptr _background;/**<Pointcloud of the background. only for export mode*/
+    bool _background_saved; /**<if the bachground is already saved */
 
-    std::map<uint32_t,int> _true_labels;
+    std::map<uint32_t,int> _true_labels; /**<The labels from the groundtruth*/
 
-    map_t _choice_map;
-    std::shared_ptr<ip::workspace_t> _workspace; /**< workspace of the robot */
+    map_t _choice_map; /**<the choice distribution*/
+    std::shared_ptr<ip::workspace_t> _workspace; /**<workspace of the robot*/
 
-    std::map<std::string,std::vector<std::shared_ptr<ros::Publisher>>> _weighted_cloud_pub;
-    std::unique_ptr<ros::Publisher> _choice_dist_cloud_pub;
+    //**Publisher for the visual feedback*/
+    std::map<std::string,std::vector<std::shared_ptr<ros::Publisher>>> _weighted_cloud_pub; /**<relevance map publisher*/
+    std::unique_ptr<ros::Publisher> _choice_dist_cloud_pub; /**<choice distribution map publisher*/
     std::unique_ptr<ros::Publisher> _input_cloud_pub;
-    std::unique_ptr<ros::ServiceClient> _cnn_features_client;
+    //*/
 
+    std::unique_ptr<ros::ServiceClient> _cnn_features_client; /**<Client to retrieve the CNN features*/
+
+
+    /**
+     * @brief clear supervoxels. Take as template static parameters
+     * relative to the supervoxels extraction
+     */
     template <typename param>
     void _clear_supervoxels(){
         _soi.clear<param>();
     }
 
-    bool _compute_supervoxels(const ip::PointCloudT::Ptr input_cloud, bool with_workspace = true);
     /**
-     * @brief Compute the saliency map for the next iteration and choose the next supervoxel to explore.
+     * @brief _compute_supervoxels
+     * @param input_cloud
+     * @param with_workspace
+     * @return
+     */
+    bool _compute_supervoxels(const ip::PointCloudT::Ptr input_cloud, bool with_workspace = true);
+
+    /**
+     * @brief Compute the relevance map for the next iteration
      * @param input cloud
      * @return true if all went good false otherwise
      */
     bool _compute_relevance_map();
+
+    /**
+     * @brief compute the choice distribution map and choose the next supervoxel to explore
+     * @param chosen supervoxel
+     * @param chosen supervoxel's label
+     * @return true if all went good
+     */
     bool _compute_choice_map(pcl::Supervoxel<image_processing::PointT> &sv, uint32_t &lbl);
 };
 

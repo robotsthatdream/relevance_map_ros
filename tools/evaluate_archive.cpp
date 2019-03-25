@@ -30,6 +30,7 @@ public:
         _method = static_cast<std::string>(param["method"]);
         _modality = "centralFPFHLabHist";
         _dimension = 48;
+        _load_comp = static_cast<std::string>(param["load_comp"]);
         _modalities.emplace(_modality,0);
 
         rm::load_archive(exp_archive,_iter_list);
@@ -100,11 +101,26 @@ public:
                 _background = back;
 
                 std::map<uint32_t,int> true_labels;
+                std::vector<uint32_t> lbls;
                 for(const auto& sv: _soi.getSupervoxels()){
-                    if(rm::is_in_cloud(sv.second->centroid_,_background))
-                        true_labels.emplace(sv.first,0);
-                    else true_labels.emplace(sv.first,1);
+                    true_labels.emplace(sv.first,0);
+                    lbls.push_back(sv.first);
                 }
+                ip::SupervoxelArray supervoxels = _soi.getSupervoxels();
+                tbb::parallel_for(tbb::blocked_range<size_t>(0,lbls.size()),
+                                  [&](const tbb::blocked_range<size_t>& r){
+                    for(int i = r.begin(); i != r.end(); i++){
+                        if(rm::is_in_cloud(supervoxels[lbls[i]]->centroid_,_background))
+                            true_labels[lbls[i]] = 0;
+                        else true_labels[lbls[i]] = 1;
+                    }
+                });
+
+//                for(const auto& sv: _soi.getSupervoxels()){
+//                    if(rm::is_in_cloud(sv.second->centroid_,_background))
+//                        true_labels.emplace(sv.first,0);
+//                    else true_labels.emplace(sv.first,1);
+//                }
                 sc.set_true_labels(true_labels);
                 std::vector<double> precision, recall, accuracy;
                 sc.compute_precision_recall(precision,recall,accuracy);

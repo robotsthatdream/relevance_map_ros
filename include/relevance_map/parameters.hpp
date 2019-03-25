@@ -5,7 +5,7 @@ namespace  relevance_map {
 
 /**
  * @brief VCCS hyperparameters and camera intrisic parameters
- * This parameters are used as default for the image_processing library
+ * This parameters are used as default by the image_processing library
  */
 struct sv_param {
     //Supervoxels hyperparameters

@@ -89,7 +89,7 @@ class score_computation{
             std::chrono::system_clock::time_point timer;
             timer  = std::chrono::system_clock::now();
             statistics_name = {"nb_samples","precision","recall","accuracy",
-                               "nbr_samples","nbr_comp"};
+                               "nbr_samples","nbr_comp","rand_nbr"};
 //                               "pos_components","neg_components",
 //                               "false_positives","false_negatives",
 //                               "rand_nb_pos","rand_nb_pos"};
@@ -98,7 +98,7 @@ class score_computation{
             compute_precision_recall(precision,recall,accuracy);
 
             int nb_samples ,rand_nb_pos, rand_nb_neg;
-            std::vector<double> nbr_spl,nbr_comp;
+            std::vector<double> nbr_spl,nbr_comp, rand_nb;
             int nbr_class = 0;
 
             if(_node->get_method() == "nnmap"){
@@ -133,7 +133,7 @@ class score_computation{
             }else ROS_ERROR_STREAM(_node->get_method() << " unknown relevance map method");
             rand_nb_pos = nb_samples*_total_pos/(_total_pos+_total_neg);
             rand_nb_neg = nb_samples - rand_nb_pos;
-
+            rand_nb = {rand_nb_neg,rand_nb_pos};
 
 
 
@@ -141,7 +141,8 @@ class score_computation{
             std::stringstream str;
             str << "iteration_" << iter;
 
-            std::vector<std::vector<double>> scores =  {precision,recall,accuracy,nbr_spl,nbr_comp};
+            std::vector<std::vector<double>> scores =  {precision,recall,accuracy,
+                                                        nbr_spl,nbr_comp,rand_nb};
             set_results(str.str(),std::make_tuple(nb_samples,scores));
             ROS_INFO_STREAM("--------------------------------------------------------");
             ROS_INFO_STREAM("scores for iteration " << iter << "\n"
