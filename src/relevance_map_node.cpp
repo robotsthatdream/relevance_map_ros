@@ -35,8 +35,6 @@ void relevance_map_node::initialize(const ros::NodeHandlePtr nh){
     _threshold = std::stod(exp_params["soi"]["threshold"]); // 1./(double)_nbr_class;
 
     cmm::Component::_alpha = std::stod(exp_params["soi"]["alpha"]);
-    cmm::Component::_outlier_thres = 0;
-
 
 
     for(const auto& mod: modalities){
@@ -108,7 +106,6 @@ void relevance_map_node::init_classifiers(const std::string &folder_name){
             gmm.second.set_max_nb_components(4);
             gmm.second.use_confidence(true);
             gmm.second.use_uncertainty(true);
-            gmm.second.use_novelty(false);
         }
     }
     else if (_method == "composition"){
@@ -124,7 +121,6 @@ void relevance_map_node::init_classifiers(const std::string &folder_name){
             gmm.second.set_max_nb_components(4);
             gmm.second.use_confidence(true);
             gmm.second.use_uncertainty(true);
-            gmm.second.use_novelty(false);
             gmm.second.skip_bootstrap = true;
         }
         load_compo_gmm(_load_comp,_composition_gmm);

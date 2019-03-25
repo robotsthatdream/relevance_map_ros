@@ -137,10 +137,10 @@ bool load_models(XmlRpc::XmlRpcValue &params,
     return true;
 }
 
-cmm::TrainingData load_dataset(const std::string& filename){
+cmm::Data load_dataset(const std::string& filename){
     std::cout << "load dataset : " << filename << std::endl;
 
-    cmm::TrainingData dataset;
+    cmm::Data dataset;
 
     YAML::Node fileNode = YAML::LoadFile(filename);
     if (fileNode.IsNull()) {
@@ -235,7 +235,7 @@ bool load_experiment(const std::string& soi_method, const std::string &folder,
     }
 
     for(const auto& file : dataset_file){
-        cmm::TrainingData data = load_dataset(file.second);
+        cmm::Data data = load_dataset(file.second);
         if(soi_method == "gmm" || soi_method == "composition")
             gmm_class[file.first].set_samples(data);
         else if(soi_method == "nnmap")
