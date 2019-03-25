@@ -6,9 +6,9 @@
 
 #include <ros/ros.h>
 
-#include <iagmm/gmm.hpp>
-#include <iagmm/nnmap.hpp>
-#include <iagmm/mcs.hpp>
+#include <cmm/gmm.hpp>
+#include <cmm/nnmap.hpp>
+#include <cmm/mcs.hpp>
 
 #include <image_processing/SurfaceOfInterest.h>
 #include <image_processing/pcl_types.h>
@@ -94,9 +94,10 @@ public:
     void set_nbr_max_comp(int n){_nbr_max_comp = n;}
     //*/
 
-    std::map<std::string,iagmm::NNMap> _nnmap_class; /**< nnmap classifiers */
-    std::map<std::string,iagmm::GMM> _gmm_class; /**< gmm classifiers */
-    iagmm::MCS _mcs; /**<the multi classifier system*/
+
+    std::map<std::string,cmm::NNMap> _nnmap_class; /**< nnmap classifiers */
+    std::map<std::string,cmm::CollabMM> _gmm_class; /**< gmm classifiers */
+    cmm::MCS _mcs;/**<the multi classifier system*/
 
 protected:
     rgbd::RGBD_Subscriber::Ptr _images_sub; /**<RGB image, Depth image and camera info subscriber*/
@@ -118,7 +119,7 @@ protected:
 
     int _nbr_max_comp = 0; /**<The number of component in the GMMs of each class. If set at 0 then no limit is defined.*/
 
-    iagmm::GMM _composition_gmm; /**<The classifier on top of which the new classifier is trained*/
+    cmm::CollabMM _composition_gmm; /**<The classifier on top of which the new classifier is trained*/
 
     ip::PointCloudT::Ptr _background;/**<Pointcloud of the background. only for export mode*/
     bool _background_saved; /**<if the bachground is already saved */

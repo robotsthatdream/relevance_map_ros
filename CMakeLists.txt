@@ -19,29 +19,67 @@ set(CATKIN_COMMON_COMPONENTS roscpp
                              message_filters
                              geometry_msgs
                              sensor_msgs
+                             depth_image_proc
                             )
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_COMMON_COMPONENTS})
-find_package(OpenCV 2.4.8 REQUIRED)
+find_package(OpenCV REQUIRED) # FIXME nice to tell a version range.
 find_package(PCL REQUIRED)
 find_library(BASE64 NAMES b64)
+
+
+
+SET(CMM_INSTALL_TREE FALSE CACHE STRING "Path to CMM.")
+
+if(NOT CMM_INSTALL_TREE)
+  message(SEND_ERROR "Please tell me where to find a compiled CMM.  For example:
+      cmake -DCMM_INSTALL_TREE=/path/to/cmm.installtree/ .
+Then you can run again.")
+endif(NOT CMM_INSTALL_TREE)
+
+add_library(cmm SHARED IMPORTED)
+set_property(TARGET cmm PROPERTY IMPORTED_LOCATION "${CMM_INSTALL_TREE}/lib/libcmm.so" )
+# The /lib/libcmm.so above could be further cleaned up.
+
+
+
+SET(IMAGE_PROCESSING_INSTALL_TREE FALSE CACHE STRING "Path to image_processing.")
+
+if(NOT IMAGE_PROCESSING_INSTALL_TREE)
+  message(SEND_ERROR "Please tell me where to find a compiled IMAGE_PROCESSING.  For example:
+      cmake -DIMAGE_PROCESSING_INSTALL_TREE=/path/to/image_processing.installtree/ .
+Then you can run again.")
+endif(NOT IMAGE_PROCESSING_INSTALL_TREE)
+
+add_library(image_processing SHARED IMPORTED)
+set_property(TARGET image_processing PROPERTY IMPORTED_LOCATION "${IMAGE_PROCESSING_INSTALL_TREE}/lib/libimage_processing.so" )
+# The /lib/libimage_processing.so above could be further cleaned up.
+
 
 
 include_directories(include
 	${PCL_INCLUDE_DIRS}
 	${catkin_INCLUDE_DIRS}
         ${OpencCV_INCLUDE_DIRS}
-BEFORE SYSTEM        ${image_processing_INCLUDE} ${IAGMM_INCLUDE_DIR}
+BEFORE SYSTEM        ${IMAGE_PROCESSING_INSTALL_TREE}/include "${CMM_INSTALL_TREE}/include"
 )
 
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
-set(LOCAL_LIB_DIR /usr/local/ CACHE STRING "local libraries directory for iagmm and image_processing")
-set(IAGMM_INCLUDE_DIR ${LOCAL_LIB_DIR}/include/)
-set(IAGMM_LIBRARIES ${LOCAL_LIB_DIR}/lib/libiagmm.so)
-set(image_processing_INCLUDE_DIR ${LOCAL_LIB_DIR}/include/)
-set(image_processing_LIBRARIES ${LOCAL_LIB_DIR}/lib/libimage_processing.so)
+
+
+
+
+# # find_library(CMM_LIBRARY cmm)
+# find_package(cmm)
+
+include_directories(${PCL_INCLUDE_DIRS} /usr/local/include include ${OpenCV_INCLUDE_DIRS} "${CMM_INSTALL_TREE}/include" )
+link_directories(${PCL_LIBRARY_DIRS} /usr/local/lib)
+add_definitions(${PCL_DEFINITIONS})
+
+
+
 
 ## Generate messages in the 'msg' folder
 #add_message_files(
@@ -99,7 +137,7 @@ install(DIRECTORY include/rgbd_utils
 
 add_library(${PROJECT_NAME} ${SRC_FILES})
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} rgbd_utils)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} cmm ${CMM_Lib_LIBRARIES} ${image_processing_LIBRARIES} rgbd_utils)
 
 
 ## Mark executables and/or libraries for installation
@@ -118,16 +156,16 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 #TOOLS
 add_executable(pcd_to_relevance_map tools/pcd_to_relevance_map.cpp)
-target_link_libraries(pcd_to_relevance_map ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb)
+target_link_libraries(pcd_to_relevance_map ${catkin_LIBRARIES} relevance_map ${CMM_Lib_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb)
 
 #add_executable(evaluate_classifier tools/evaluate_classifier.cpp)
-#target_link_libraries(evaluate_classifier ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
+#target_link_libraries(evaluate_classifier ${catkin_LIBRARIES} relevance_map ${CMM_Lib_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
 
 add_executable(evaluate_archive tools/evaluate_archive.cpp)
-target_link_libraries(evaluate_archive ${catkin_LIBRARIES} relevance_map ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
+target_link_libraries(evaluate_archive ${catkin_LIBRARIES} relevance_map ${CMM_Lib_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
 
 add_executable(features_variability tools/features_variability.cpp)
-target_link_libraries(features_variability ${catkin_LIBRARIES} relevance_map rgbd_utils ${IAGMM_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
+target_link_libraries(features_variability ${catkin_LIBRARIES} relevance_map rgbd_utils ${CMM_Lib_LIBRARIES} ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
 
 #TEST
 add_executable(test_rgbd_utils src/rgbd_utils/test_rgbd_utils.cpp)

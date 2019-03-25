@@ -50,7 +50,7 @@ public:
 private:
     ip::PointCloudT::Ptr _input_cloud;
     ros::NodeHandle _nh;
-    iagmm::GMM _gmm;
+    cmm::CollabMM _gmm;
 };
 
 int main(int argc, char** argv){

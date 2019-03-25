@@ -7,7 +7,7 @@ Library to facilate implementation of ros node for relevance map building, explo
 
 # Install first :
 - image_processing library https://github.com/robotsthatdream/image_processing
-- iagmm library  https://github.com/LeniLeGoff/IAGMM_Lib
+- cmm library  https://github.com/LeniLeGoff/CMM_Lib
 
 # Installation :
 
