@@ -19,7 +19,7 @@ int main(int argc, char** argv){
 
     ros::Publisher cloud_pub(nh.advertise<sensor_msgs::PointCloud2>("cloud",5));
 
-    while(ros::ok){
+    while(ros::ok()){
         ros::spinOnce();
         usleep(1000);
         if(rgbd_sub.get_depth().data.empty() || rgbd_sub.get_rgb().data.empty())
