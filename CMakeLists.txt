@@ -156,16 +156,16 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 #TOOLS
 add_executable(pcd_to_relevance_map tools/pcd_to_relevance_map.cpp)
-target_link_libraries(pcd_to_relevance_map ${catkin_LIBRARIES} relevance_map cmm ${IMAGE_PROCESSING_LIBRARY} ${PCL_LIBRARIES} tbb)
+target_link_libraries(pcd_to_relevance_map ${catkin_LIBRARIES} relevance_map cmm image_processing ${PCL_LIBRARIES} tbb)
 
 #add_executable(evaluate_classifier tools/evaluate_classifier.cpp)
 #target_link_libraries(evaluate_classifier ${catkin_LIBRARIES} relevance_map cmm ${image_processing_LIBRARIES} ${PCL_LIBRARIES} tbb yaml-cpp.so)
 
 add_executable(evaluate_archive tools/evaluate_archive.cpp)
-target_link_libraries(evaluate_archive ${catkin_LIBRARIES} relevance_map cmm ${IMAGE_PROCESSING_LIBRARY} ${PCL_LIBRARIES} tbb yaml-cpp.so)
+target_link_libraries(evaluate_archive ${catkin_LIBRARIES} relevance_map cmm image_processing ${PCL_LIBRARIES} tbb yaml-cpp.so)
 
 add_executable(features_variability tools/features_variability.cpp)
-target_link_libraries(features_variability ${catkin_LIBRARIES} relevance_map rgbd_utils cmm ${IMAGE_PROCESSING_LIBRARY} ${PCL_LIBRARIES} tbb yaml-cpp.so)
+target_link_libraries(features_variability ${catkin_LIBRARIES} relevance_map rgbd_utils cmm image_processing ${PCL_LIBRARIES} tbb yaml-cpp.so)
 
 #TEST
 add_executable(test_rgbd_utils src/rgbd_utils/test_rgbd_utils.cpp)
