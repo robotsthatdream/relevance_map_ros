@@ -133,7 +133,7 @@ class score_computation{
             }else ROS_ERROR_STREAM(_node->get_method() << " unknown relevance map method");
             rand_nb_pos = nb_samples*_total_pos/(_total_pos+_total_neg);
             rand_nb_neg = nb_samples - rand_nb_pos;
-            rand_nb = {rand_nb_neg,rand_nb_pos};
+            rand_nb = {static_cast<double>(rand_nb_neg),static_cast<double>(rand_nb_pos)};
 
 
 
