@@ -1,5 +1,5 @@
 ## relevance_map_ros
-Library to facilate implementation of ros node for relevance map building, exploitation, viewing.
+Library to facilitate implementation of ros node for relevance map building, exploitation and, viewing.
 
 ---
 
@@ -11,7 +11,7 @@ Library to facilate implementation of ros node for relevance map building, explo
 
 # Installation :
 
-After cloning this repository into your catkin worksapce,
+After cloning this repository into your catkin workspace,
 follow the command lines :
 <pre>
 cd < catkin workspace >
