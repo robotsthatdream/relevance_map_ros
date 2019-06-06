@@ -60,7 +60,7 @@ public:
          *      Then the new supervoxel segmentation is computed.
          */
         _clear_supervoxels<rm::sv_param>();
-        if(!_compute_supervoxels(cloud)){
+        if(!_compute_supervoxels(cloud, true /* use workspace crop information */)){
             ROS_ERROR_STREAM("Unable to extract supervoxels");
             return;
         }
