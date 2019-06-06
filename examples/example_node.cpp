@@ -28,7 +28,7 @@ public:
 
         /* Initialize the classifer from the folder _load_exp containing an archive of the classifier.
          */
-        init_classiefiers(_load_exp);
+        init_classifiers(_load_exp);
     }
 
     /*The destructor calls release() to destroy all the pointers.
@@ -88,6 +88,8 @@ public:
 
         publish_feedback();
    }
+   private:
+    ros::NodeHandle _nh;
 };
 
 int main(int argc, char** argv){
