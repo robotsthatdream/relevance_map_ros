@@ -1,0 +1,46 @@
+<launch>
+    <!-- Topics of the camera streams 
+         An example for the Kinect2 camera used with kinect2_bridge.
+    -->
+    <rosparam ns="global">
+            rgb_topic: "/kinect2/hd/image_color"
+            depth_topic: "/kinect2/hd/image_depth_rect"
+            rgb_info_topic: "/kinect2/hd/camera_info"
+            depth_info_topic: "/kinect2/hd/camera_info"    
+    </rosparam>
+    
+
+    <!-- To launch the node example_node -->
+    <node name="example_node" pkg="relevance_map" type="example_node" output="screen">
+        
+        <!-- The parameters for the workspace
+             This parameters define a area in which the relevance map will be computed
+        -->
+        <rosparam ns="experiment/workspace">
+            sphere:
+                x: 0.
+                y: 0.
+                z: 1.
+                radius: 10.
+                threshold: 0.35
+            csg_intersect_cuboid:
+                x_min: -0.1
+                x_max: 0.4
+                y_min: -0.2
+                y_max: 0.4
+                z_min: -0.5
+                z_max: 1.4
+        </rosparam>
+
+        <!-- Parameters specific to the classifier -->
+        <rosparam ns="experiment/soi">
+            method: "gmm" <!-- the type of classifier. Here Gaussian Mixture Models-->
+            load_exp: "$(find relevance_map)/examples/gmm_archives/1"  <!-- the folder where to find the archive of the classifier to load -->
+            modality: "centralFPFHLabHist" <!-- the type of visual feature extracted on a supervoxls. For more info see the documentaion of the image processing library -->
+            dimension: "48" <!-- The dimensionality of the visual feature -->
+            threshold: "0.5" <!-- the threshold to binarize the relevance map -->
+            alpha : "0.6" <!-- hyperparameter of the classifier. Only for training and only for the gmm classifier -->
+        </rosparam>
+    </node>
+</launch>
+
