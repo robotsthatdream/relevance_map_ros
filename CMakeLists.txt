@@ -173,3 +173,7 @@ target_link_libraries(features_variability ${catkin_LIBRARIES} relevance_map rgb
 #TEST
 add_executable(test_rgbd_utils src/rgbd_utils/test_rgbd_utils.cpp)
 target_link_libraries(test_rgbd_utils ${catkin_LIBRARIES} rgbd_utils)
+
+#EXAMPLE
+add_executable(example_node src/examples/example_node.cpp)
+target_link_libraries(example_node ${catkin_LIBRARIES} rgbd_utils)
