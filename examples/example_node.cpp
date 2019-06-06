@@ -33,7 +33,7 @@ public:
 
     /*The destructor calls release() to destroy all the pointers.
      */
-    void ~ExampleNode(){
+    ~ExampleNode(){
         release();
     }
 
