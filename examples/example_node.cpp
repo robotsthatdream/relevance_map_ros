@@ -44,8 +44,8 @@ public:
 
         /* Step 1 :
          *      The current pointcloud is retrieved.
-         *      This pointcloud comes from an image stream composed of colore images and depth images
-         *      Their are retrieves by listening to topics specified in the launch file of this node :
+         *      This pointcloud comes from an image stream composed of color images and depth images
+         *      Their are retrieved by listening to topics specified in the launch file of this node :
          *      example_node.launch.
          */
         ip::PointCloudT::Ptr cloud(new ip::PointCloudT);
