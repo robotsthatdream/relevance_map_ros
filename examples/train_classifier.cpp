@@ -121,14 +121,18 @@ public:
         /* Step 5 :
          * Add a new sample with a label determined by looking if the centroid of the selected supervoxel is in the background.
          * If true the label is equal to 0 otherwise the label is equal to 1.
+         * And update the parameters of the classifier.
          */
         int label = rm::is_in_cloud(_sv.centroid_,_background) ? 0 : 1;
         _add_new_sample(label);
+        _update_classifiers();
 
         publish_feedback();
+
    }
    private:
     ros::NodeHandlePtr  _nh;
+
 };
 
 int main(int argc, char** argv){

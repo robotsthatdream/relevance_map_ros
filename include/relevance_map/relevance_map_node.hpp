@@ -119,6 +119,8 @@ protected:
 
 
     int _nbr_max_comp = 0; /**<The number of component in the GMMs of each class. If set at 0 then no limit is defined.*/
+    int _last_number_of_samples = 0; /**<Number of samples in the dataset at the end of the last iteration.*/
+
 
     cmm::CollabMM _composition_gmm; /**<The classifier on top of which the new classifier is trained*/
 
@@ -172,13 +174,14 @@ protected:
     bool _compute_choice_map(pcl::Supervoxel<image_processing::PointT> &sv, uint32_t &lbl);
 
     /**
-     * @brief _add_new_sample
-     * @param label
+     * @brief add new sample to the classifier
+     * @param sv_lbl : supervoxel label
+     * @param label corresponding to the class of the new sample
      */
-    void _add_new_sample(int label);
+    void _add_new_sample(uint32_t sv_lbl, int label);
 
     /**
-     * @brief _update_classifiers
+     * @brief update the parameters of the classifier (useless in case of nnmap classifier)
      */
     void _update_classifiers();
 
