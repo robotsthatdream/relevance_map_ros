@@ -1,7 +1,7 @@
 /* Written by Léni K. Le Goff
  *
- * This sample of code is a minimal example of how to implement quickly a node
- * to produce a relevance map from an archive of a trained classifier and from a rgbd camera flow.
+ * In this sample of code, it is shown how to train a new classifier or how to continue the training of a stored classifier.
+ * The training is done by processing a rgb-d video stream. An expert is used to label the samples collected for the trainging.
  */
 
 
@@ -17,10 +17,10 @@ namespace ip = image_processing;
 namespace rm = relevance_map;
 namespace rgbd = rgbd_utils;
 
-class ExampleNode : public rm::relevance_map_node{
+class TrainClassifier : public rm::relevance_map_node{
 public:
-    ExampleNode(){
-        _nh.reset(new ros::NodeHandle); //Instantiate the nodehandle.
+    TrainClassifier(){
+        _nh.reset(new ros::NodeHandle);
 
         /* Initialize the node by instanciating all the publishers, subcribers, clients and services needed.
          * And retrieve the parameters in the paramter server.
@@ -30,11 +30,42 @@ public:
         /* Initialize the classifer from the folder _load_exp containing an archive of the classifier.
          */
         init_classifiers(_load_exp);
+
+        /* A reference pointcloud must be taken to be able to distinguish
+         * if a supervoxel is part of the background (class 0) or from objects (class 1).
+         * To do so you can use any method you want. In the following to method is shown.
+         * * * *
+         * First possibility : you take the background for the input rgb-d stream.
+         */
+        /*ip::PointCloudT::Ptr input_cloud(new ip::PointCloudT);
+        while(!retrieve_input_cloud(input_cloud)){
+            ros::spinOnce();
+        }
+        std::cout << "BABBLING_NODE : take the background" << std::endl;
+        set_background(input_cloud);
+        std::cout << "BABBLING_NODE : done" << std::endl;
+
+        std::cout << "BABBLING_NODE : Press enter to start.";
+        std::cin.ignore();*/
+        /* Second possibility : you take the background from pointcloud file (.pcd).
+         */
+        ip::PointCloudT::Ptr background(new ip::PointCloudT);
+
+        std::string pcd_file;
+        _nh->getParam("/global/background",pcd_file); //retrieve the name of the pcd file from the parameters server. The parameter is given in the launch file.
+
+        if (pcl::io::loadPCDFile<pcl::PointXYZ> (pcd_file, background) == -1) //* load the file
+        {
+            ROS_ERROR_STREAM("Couldn't read file " << pcd_file);
+            exit(1);
+        }
+        set_background(background);
+
     }
 
     /*The destructor calls release() to destroy all the pointers.
      */
-    ~ExampleNode(){
+    ~TrainClassifier(){
         release();
     }
 
@@ -87,6 +118,13 @@ public:
             return;
         }
 
+        /*
+         * Add a new sample with a label determined by looking if the centroid of the selected supervoxel is in the background.
+         * If true the label is equal to 0 otherwise the label is equal to 1.
+         */
+        int label = rm::is_in_cloud(_sv.centroid_,_background) ? 0 : 1;
+        _add_new_sample(label);
+
         publish_feedback();
    }
    private:
@@ -95,12 +133,12 @@ public:
 
 int main(int argc, char** argv){
 
-    ros::init(argc,argv,"example_node");
+    ros::init(argc,argv,"train_classifier");
 
-    ExampleNode en;
+    TrainClassifier tc;
 
     while(ros::ok()){
-        en.execute();
+        tc.execute();
         ros::spinOnce();
     }
     return 0;

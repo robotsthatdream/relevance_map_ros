@@ -86,6 +86,7 @@ public:
 
     //** GETTERS & SETTERS **\\
     const ip::PointCloudT::Ptr get_background(){return _background;}
+    void set_background(const ip::PointCloudT::Ptr& cloud){_background.reset(cloud.get());}
     ip::SurfaceOfInterest& get_soi(){return _soi;}
     const std::string& get_modality(){return _modality;}
     const std::string& get_method(){return _method;}
@@ -169,6 +170,9 @@ protected:
      * @return true if all went good
      */
     bool _compute_choice_map(pcl::Supervoxel<image_processing::PointT> &sv, uint32_t &lbl);
+
+    void _add_new_sample(int label);
+
 };
 
 }

@@ -454,6 +454,26 @@ bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, ui
 
 }
 
+void relevance_map_node::_add_new_sample(int label){
+    if(_method == "nnmap"){
+        for(auto& classifier : _nnmap_class){
+//            ROS_INFO_STREAM(classifier.first);
+            classifier.second.add(_soi.get_feature(_lbl,classifier.first),label);
+//            ROS_INFO_STREAM("BABBLING_NODE : size of dataset : " << classifier.second.dataset_size());
+        }
+    }
+    else if(_method == "gmm" || _method == "composition"){
+        for(auto& classifier : _gmm_class){
+//            ROS_INFO_STREAM(classifier.first);
+            classifier.second.add(_soi.get_feature(_lbl,classifier.first),label);
+//            ROS_INFO_STREAM("BABBLING_NODE : size of dataset : " << classifier.second.dataset_size());
+        }
+    }
+    else if(_method == "mcs"){
+        _mcs.add(_soi.get_features(_lbl),label);
+    }
+}
+
 void relevance_map_node::publish_feedback(){
     sensor_msgs::PointCloud2 weighted_cloud;
 
