@@ -43,3 +43,10 @@
         </rosparam>
     </node>
 </launch>
+
+
+<!-- The parameters modality and dimension correspond to the visual features used for the training of the classifier and the computation of the relevance map. Three visual features are available : 
+    - centralFPFH : FPFH is a common descriptor that characterizes shape based on a pointcloud of normals (Rusu et al. [2009]). In this implementation, FPFH is extracted on the central point of the pointcloud including the targeted supervoxel and its neighbors. The radius of neighborhood to compute FPFH is set to the size of a supervoxel, thus the central point FPFH takes into account the whole considered pointcloud. The central point is the centroid of the targeted supervoxel. The dimensionality is 33.
+    - colorLabHist : Color histogram of a supervoxel extracted on CIELab color encoding. One histogram of 5 bins is computed separately on each dimension (L ∗ a ∗ b) and then they are concatenated. This feature space has 15 dimensions.
+    - centralFPFHLabHist : The concatenation of colorLabHist and centralFPFH which has 48 dimensions.
+-->
