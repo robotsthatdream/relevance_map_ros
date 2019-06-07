@@ -8,6 +8,7 @@
 #include <iostream>
 #include <relevance_map/relevance_map_node.hpp>
 #include <relevance_map/parameters.hpp>
+#include <relevance_map/utilities.hpp>
 #include <pcl/io/pcd_io.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -54,7 +55,7 @@ public:
         std::string pcd_file;
         _nh->getParam("/global/background",pcd_file); //retrieve the name of the pcd file from the parameters server. The parameter is given in the launch file.
 
-        if (pcl::io::loadPCDFile<pcl::PointXYZ> (pcd_file, background) == -1) //* load the file
+        if (pcl::io::loadPCDFile<ip::PointT>(pcd_file, *background) == -1) //* load the file
         {
             ROS_ERROR_STREAM("Couldn't read file " << pcd_file);
             exit(1);
@@ -123,8 +124,8 @@ public:
          * If true the label is equal to 0 otherwise the label is equal to 1.
          * And update the parameters of the classifier.
          */
-        int label = rm::is_in_cloud(_sv.centroid_,_background) ? 0 : 1;
-        _add_new_sample(label);
+        int label = rm::is_in_cloud(sv.centroid_,_background) ? 0 : 1;
+        _add_new_sample(sv_lbl,label);
         _update_classifiers();
 
         publish_feedback();
