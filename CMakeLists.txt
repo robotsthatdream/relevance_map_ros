@@ -177,3 +177,6 @@ target_link_libraries(test_rgbd_utils ${catkin_LIBRARIES} rgbd_utils)
 #EXAMPLE
 add_executable(example_node examples/example_node.cpp)
 target_link_libraries(example_node ${catkin_LIBRARIES} relevance_map rgbd_utils cmm ${PCL_LIBRARIES}  image_processing tbb yaml-cpp.so)
+
+add_executable(train_classifier examples/train_classifier.cpp)
+target_link_libraries(train_classifier ${catkin_LIBRARIES} relevance_map rgbd_utils cmm ${PCL_LIBRARIES}  image_processing tbb yaml-cpp.so)

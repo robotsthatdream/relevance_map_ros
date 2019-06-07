@@ -39,7 +39,7 @@ public:
     }
 
     /* The execute function contain all the computation to produce a relevance on a current pointcloud.
-     * The computation is done in 4 steps.
+     * The computation is done in 3 steps.
      */
     void execute(){
 
@@ -74,18 +74,6 @@ public:
             return;
         }
 
-        /* Step 4 (Optional):
-         *      This step is not necessary for computing the relevance.
-         *      A choice distribution is computed to choose a supervoxel in the current segmentation
-         *      to be explored by a robotic system.
-         *      This step is useful when the classifier is in training.
-         */
-        pcl::Supervoxel<ip::PointT> sv; //the variable to retrieve the chosen supervoxel
-        uint32_t sv_lbl; //the variable to retrieve the label of the chosen in supervoxel
-        if(!_compute_choice_map(sv,sv_lbl)){
-            ROS_ERROR_STREAM("Unable to compute the choice map");
-            return;
-        }
 
         publish_feedback();
    }

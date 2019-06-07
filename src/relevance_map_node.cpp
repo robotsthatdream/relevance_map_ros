@@ -474,6 +474,24 @@ void relevance_map_node::_add_new_sample(int label){
     }
 }
 
+void relevance_map_node::_update_classifiers(){
+    if(_method == "gmm" || _method == "composition"){
+        if(_gmm_class[_modality].get_samples().size() > _last_number_of_samples){
+            for(auto& classifier: _gmm_class){
+//                std::cout << "update classifier " << classifier.first << std::endl;
+                classifier.second.update();
+                //ROS_INFO_STREAM(classifier.second.print_info());
+            }
+            _last_number_of_samples = _gmm_class[_modality].get_samples().size();
+        }
+    }else if(_method == "mcs"){
+        if(_mcs.get_nb_samples() > _last_number_of_samples){
+            _mcs.update();
+            _last_number_of_samples = _mcs.get_nb_samples();
+        }
+    }
+}
+
 void relevance_map_node::publish_feedback(){
     sensor_msgs::PointCloud2 weighted_cloud;
 

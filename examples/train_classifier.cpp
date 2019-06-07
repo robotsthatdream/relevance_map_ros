@@ -69,8 +69,9 @@ public:
         release();
     }
 
-    /* The execute function contain all the computation to produce a relevance on a current pointcloud.
-     * The computation is done in 4 steps.
+    /* The execute function contain all the computation to produce a relevance map on a current pointcloud
+     * and add a new sample in the training dataset.
+     * The computation is done in 5 steps.
      */
     void execute(){
 
@@ -105,8 +106,7 @@ public:
             return;
         }
 
-        /* Step 4 (Optional):
-         *      This step is not necessary for computing the relevance.
+        /* Step 4 :
          *      A choice distribution is computed to choose a supervoxel in the current segmentation
          *      to be explored by a robotic system.
          *      This step is useful when the classifier is in training.
@@ -118,7 +118,7 @@ public:
             return;
         }
 
-        /*
+        /* Step 5 :
          * Add a new sample with a label determined by looking if the centroid of the selected supervoxel is in the background.
          * If true the label is equal to 0 otherwise the label is equal to 1.
          */

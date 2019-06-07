@@ -171,7 +171,16 @@ protected:
      */
     bool _compute_choice_map(pcl::Supervoxel<image_processing::PointT> &sv, uint32_t &lbl);
 
+    /**
+     * @brief _add_new_sample
+     * @param label
+     */
     void _add_new_sample(int label);
+
+    /**
+     * @brief _update_classifiers
+     */
+    void _update_classifiers();
 
 };
 
