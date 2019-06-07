@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <relevance_map/relevance_map_node.hpp>
+#include <relevance_map/parameters.hpp>
 #include <pcl/io/pcd_io.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -19,7 +20,7 @@ namespace rgbd = rgbd_utils;
 class ExampleNode : public rm::relevance_map_node{
 public:
     ExampleNode(){
-        _nh.reset(ros::NodeHandle);
+        _nh.reset(new ros::NodeHandle);
 
         /* Initialize the node by instanciating all the publishers, subcribers, clients and services needed.
          * And retrieve the parameters in the paramter server.
@@ -33,7 +34,7 @@ public:
 
     /*The destructor calls release() to destroy all the pointers.
      */
-    void ~ExampleNode(){
+    ~ExampleNode(){
         release();
     }
 
@@ -89,14 +90,14 @@ public:
         publish_feedback();
    }
    private:
-    ros::NodeHandle _nh;
+    ros::NodeHandlePtr  _nh;
 };
 
 int main(int argc, char** argv){
 
     ros::init(argc,argv,"example_node");
 
-    ExampleNode en();
+    ExampleNode en;
 
     while(ros::ok()){
         en.execute();
