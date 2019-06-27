@@ -38,7 +38,9 @@ public:
          * * * *
          * First possibility : you take the background for the input rgb-d stream.
          */
-        /*ip::PointCloudT::Ptr input_cloud(new ip::PointCloudT);
+        if (1)
+        {
+            ip::PointCloudT::Ptr input_cloud(new ip::PointCloudT);
         while(!retrieve_input_cloud(input_cloud)){
             ros::spinOnce();
         }
@@ -47,7 +49,10 @@ public:
         std::cout << "BABBLING_NODE : done" << std::endl;
 
         std::cout << "BABBLING_NODE : Press enter to start.";
-        std::cin.ignore();*/
+            std::cin.ignore();
+        }
+        else
+        {
         /* Second possibility : you take the background from pointcloud file (.pcd).
          */
         ip::PointCloudT::Ptr background(new ip::PointCloudT);
@@ -61,7 +66,7 @@ public:
             exit(1);
         }
         set_background(background);
-
+        }
     }
 
     /*The destructor calls release() to destroy all the pointers.
