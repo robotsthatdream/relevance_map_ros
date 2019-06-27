@@ -41,31 +41,31 @@ public:
         if (1)
         {
             ip::PointCloudT::Ptr input_cloud(new ip::PointCloudT);
-        while(!retrieve_input_cloud(input_cloud)){
-            ros::spinOnce();
-        }
-        std::cout << "BABBLING_NODE : take the background" << std::endl;
-        set_background(input_cloud);
-        std::cout << "BABBLING_NODE : done" << std::endl;
+            while(!retrieve_input_cloud(input_cloud)){
+                ros::spinOnce();
+            }
+            std::cout << "BABBLING_NODE : take the background" << std::endl;
+            set_background(input_cloud);
+            std::cout << "BABBLING_NODE : done" << std::endl;
 
-        std::cout << "BABBLING_NODE : Press enter to start.";
+            std::cout << "BABBLING_NODE : Press enter to start.";
             std::cin.ignore();
         }
         else
         {
-        /* Second possibility : you take the background from pointcloud file (.pcd).
+            /* Second possibility : you take the background from pointcloud file (.pcd).
          */
-        ip::PointCloudT::Ptr background(new ip::PointCloudT);
+            ip::PointCloudT::Ptr background(new ip::PointCloudT);
 
-        std::string pcd_file;
-        _nh->getParam("/global/background",pcd_file); //retrieve the name of the pcd file from the parameters server. The parameter is given in the launch file.
+            std::string pcd_file;
+            _nh->getParam("/global/background",pcd_file); //retrieve the name of the pcd file from the parameters server. The parameter is given in the launch file.
 
-        if (pcl::io::loadPCDFile<ip::PointT>(pcd_file, *background) == -1) //* load the file
-        {
-            ROS_ERROR_STREAM("Couldn't read file " << pcd_file);
-            exit(1);
-        }
-        set_background(background);
+            if (pcl::io::loadPCDFile<ip::PointT>(pcd_file, *background) == -1) //* load the file
+            {
+                ROS_ERROR_STREAM("Couldn't read file " << pcd_file);
+                exit(1);
+            }
+            set_background(background);
         }
     }
 
@@ -135,8 +135,8 @@ public:
 
         publish_feedback();
 
-   }
-   private:
+    }
+private:
     ros::NodeHandlePtr  _nh;
 
 };
