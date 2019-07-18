@@ -21,7 +21,7 @@ namespace rgbd = rgbd_utils;
 class TrainClassifier : public rm::relevance_map_node{
 public:
     TrainClassifier(){
-        _nh.reset(new ros::NodeHandle);
+        _nh.reset(new ros::NodeHandle("~"));
 
         /* Initialize the node by instanciating all the publishers, subcribers, clients and services needed.
          * And retrieve the parameters in the paramter server.
