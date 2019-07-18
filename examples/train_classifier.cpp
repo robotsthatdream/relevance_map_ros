@@ -7,6 +7,7 @@
  */
 
 #include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include <iostream>
 #include <pcl/io/pcd_io.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -155,8 +156,33 @@ class TrainClassifier : public rm::relevance_map_node {
         _add_new_sample(sv_lbl, label);
         _update_classifiers();
 
-        publish_feedback();
+        /* Step 6: Save the classifier by serialization and save the training
+         * dataset.
+         * This piece of code is not compilable !!
+         */
+        std::stringstream folder;
+        // folder << ros_home << "/cafer_db/dream_babbling/babbling/iteration_"
+        // << _counter_iter;
+        folder << "."; // TODO number
 
+        ROS_INFO_STREAM("Saving to " << folder.str() );
+
+        for (const auto &classifier : _gmm_class) {
+            if (classifier.second.dataset_size() != 0) {
+                // Write dataset in a file in a yml format.=
+                classifier.second.get_samples().save_yml(
+                    folder.str() + "/dataset_" + classifier.first + ".yml");
+                // serializartion of the classifier
+                std::stringstream sstream;
+                boost::archive::text_oarchive oarch(sstream);
+                oarch << classifier.second;
+                // write serialized classifier in a file
+                rm::write_data(folder.str() + "/gmm_" + classifier.first,
+                               sstream.str());
+            }
+        }
+
+        publish_feedback();
         _counter_iter++;
     }
     bool is_finished() { return _counter_iter >= _max_iter; }
