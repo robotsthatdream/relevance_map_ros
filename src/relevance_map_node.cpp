@@ -440,7 +440,7 @@ bool relevance_map_node::_compute_choice_map(pcl::Supervoxel<ip::PointT> &sv, ui
         else ROS_ERROR_STREAM(_method << " unknown relevance map method");
 
         // TODO the other modes !
-    }
+    } else ROS_ERROR_STREAM(_mode << "unknown mode");
 
         // -_- TODO _-_ EXPLOITATION MODE
 //            else if(_mode == "exploration")
