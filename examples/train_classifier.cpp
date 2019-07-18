@@ -42,6 +42,9 @@ public:
         {
             ip::PointCloudT::Ptr input_cloud(new ip::PointCloudT);
             while(!retrieve_input_cloud(input_cloud)){
+              /* This is the step that causes these lines:
+               * [ERROR] [1563441618.205405755]: Waiting for input images : depth 0; rgb 0
+               */
                 ros::spinOnce();
             }
             std::cout << "BABBLING_NODE : take the background" << std::endl;
@@ -106,6 +109,11 @@ public:
 
         /*Step 3 :
          *      Compute the relevance map itself.
+         * This is the step that displays:
+         * [ INFO] [1563441866.597143702]: Computing saliency map !
+         * [ INFO] [1563441866.597276566]: Computing saliency map finish, time spent : 0
+         * [ INFO] [1563441867.626821770]: Computing saliency map !
+         * [ INFO] [1563441871.167163565]: Computing features finish for centralFPFHLabHist, time spent : 3540
          */
         if(!_compute_relevance_map()){
             ROS_ERROR_STREAM("Unable to compute the relevance map");
