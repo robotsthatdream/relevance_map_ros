@@ -120,7 +120,7 @@ public:
             return;
         }
 
-        /* Step 4 :
+        /* Step 4:
          *      A choice distribution is computed to choose a supervoxel in the current segmentation
          *      to be explored by a robotic system.
          *      This step is useful when the classifier is in training.
@@ -132,7 +132,7 @@ public:
             return;
         }
 
-        /* Step 5 :
+        /* Step 5:
          * Add a new sample with a label determined by looking if the centroid of the selected supervoxel is in the background.
          * If true the label is equal to 0 otherwise the label is equal to 1.
          * And update the parameters of the classifier.
