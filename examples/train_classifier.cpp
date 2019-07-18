@@ -143,10 +143,13 @@ public:
 
         publish_feedback();
 
+        _counter_iter++;
     }
+    bool is_finished() { return _counter_iter >= _max_iter; }
 private:
     ros::NodeHandlePtr  _nh;
-
+    int _counter_iter = 0;
+    const int _max_iter = 200;
 };
 
 int main(int argc, char** argv){
@@ -155,7 +158,7 @@ int main(int argc, char** argv){
 
     TrainClassifier tc;
 
-    while(ros::ok()){
+    while(ros::ok() && !tc.is_finished()){
         tc.execute();
         ros::spinOnce();
     }
