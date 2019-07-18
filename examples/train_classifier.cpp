@@ -13,6 +13,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <relevance_map/parameters.hpp>
 #include <relevance_map/relevance_map_node.hpp>
+#include <relevance_map/score_computation.hpp>
 #include <relevance_map/utilities.hpp>
 #include <sensor_msgs/PointCloud2.h>
 
@@ -181,6 +182,11 @@ class TrainClassifier : public rm::relevance_map_node {
                                sstream.str());
             }
         }
+
+        /* Step 7: Computation of perfomence scores of the classifier.
+         */
+        rm::score_computation<TrainClassifier> sc(this, "out_score");
+        sc.compute_scores_results(_counter_iter);
 
         publish_feedback();
         _counter_iter++;
