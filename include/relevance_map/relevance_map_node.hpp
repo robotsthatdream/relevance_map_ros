@@ -86,7 +86,8 @@ public:
 
     //** GETTERS & SETTERS **\\
     const ip::PointCloudT::Ptr get_background(){return _background;}
-    void set_background(const ip::PointCloudT::Ptr& cloud){_background.reset(cloud.get());}
+    void set_background(const ip::PointCloudT::Ptr& cloud){*_background = *cloud;
+        /* _background.reset(cloud.get()); TODO understand why this fails. */}
     ip::SurfaceOfInterest& get_soi(){return _soi;}
     const std::string& get_modality(){return _modality;}
     const std::string& get_method(){return _method;}
