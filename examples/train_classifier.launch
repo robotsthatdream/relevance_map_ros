@@ -36,7 +36,7 @@
         <!-- Parameters specific to the classifier -->
         <rosparam ns="experiment/soi" subst_value="True">
             method: "gmm" <!-- the type of classifier. Here Gaussian Mixture Models-->
-            load_exp: "$(find relevance_map)/examples/gmm_archives/1"  <!-- the folder where to find the archive of the classifier to load, or empty string to create a new classifier -->
+            load_exp: ""  <!-- the folder where to find the archive of the classifier to load, or empty string to create a new classifier -->
             modality: "centralFPFHLabHist" <!-- the type of visual feature extracted on a supervoxel. For more info see the documentaion of the image processing library -->
             dimension: "48" <!-- The dimensionality of the visual feature -->
             threshold: "0.5" <!-- the threshold to binarize the relevance map -->
