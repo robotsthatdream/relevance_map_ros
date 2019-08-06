@@ -184,8 +184,22 @@ class TrainClassifier : public rm::relevance_map_node {
         }
 
         /* Step 7: Computation of perfomence scores of the classifier.
+		TODO encapsulate this part
          */
-        rm::score_computation<TrainClassifier> sc(this, "out_score");
+        std::map<uint32_t,int> true_labels;
+        std::vector<uint32_t> lbls;
+        for(const auto& sv : _soi.getSupervoxels()){
+            true_labels.emplace(sv.first,0);
+            lbls.push_back(sv.first);
+        }
+        tbb::parallel_for(tbb::blocked_range<size_t>(0,lbls.size()),
+                                      [&](const tbb::blocked_range<size_t>& r){
+                        ip::SupervoxelArray supervoxel = _soi.getSupervoxels();
+                        for(int i = r.begin(); i != r.end(); i++)
+                            true_labels[lbls[i]] = rm::is_in_cloud(supervoxel[lbls[i]]->centroid_,_background) ? 0 : 1;
+        });
+
+	rm::score_computation<TrainClassifier> sc(this,true_labels, "out_score");
         sc.compute_scores_results(_counter_iter);
 
         publish_feedback();
