@@ -12,8 +12,8 @@
     
 
     <!-- To launch the node example_node -->
-    <node name="train_classifier" pkg="relevance_map" type="train_classifier" output="screen" launch-prefix="gdb --args ">
-        
+    <node name="train_classifier" pkg="relevance_map" type="train_classifier" output="screen" launch-prefix="">
+       <!-- gdb -\-args   -->
         <!-- The parameters for the workspace
              This parameters define a area in which the relevance map will be computed
         -->
